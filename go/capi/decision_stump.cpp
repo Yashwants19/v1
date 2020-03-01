@@ -11,8 +11,7 @@ extern "C" void mlpackSetDSModelPtr(
     void* value)
 {
   SetParamPtr<DSModel>(identifier,
-      static_cast<DSModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<DSModel*>(value));
 }
 
 extern "C" void *mlpackGetDSModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetDSModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void decision_stumpmlpackMain()
+static void DecisionStumpMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackdecision_stump()
+extern "C" void mlpackDecisionStump()
 {
-  decision_stumpmlpackMain();
+  DecisionStumpMlpackMain();
 }
 

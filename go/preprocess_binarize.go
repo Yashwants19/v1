@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_preprocess_binarize
+#cgo LDFLAGS: -L. -lmlpack_go_preprocess_binarize
 #include <capi/preprocess_binarize.h>
 #include <stdlib.h>
 */
@@ -12,16 +12,14 @@ import (
   "gonum.org/v1/gonum/mat" 
 )
 
-type Preprocess_binarizeOptionalParam struct {
-    Copy_all_inputs bool
+type PreprocessBinarizeOptionalParam struct {
     Dimension int
     Threshold float64
     Verbose bool
 }
 
-func InitializePreprocess_binarize() *Preprocess_binarizeOptionalParam {
-  return &Preprocess_binarizeOptionalParam{
-    Copy_all_inputs: false,
+func InitializePreprocessBinarize() *PreprocessBinarizeOptionalParam {
+  return &PreprocessBinarizeOptionalParam{
     Dimension: 0,
     Threshold: 0,
     Verbose: false,
@@ -32,97 +30,87 @@ func InitializePreprocess_binarize() *Preprocess_binarizeOptionalParam {
   This utility takes a dataset and binarizes the variables into either 0 or 1
   given threshold. User can apply binarization on a dimension or the whole
   dataset.  The dimension to apply binarization to can be specified using the
-  'dimension' parameter; if left unspecified, every dimension will be binarized.
-   The threshold for binarization can also be specified with the 'threshold'
+  "dimension" parameter; if left unspecified, every dimension will be binarized.
+   The threshold for binarization can also be specified with the "threshold"
   parameter; the default threshold is 0.0.
   
-  The binarized matrix may be saved with the 'output' output parameter.
+  The binarized matrix may be saved with the "output" output parameter.
   
   For example, if we want to set all variables greater than 5 in the dataset X
   to 1 and variables less than or equal to 5.0 to 0, and save the result to Y,
   we could run
   
-  param := InitializePreprocess_binarize()
-  param.Threshold = 5
-  Y := Preprocess_binarize(X, param)
+    param := mlpack.InitializePreprocessBinarize()
+    param.Threshold = 5
+    Y := mlpack.PreprocessBinarize(X, param)
   
   But if we want to apply this to only the first (0th) dimension of X,  we could
   instead run
   
-  param := InitializePreprocess_binarize()
-  param.Threshold = 5
-  param.Dimension = 0
-  Y := Preprocess_binarize(X, param)
+    param := mlpack.InitializePreprocessBinarize()
+    param.Threshold = 5
+    param.Dimension = 0
+    Y := mlpack.PreprocessBinarize(X, param)
 
 
   Input parameters:
 
-   - input (mat.Dense): Input data matrix.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - dimension (int): Dimension to apply the binarization. If not set, the
+   - Input (mat.Dense): Input data matrix.
+   - Dimension (int): Dimension to apply the binarization. If not set, the
         program will binarize every dimension by default.  Default value 0.
-   - threshold (float64): Threshold to be applied for binarization. If not
+   - Threshold (float64): Threshold to be applied for binarization. If not
         set, the threshold defaults to 0.0.  Default value 0.
-   - verbose (bool): Display informational messages and the full list of
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - output (mat.Dense): Matrix in which to save the output.
+   - Output (mat.Dense): Matrix in which to save the output.
 
-*/
-func Preprocess_binarize(input *mat.Dense, param *Preprocess_binarizeOptionalParam) (*mat.Dense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Binarize Data")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
+ */
+func PreprocessBinarize(input *mat.Dense, param *PreprocessBinarizeOptionalParam) (*mat.Dense) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Binarize Data")
 
   // Detect if the parameter was passed; set if so.
-  GonumToArmaMat("input", input)
-  SetPassed("input")
+  gonumToArmaMat("input", input)
+  setPassed("input")
 
   // Detect if the parameter was passed; set if so.
   if param.Dimension != 0 {
-    SetParamInt("dimension", param.Dimension)
-    SetPassed("dimension")
+    setParamInt("dimension", param.Dimension)
+    setPassed("dimension")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Threshold != 0 {
-    SetParamDouble("threshold", param.Threshold)
-    SetPassed("threshold")
+    setParamDouble("threshold", param.Threshold)
+    setPassed("threshold")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("output")
+  setPassed("output")
 
   // Call the mlpack program.
-  C.mlpackpreprocess_binarize()
+  C.mlpackPreprocessBinarize()
 
   // Initialize result variable and get output.
-  var output_ptr mlpackArma
-  output := output_ptr.ArmaToGonumMat("output")
+  var outputPtr mlpackArma
+  Output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output
+  return Output
 }

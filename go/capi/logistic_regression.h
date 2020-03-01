@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetLogisticRegressionPtr(const char* identifier,void* value);
+extern void mlpackSetLogisticRegressionPtr(const char* identifier, void* value);
 
 extern void *mlpackGetLogisticRegressionPtr(const char* identifier);
 
-extern void mlpacklogistic_regression();
+extern void mlpackLogisticRegression();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

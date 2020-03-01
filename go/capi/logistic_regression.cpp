@@ -11,8 +11,7 @@ extern "C" void mlpackSetLogisticRegressionPtr(
     void* value)
 {
   SetParamPtr<LogisticRegression<>>(identifier,
-      static_cast<LogisticRegression<>*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<LogisticRegression<>*>(value));
 }
 
 extern "C" void *mlpackGetLogisticRegressionPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetLogisticRegressionPtr(const char* identifier)
   return modelptr;
 }
 
-static void logistic_regressionmlpackMain()
+static void LogisticRegressionMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacklogistic_regression()
+extern "C" void mlpackLogisticRegression()
 {
-  logistic_regressionmlpackMain();
+  LogisticRegressionMlpackMain();
 }
 

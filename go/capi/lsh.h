@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetLSHSearchPtr(const char* identifier,void* value);
+extern void mlpackSetLSHSearchPtr(const char* identifier, void* value);
 
 extern void *mlpackGetLSHSearchPtr(const char* identifier);
 
-extern void mlpacklsh();
+extern void mlpackLsh();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

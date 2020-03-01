@@ -11,8 +11,7 @@ extern "C" void mlpackSetDecisionTreeModelPtr(
     void* value)
 {
   SetParamPtr<DecisionTreeModel>(identifier,
-      static_cast<DecisionTreeModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<DecisionTreeModel*>(value));
 }
 
 extern "C" void *mlpackGetDecisionTreeModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetDecisionTreeModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void decision_treemlpackMain()
+static void DecisionTreeMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackdecision_tree()
+extern "C" void mlpackDecisionTree()
 {
-  decision_treemlpackMain();
+  DecisionTreeMlpackMain();
 }
 

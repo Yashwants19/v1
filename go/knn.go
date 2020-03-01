@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_knn
+#cgo LDFLAGS: -L. -lmlpack_go_knn
 #include <capi/knn.h>
 #include <stdlib.h>
 */
@@ -11,68 +11,62 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
 type KnnOptionalParam struct {
     Algorithm string
-    Copy_all_inputs bool
     Epsilon float64
-    Input_model *KNNModel
+    InputModel *knnModel
     K int
-    Leaf_size int
+    LeafSize int
     Query *mat.Dense
-    Random_basis bool
+    RandomBasis bool
     Reference *mat.Dense
     Rho float64
     Seed int
     Tau float64
-    Tree_type string
-    True_distances *mat.Dense
-    True_neighbors *mat.Dense
+    TreeType string
+    TrueDistances *mat.Dense
+    TrueNeighbors *mat.Dense
     Verbose bool
 }
 
 func InitializeKnn() *KnnOptionalParam {
   return &KnnOptionalParam{
     Algorithm: "dual_tree",
-    Copy_all_inputs: false,
     Epsilon: 0,
-    Input_model: nil,
+    InputModel: nil,
     K: 0,
-    Leaf_size: 20,
+    LeafSize: 20,
     Query: nil,
-    Random_basis: false,
+    RandomBasis: false,
     Reference: nil,
     Rho: 0.7,
     Seed: 0,
     Tau: 0,
-    Tree_type: "kd",
-    True_distances: nil,
-    True_neighbors: nil,
+    TreeType: "kd",
+    TrueDistances: nil,
+    TrueNeighbors: nil,
     Verbose: false,
   }
 }
 
-type KNNModel struct {
- mem unsafe.Pointer
+type knnModel struct {
+  mem unsafe.Pointer
 }
 
-func (m *KNNModel) allocKNNModel(identifier string) {
- m.mem = C.mlpackGetKNNModelPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *knnModel) allocKNNModel(identifier string) {
+  m.mem = C.mlpackGetKNNModelPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *KNNModel) getKNNModel(identifier string) {
- m.allocKNNModel(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *knnModel) getKNNModel(identifier string) {
+  m.allocKNNModel(identifier)
 }
 
-func setKNNModel(identifier string, ptr *KNNModel) {
- C.mlpackSetKNNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setKNNModel(identifier string, ptr *knnModel) {
+  C.mlpackSetKNNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -85,10 +79,10 @@ func setKNNModel(identifier string, ptr *KNNModel) {
   each point in input and store the distances in distances and the neighbors in
   neighbors: 
   
-  param := InitializeKnn()
-  param.K = 5
-  param.Reference = input
-  _, neighbors, _ := Knn(param)
+    param := mlpack.InitializeKnn()
+    param.K = 5
+    param.Reference = input
+    Distances, Neighbors, _ := mlpack.Knn(param)
   
   The output is organized such that row i and column j in the neighbors output
   matrix corresponds to the index of the point in the reference set which is the
@@ -99,172 +93,162 @@ func setKNNModel(identifier string, ptr *KNNModel) {
 
   Input parameters:
 
-   - algorithm (string): Type of neighbor search: 'naive', 'single_tree',
+   - Algorithm (string): Type of neighbor search: 'naive', 'single_tree',
         'dual_tree', 'greedy'.  Default value 'dual_tree'.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - epsilon (float64): If specified, will do approximate nearest neighbor
+   - Epsilon (float64): If specified, will do approximate nearest neighbor
         search with given relative error.  Default value 0.
-   - input_model (KNNModel): Pre-trained kNN model.
-   - k (int): Number of nearest neighbors to find.  Default value 0.
-   - leaf_size (int): Leaf size for tree building (used for kd-trees, vp
+   - InputModel (knnModel): Pre-trained kNN model.
+   - K (int): Number of nearest neighbors to find.  Default value 0.
+   - LeafSize (int): Leaf size for tree building (used for kd-trees, vp
         trees, random projection trees, UB trees, R trees, R* trees, X trees,
         Hilbert R trees, R+ trees, R++ trees, spill trees, and octrees). 
         Default value 20.
-   - query (mat.Dense): Matrix containing query points (optional).
-   - random_basis (bool): Before tree-building, project the data onto a
+   - Query (mat.Dense): Matrix containing query points (optional).
+   - RandomBasis (bool): Before tree-building, project the data onto a
         random orthogonal basis.
-   - reference (mat.Dense): Matrix containing the reference dataset.
-   - rho (float64): Balance threshold (only valid for spill trees). 
+   - Reference (mat.Dense): Matrix containing the reference dataset.
+   - Rho (float64): Balance threshold (only valid for spill trees). 
         Default value 0.7.
-   - seed (int): Random seed (if 0, std::time(NULL) is used).  Default
+   - Seed (int): Random seed (if 0, std::time(NULL) is used).  Default
         value 0.
-   - tau (float64): Overlapping size (only valid for spill trees). 
+   - Tau (float64): Overlapping size (only valid for spill trees). 
         Default value 0.
-   - tree_type (string): Type of tree to use: 'kd', 'vp', 'rp', 'max-rp',
+   - TreeType (string): Type of tree to use: 'kd', 'vp', 'rp', 'max-rp',
         'ub', 'cover', 'r', 'r-star', 'x', 'ball', 'hilbert-r', 'r-plus',
         'r-plus-plus', 'spill', 'oct'.  Default value 'kd'.
-   - true_distances (mat.Dense): Matrix of true distances to compute the
+   - TrueDistances (mat.Dense): Matrix of true distances to compute the
         effective error (average relative error) (it is printed when -v is
         specified).
-   - true_neighbors (mat.Dense): Matrix of true neighbors to compute the
+   - TrueNeighbors (mat.Dense): Matrix of true neighbors to compute the
         recall (it is printed when -v is specified).
-   - verbose (bool): Display informational messages and the full list of
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - distances (mat.Dense): Matrix to output distances into.
-   - neighbors (mat.Dense): Matrix to output neighbors into.
-   - output_model (KNNModel): If specified, the kNN model will be output
+   - Distances (mat.Dense): Matrix to output distances into.
+   - Neighbors (mat.Dense): Matrix to output neighbors into.
+   - OutputModel (knnModel): If specified, the kNN model will be output
         here.
 
-*/
-func Knn(param *KnnOptionalParam) (*mat.Dense, *mat.Dense, KNNModel) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("k-Nearest-Neighbors Search")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
+ */
+func Knn(param *KnnOptionalParam) (*mat.Dense, *mat.Dense, knnModel) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("k-Nearest-Neighbors Search")
 
   // Detect if the parameter was passed; set if so.
   if param.Algorithm != "dual_tree" {
-    SetParamString("algorithm", param.Algorithm)
-    SetPassed("algorithm")
+    setParamString("algorithm", param.Algorithm)
+    setPassed("algorithm")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Epsilon != 0 {
-    SetParamDouble("epsilon", param.Epsilon)
-    SetPassed("epsilon")
+    setParamDouble("epsilon", param.Epsilon)
+    setPassed("epsilon")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setKNNModel("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.InputModel != nil {
+    setKNNModel("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    SetParamInt("k", param.K)
-    SetPassed("k")
+    setParamInt("k", param.K)
+    setPassed("k")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Leaf_size != 20 {
-    SetParamInt("leaf_size", param.Leaf_size)
-    SetPassed("leaf_size")
+  if param.LeafSize != 20 {
+    setParamInt("leaf_size", param.LeafSize)
+    setPassed("leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    GonumToArmaMat("query", param.Query)
-    SetPassed("query")
+    gonumToArmaMat("query", param.Query)
+    setPassed("query")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Random_basis != false {
-    SetParamBool("random_basis", param.Random_basis)
-    SetPassed("random_basis")
+  if param.RandomBasis != false {
+    setParamBool("random_basis", param.RandomBasis)
+    setPassed("random_basis")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    GonumToArmaMat("reference", param.Reference)
-    SetPassed("reference")
+    gonumToArmaMat("reference", param.Reference)
+    setPassed("reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Rho != 0.7 {
-    SetParamDouble("rho", param.Rho)
-    SetPassed("rho")
+    setParamDouble("rho", param.Rho)
+    setPassed("rho")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    SetParamInt("seed", param.Seed)
-    SetPassed("seed")
+    setParamInt("seed", param.Seed)
+    setPassed("seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tau != 0 {
-    SetParamDouble("tau", param.Tau)
-    SetPassed("tau")
+    setParamDouble("tau", param.Tau)
+    setPassed("tau")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Tree_type != "kd" {
-    SetParamString("tree_type", param.Tree_type)
-    SetPassed("tree_type")
+  if param.TreeType != "kd" {
+    setParamString("tree_type", param.TreeType)
+    setPassed("tree_type")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.True_distances != nil {
-    GonumToArmaMat("true_distances", param.True_distances)
-    SetPassed("true_distances")
+  if param.TrueDistances != nil {
+    gonumToArmaMat("true_distances", param.TrueDistances)
+    setPassed("true_distances")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.True_neighbors != nil {
-    GonumToArmaUmat("true_neighbors", param.True_neighbors)
-    SetPassed("true_neighbors")
+  if param.TrueNeighbors != nil {
+    gonumToArmaUmat("true_neighbors", param.TrueNeighbors)
+    setPassed("true_neighbors")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("distances")
-  SetPassed("neighbors")
-  SetPassed("output_model")
+  setPassed("distances")
+  setPassed("neighbors")
+  setPassed("output_model")
 
   // Call the mlpack program.
-  C.mlpackknn()
+  C.mlpackKnn()
 
   // Initialize result variable and get output.
-  var distances_ptr mlpackArma
-  distances := distances_ptr.ArmaToGonumMat("distances")
-  var neighbors_ptr mlpackArma
-  neighbors := neighbors_ptr.ArmaToGonumUmat("neighbors")
-  var output_model KNNModel
-  output_model.getKNNModel("output_model")
+  var distancesPtr mlpackArma
+  Distances := distancesPtr.armaToGonumMat("distances")
+  var neighborsPtr mlpackArma
+  Neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  var OutputModel knnModel
+  OutputModel.getKNNModel("output_model")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return distances, neighbors, output_model
+  return Distances, Neighbors, OutputModel
 }

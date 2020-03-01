@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_emst
+#cgo LDFLAGS: -L. -lmlpack_go_emst
 #include <capi/emst.h>
 #include <stdlib.h>
 */
@@ -13,16 +13,14 @@ import (
 )
 
 type EmstOptionalParam struct {
-    Copy_all_inputs bool
-    Leaf_size int
+    LeafSize int
     Naive bool
     Verbose bool
 }
 
 func InitializeEmst() *EmstOptionalParam {
   return &EmstOptionalParam{
-    Copy_all_inputs: false,
-    Leaf_size: 1,
+    LeafSize: 1,
     Naive: false,
     Verbose: false,
   }
@@ -33,11 +31,11 @@ func InitializeEmst() *EmstOptionalParam {
   points using the dual-tree Boruvka algorithm.
   
   The set to calculate the minimum spanning tree of is specified with the
-  'input' parameter, and the output may be saved with the 'output' output
+  "input" parameter, and the output may be saved with the "output" output
   parameter.
   
-  The 'leaf_size' parameter controls the leaf size of the kd-tree that is used
-  to calculate the minimum spanning tree, and if the 'naive' option is given,
+  The "leaf_size" parameter controls the leaf size of the kd-tree that is used
+  to calculate the minimum spanning tree, and if the "naive" option is given,
   then brute-force search is used (this is typically much slower in low
   dimensions).  The leaf size does not affect the results, but it may have some
   effect on the runtime of the algorithm.
@@ -46,9 +44,9 @@ func InitializeEmst() *EmstOptionalParam {
   calculated with a leaf size of 20 and stored as spanning_tree using the
   following command:
   
-  param := InitializeEmst()
-  param.Leaf_size = 20
-  spanning_tree := Emst(data, param)
+    param := mlpack.InitializeEmst()
+    param.LeafSize = 20
+    SpanningTree := mlpack.Emst(data, param)
   
   The output matrix is a three-dimensional matrix, where each row indicates an
   edge.  The first dimension corresponds to the lesser index of the edge; the
@@ -58,72 +56,62 @@ func InitializeEmst() *EmstOptionalParam {
 
   Input parameters:
 
-   - input (mat.Dense): Input data matrix.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - leaf_size (int): Leaf size in the kd-tree.  One-element leaves give
+   - Input (mat.Dense): Input data matrix.
+   - LeafSize (int): Leaf size in the kd-tree.  One-element leaves give
         the empirically best performance, but at the cost of greater memory
         requirements.  Default value 1.
-   - naive (bool): Compute the MST using O(n^2) naive algorithm.
-   - verbose (bool): Display informational messages and the full list of
+   - Naive (bool): Compute the MST using O(n^2) naive algorithm.
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - output (mat.Dense): Output data.  Stored as an edge list.
+   - Output (mat.Dense): Output data.  Stored as an edge list.
 
-*/
+ */
 func Emst(input *mat.Dense, param *EmstOptionalParam) (*mat.Dense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Fast Euclidean Minimum Spanning Tree")
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Fast Euclidean Minimum Spanning Tree")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
+  gonumToArmaMat("input", input)
+  setPassed("input")
 
   // Detect if the parameter was passed; set if so.
-  GonumToArmaMat("input", input)
-  SetPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Leaf_size != 1 {
-    SetParamInt("leaf_size", param.Leaf_size)
-    SetPassed("leaf_size")
+  if param.LeafSize != 1 {
+    setParamInt("leaf_size", param.LeafSize)
+    setPassed("leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Naive != false {
-    SetParamBool("naive", param.Naive)
-    SetPassed("naive")
+    setParamBool("naive", param.Naive)
+    setPassed("naive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("output")
+  setPassed("output")
 
   // Call the mlpack program.
-  C.mlpackemst()
+  C.mlpackEmst()
 
   // Initialize result variable and get output.
-  var output_ptr mlpackArma
-  output := output_ptr.ArmaToGonumMat("output")
+  var outputPtr mlpackArma
+  Output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output
+  return Output
 }

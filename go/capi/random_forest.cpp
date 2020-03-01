@@ -11,8 +11,7 @@ extern "C" void mlpackSetRandomForestModelPtr(
     void* value)
 {
   SetParamPtr<RandomForestModel>(identifier,
-      static_cast<RandomForestModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<RandomForestModel*>(value));
 }
 
 extern "C" void *mlpackGetRandomForestModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetRandomForestModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void random_forestmlpackMain()
+static void RandomForestMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackrandom_forest()
+extern "C" void mlpackRandomForest()
 {
-  random_forestmlpackMain();
+  RandomForestMlpackMain();
 }
 

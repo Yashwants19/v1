@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetDSModelPtr(const char* identifier,void* value);
+extern void mlpackSetDSModelPtr(const char* identifier, void* value);
 
 extern void *mlpackGetDSModelPtr(const char* identifier);
 
-extern void mlpackdecision_stump();
+extern void mlpackDecisionStump();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void mlpackkmeans();
+extern void mlpackKmeans();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

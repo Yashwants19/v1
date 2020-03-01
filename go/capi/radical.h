@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void mlpackradical();
+extern void mlpackRadical();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

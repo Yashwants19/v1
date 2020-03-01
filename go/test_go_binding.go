@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_test_go_binding
+#cgo LDFLAGS: -L. -lmlpack_go_test_go_binding
 #include <capi/test_go_binding.h>
 #include <stdlib.h>
 */
@@ -11,64 +11,58 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
-type Test_go_bindingOptionalParam struct {
-    Build_model bool
-    Col_in *mat.VecDense
-    Copy_all_inputs bool
+type TestGoBindingOptionalParam struct {
+    BuildModel bool
+    ColIn *mat.Dense
     Flag1 bool
     Flag2 bool
-    Matrix_and_info_in *DataWithInfo
-    Matrix_in *mat.Dense
-    Model_in *GaussianKernel
-    Row_in *mat.VecDense
-    Str_vector_in []string
-    Ucol_in *mat.VecDense
-    Umatrix_in *mat.Dense
-    Urow_in *mat.VecDense
-    Vector_in []int
+    MatrixAndInfoIn *MatrixWithInfo
+    MatrixIn *mat.Dense
+    ModelIn *gaussianKernel
+    RowIn *mat.Dense
+    StrVectorIn []string
+    UcolIn *mat.Dense
+    UmatrixIn *mat.Dense
+    UrowIn *mat.Dense
+    VectorIn []int
     Verbose bool
 }
 
-func InitializeTest_go_binding() *Test_go_bindingOptionalParam {
-  return &Test_go_bindingOptionalParam{
-    Build_model: false,
-    Col_in: nil,
-    Copy_all_inputs: false,
+func InitializeTestGoBinding() *TestGoBindingOptionalParam {
+  return &TestGoBindingOptionalParam{
+    BuildModel: false,
+    ColIn: nil,
     Flag1: false,
     Flag2: false,
-    Matrix_and_info_in: nil,
-    Matrix_in: nil,
-    Model_in: nil,
-    Row_in: nil,
-    Ucol_in: nil,
-    Umatrix_in: nil,
-    Urow_in: nil,
+    MatrixAndInfoIn: nil,
+    MatrixIn: nil,
+    ModelIn: nil,
+    RowIn: nil,
+    UcolIn: nil,
+    UmatrixIn: nil,
+    UrowIn: nil,
     Verbose: false,
   }
 }
 
-type GaussianKernel struct {
- mem unsafe.Pointer
+type gaussianKernel struct {
+  mem unsafe.Pointer
 }
 
-func (m *GaussianKernel) allocGaussianKernel(identifier string) {
- m.mem = C.mlpackGetGaussianKernelPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *gaussianKernel) allocGaussianKernel(identifier string) {
+  m.mem = C.mlpackGetGaussianKernelPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *GaussianKernel) getGaussianKernel(identifier string) {
- m.allocGaussianKernel(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *gaussianKernel) getGaussianKernel(identifier string) {
+  m.allocGaussianKernel(identifier)
 }
 
-func setGaussianKernel(identifier string, ptr *GaussianKernel) {
- C.mlpackSetGaussianKernelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setGaussianKernel(identifier string, ptr *gaussianKernel) {
+  C.mlpackSetGaussianKernelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -79,206 +73,195 @@ func setGaussianKernel(identifier string, ptr *GaussianKernel) {
 
   Input parameters:
 
-   - double_in (float64): Input double, must be 4.0.
-   - int_in (int): Input int, must be 12.
-   - string_in (string): Input string, must be 'hello'.
-   - build_model (bool): If true, a model will be returned.
-   - col_in (mat.VecDense): Input column.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - flag1 (bool): Input flag, must be specified.
-   - flag2 (bool): Input flag, must not be specified.
-   - matrix_and_info_in (DataWithInfo): Input matrix and info.
-   - matrix_in (mat.Dense): Input matrix.
-   - model_in (GaussianKernel): Input model.
-   - row_in (mat.VecDense): Input row.
-   - str_vector_in ([]string): Input vector of strings.
-   - ucol_in (mat.VecDense): Input unsigned column.
-   - umatrix_in (mat.Dense): Input unsigned matrix.
-   - urow_in (mat.VecDense): Input unsigned row.
-   - vector_in ([]int): Input vector of numbers.
-   - verbose (bool): Display informational messages and the full list of
+   - DoubleIn (float64): Input double, must be 4.0.
+   - IntIn (int): Input int, must be 12.
+   - StringIn (string): Input string, must be 'hello'.
+   - BuildModel (bool): If true, a model will be returned.
+   - ColIn (mat.Dense): Input column.
+   - Flag1 (bool): Input flag, must be specified.
+   - Flag2 (bool): Input flag, must not be specified.
+   - MatrixAndInfoIn (MatrixWithInfo): Input matrix and info.
+   - MatrixIn (mat.Dense): Input matrix.
+   - ModelIn (gaussianKernel): Input model.
+   - RowIn (mat.Dense): Input row.
+   - StrVectorIn ([]string): Input vector of strings.
+   - UcolIn (mat.Dense): Input unsigned column.
+   - UmatrixIn (mat.Dense): Input unsigned matrix.
+   - UrowIn (mat.Dense): Input unsigned row.
+   - VectorIn ([]int): Input vector of numbers.
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - col_out (mat.VecDense): Output column. 2x input column
-   - double_out (float64): Output double, will be 5.0.  Default value 0.
-   - int_out (int): Output int, will be 13.  Default value 0.
-   - matrix_and_info_out (mat.Dense): Output matrix and info; all numeric
+   - ColOut (mat.Dense): Output column. 2x input column
+   - DoubleOut (float64): Output double, will be 5.0.  Default value 0.
+   - IntOut (int): Output int, will be 13.  Default value 0.
+   - MatrixAndInfoOut (mat.Dense): Output matrix and info; all numeric
         elements multiplied by 3.
-   - matrix_out (mat.Dense): Output matrix.
-   - model_bw_out (float64): The bandwidth of the model.  Default value
-        0.
-   - model_out (GaussianKernel): Output model, with twice the bandwidth.
-   - row_out (mat.VecDense): Output row.  2x input row.
-   - str_vector_out ([]string): Output string vector.
-   - string_out (string): Output string, will be 'hello2'.  Default value
+   - MatrixOut (mat.Dense): Output matrix.
+   - ModelBwOut (float64): The bandwidth of the model.  Default value 0.
+   - ModelOut (gaussianKernel): Output model, with twice the bandwidth.
+   - RowOut (mat.Dense): Output row.  2x input row.
+   - StrVectorOut ([]string): Output string vector.
+   - StringOut (string): Output string, will be 'hello2'.  Default value
         ''.
-   - ucol_out (mat.VecDense): Output unsigned column. 2x input column.
-   - umatrix_out (mat.Dense): Output unsigned matrix.
-   - urow_out (mat.VecDense): Output unsigned row.  2x input row.
-   - vector_out ([]int): Output vector.
+   - UcolOut (mat.Dense): Output unsigned column. 2x input column.
+   - UmatrixOut (mat.Dense): Output unsigned matrix.
+   - UrowOut (mat.Dense): Output unsigned row.  2x input row.
+   - VectorOut ([]int): Output vector.
 
-*/
-func Test_go_binding(double_in float64, int_in int, string_in string, param *Test_go_bindingOptionalParam) (*mat.VecDense, float64, int, *mat.Dense, *mat.Dense, float64, GaussianKernel, *mat.VecDense, []string, string, *mat.VecDense, *mat.Dense, *mat.VecDense, []int) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Golang binding test")
+ */
+func TestGoBinding(double_in float64, int_in int, string_in string, param *TestGoBindingOptionalParam) (*mat.Dense, float64, int, *mat.Dense, *mat.Dense, float64, gaussianKernel, *mat.Dense, []string, string, *mat.Dense, *mat.Dense, *mat.Dense, []int) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Golang binding test")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
+  setParamDouble("double_in", double_in)
+  setPassed("double_in")
+
+  // Detect if the parameter was passed; set if so.
+  setParamInt("int_in", int_in)
+  setPassed("int_in")
+
+  // Detect if the parameter was passed; set if so.
+  setParamString("string_in", string_in)
+  setPassed("string_in")
+
+  // Detect if the parameter was passed; set if so.
+  if param.BuildModel != false {
+    setParamBool("build_model", param.BuildModel)
+    setPassed("build_model")
   }
 
   // Detect if the parameter was passed; set if so.
-  SetParamDouble("double_in", double_in)
-  SetPassed("double_in")
-
-  // Detect if the parameter was passed; set if so.
-  SetParamInt("int_in", int_in)
-  SetPassed("int_in")
-
-  // Detect if the parameter was passed; set if so.
-  SetParamString("string_in", string_in)
-  SetPassed("string_in")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Build_model != false {
-    SetParamBool("build_model", param.Build_model)
-    SetPassed("build_model")
-  }
-
-  // Detect if the parameter was passed; set if so.
-  if param.Col_in != nil {
-    GonumToArmaCol("col_in", param.Col_in)
-    SetPassed("col_in")
+  if param.ColIn != nil {
+    gonumToArmaCol("col_in", param.ColIn)
+    setPassed("col_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Flag1 != false {
-    SetParamBool("flag1", param.Flag1)
-    SetPassed("flag1")
+    setParamBool("flag1", param.Flag1)
+    setPassed("flag1")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Flag2 != false {
-    SetParamBool("flag2", param.Flag2)
-    SetPassed("flag2")
+    setParamBool("flag2", param.Flag2)
+    setPassed("flag2")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Matrix_and_info_in != nil {
-    GonumToArmaMatWithInfo("matrix_and_info_in", param.Matrix_and_info_in)
-    SetPassed("matrix_and_info_in")
+  if param.MatrixAndInfoIn != nil {
+    gonumToArmaMatWithInfo("matrix_and_info_in", param.MatrixAndInfoIn)
+    setPassed("matrix_and_info_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Matrix_in != nil {
-    GonumToArmaMat("matrix_in", param.Matrix_in)
-    SetPassed("matrix_in")
+  if param.MatrixIn != nil {
+    gonumToArmaMat("matrix_in", param.MatrixIn)
+    setPassed("matrix_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Model_in != nil {
-    setGaussianKernel("model_in", param.Model_in)
-    SetPassed("model_in")
+  if param.ModelIn != nil {
+    setGaussianKernel("model_in", param.ModelIn)
+    setPassed("model_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Row_in != nil {
-    GonumToArmaRow("row_in", param.Row_in)
-    SetPassed("row_in")
+  if param.RowIn != nil {
+    gonumToArmaRow("row_in", param.RowIn)
+    setPassed("row_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Str_vector_in != nil {
-    SetParamVecString("str_vector_in", param.Str_vector_in)
-    SetPassed("str_vector_in")
+  if param.StrVectorIn != nil {
+    setParamVecString("str_vector_in", param.StrVectorIn)
+    setPassed("str_vector_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Ucol_in != nil {
-    GonumToArmaUcol("ucol_in", param.Ucol_in)
-    SetPassed("ucol_in")
+  if param.UcolIn != nil {
+    gonumToArmaUcol("ucol_in", param.UcolIn)
+    setPassed("ucol_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Umatrix_in != nil {
-    GonumToArmaUmat("umatrix_in", param.Umatrix_in)
-    SetPassed("umatrix_in")
+  if param.UmatrixIn != nil {
+    gonumToArmaUmat("umatrix_in", param.UmatrixIn)
+    setPassed("umatrix_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Urow_in != nil {
-    GonumToArmaUrow("urow_in", param.Urow_in)
-    SetPassed("urow_in")
+  if param.UrowIn != nil {
+    gonumToArmaUrow("urow_in", param.UrowIn)
+    setPassed("urow_in")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Vector_in != nil {
-    SetParamVecInt("vector_in", param.Vector_in)
-    SetPassed("vector_in")
+  if param.VectorIn != nil {
+    setParamVecInt("vector_in", param.VectorIn)
+    setPassed("vector_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("col_out")
-  SetPassed("double_out")
-  SetPassed("int_out")
-  SetPassed("matrix_and_info_out")
-  SetPassed("matrix_out")
-  SetPassed("model_bw_out")
-  SetPassed("model_out")
-  SetPassed("row_out")
-  SetPassed("str_vector_out")
-  SetPassed("string_out")
-  SetPassed("ucol_out")
-  SetPassed("umatrix_out")
-  SetPassed("urow_out")
-  SetPassed("vector_out")
+  setPassed("col_out")
+  setPassed("double_out")
+  setPassed("int_out")
+  setPassed("matrix_and_info_out")
+  setPassed("matrix_out")
+  setPassed("model_bw_out")
+  setPassed("model_out")
+  setPassed("row_out")
+  setPassed("str_vector_out")
+  setPassed("string_out")
+  setPassed("ucol_out")
+  setPassed("umatrix_out")
+  setPassed("urow_out")
+  setPassed("vector_out")
 
   // Call the mlpack program.
-  C.mlpacktest_go_binding()
+  C.mlpackTestGoBinding()
 
   // Initialize result variable and get output.
-  var col_out_ptr mlpackArma
-  col_out := col_out_ptr.ArmaToGonumCol("col_out")
-  double_out := GetParamDouble("double_out")
-  int_out := GetParamInt("int_out")
-  var matrix_and_info_out_ptr mlpackArma
-  matrix_and_info_out := matrix_and_info_out_ptr.ArmaToGonumMat("matrix_and_info_out")
-  var matrix_out_ptr mlpackArma
-  matrix_out := matrix_out_ptr.ArmaToGonumMat("matrix_out")
-  model_bw_out := GetParamDouble("model_bw_out")
-  var model_out GaussianKernel
-  model_out.getGaussianKernel("model_out")
-  var row_out_ptr mlpackArma
-  row_out := row_out_ptr.ArmaToGonumRow("row_out")
-  str_vector_out := GetParamVecString("str_vector_out")
-  string_out := GetParamString("string_out")
-  var ucol_out_ptr mlpackArma
-  ucol_out := ucol_out_ptr.ArmaToGonumUcol("ucol_out")
-  var umatrix_out_ptr mlpackArma
-  umatrix_out := umatrix_out_ptr.ArmaToGonumUmat("umatrix_out")
-  var urow_out_ptr mlpackArma
-  urow_out := urow_out_ptr.ArmaToGonumUrow("urow_out")
-  vector_out := GetParamVecInt("vector_out")
+  var colOutPtr mlpackArma
+  ColOut := colOutPtr.armaToGonumCol("col_out")
+  DoubleOut := getParamDouble("double_out")
+  IntOut := getParamInt("int_out")
+  var matrixAndInfoOutPtr mlpackArma
+  MatrixAndInfoOut := matrixAndInfoOutPtr.armaToGonumMat("matrix_and_info_out")
+  var matrixOutPtr mlpackArma
+  MatrixOut := matrixOutPtr.armaToGonumMat("matrix_out")
+  ModelBwOut := getParamDouble("model_bw_out")
+  var ModelOut gaussianKernel
+  ModelOut.getGaussianKernel("model_out")
+  var rowOutPtr mlpackArma
+  RowOut := rowOutPtr.armaToGonumRow("row_out")
+  StrVectorOut := getParamVecString("str_vector_out")
+  StringOut := getParamString("string_out")
+  var ucolOutPtr mlpackArma
+  UcolOut := ucolOutPtr.armaToGonumUcol("ucol_out")
+  var umatrixOutPtr mlpackArma
+  UmatrixOut := umatrixOutPtr.armaToGonumUmat("umatrix_out")
+  var urowOutPtr mlpackArma
+  UrowOut := urowOutPtr.armaToGonumUrow("urow_out")
+  VectorOut := getParamVecInt("vector_out")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return col_out, double_out, int_out, matrix_and_info_out, matrix_out, model_bw_out, model_out, row_out, str_vector_out, string_out, ucol_out, umatrix_out, urow_out, vector_out
+  return ColOut, DoubleOut, IntOut, MatrixAndInfoOut, MatrixOut, ModelBwOut, ModelOut, RowOut, StrVectorOut, StringOut, UcolOut, UmatrixOut, UrowOut, VectorOut
 }

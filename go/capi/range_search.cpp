@@ -11,8 +11,7 @@ extern "C" void mlpackSetRSModelPtr(
     void* value)
 {
   SetParamPtr<RSModel>(identifier,
-      static_cast<RSModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<RSModel*>(value));
 }
 
 extern "C" void *mlpackGetRSModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetRSModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void range_searchmlpackMain()
+static void RangeSearchMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackrange_search()
+extern "C" void mlpackRangeSearch()
 {
-  range_searchmlpackMain();
+  RangeSearchMlpackMain();
 }
 

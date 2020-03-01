@@ -24,139 +24,138 @@ extern "C" {
 /**
  * Set the double parameter to the given value.
  */
-extern void mlpackSetParamDouble(const char *identifier, double value);
+void mlpackSetParamDouble(const char* identifier, double value);
 
 /**
  * Set the int parameter to the given value.
  */
-extern void mlpackSetParamInt(const char *identifier, int value);
+void mlpackSetParamInt(const char* identifier, int value);
 
 /**
  * Set the float parameter to the given value.
  */
-extern void mlpackSetParamFloat(const char *identifier, float value);
+void mlpackSetParamFloat(const char* identifier, float value);
 
 /**
  * Set the bool parameter to the given value.
  */
-extern void mlpackSetParamBool(const char *identifier, bool value);
+void mlpackSetParamBool(const char* identifier, bool value);
 
 /**
  * Set the string parameter to the given value.
  */
-extern void mlpackSetParamString(const char *identifier, const char *value);
+void mlpackSetParamString(const char* identifier, const char* value);
 
 /**
  * Set the parameter to the given value, given that the type is a pointer.
  */
-extern void mlpackSetParamPtr(const char *identifier,
-                              const double *ptr,
-                              const bool copy);
+void mlpackSetParamPtr(const char* identifier,
+                              const double* ptr);
 
 /**
  * Set the int vector parameter to the given value.
  */
-extern void mlpackSetParamVectorInt(const char* identifier,
-                                    const int64_t* ints,
-                                    const int length);
+void mlpackSetParamVectorInt(const char* identifier,
+                             const long long* ints,
+                             const size_t length);
 
 /**
  * Set the string vector parameter to the given value.
  */
-extern void mlpackSetParamVectorStr(const char* identifier,
+void mlpackSetParamVectorStr(const char* identifier,
                              const char* str,
-                             const int element);
+                             const size_t element);
 
 /**
  * Call CLI::SetParam<std::vector<std::string>>() to set the length.
  */
-extern void mlpackSetParamVectorStrLen(const char* identifier,
-                              const size_t length);
+void mlpackSetParamVectorStrLen(const char* identifier,
+                                const size_t length);
 
 /**
  * Check if CLI has a specified parameter.
  */
-extern bool mlpackHasParam(const char *identifier);
+bool mlpackHasParam(const char* identifier);
 
 /**
  * Get the string parameter associated with specified identifier.
  */
-extern char *mlpackGetParamString(const char *identifier);
+const char* mlpackGetParamString(const char* identifier);
 
 /**
  * Get the double parameter associated with specified identifier.
  */
-extern double mlpackGetParamDouble(const char *identifier);
+double mlpackGetParamDouble(const char* identifier);
 
 /**
  * Get the int parameter associated with specified identifier.
  */
-extern int mlpackGetParamInt(const char *identifier);
+int mlpackGetParamInt(const char* identifier);
 
 /**
  * Get the bool parameter associated with specified identifier.
  */
-extern bool mlpackGetParamBool(const char *identifier);
+bool mlpackGetParamBool(const char* identifier);
 
 /**
  * Get the vector<int> parameter associated with specified identifier.
  */
-extern void *mlpackGetVecIntPtr(const char *identifier);
+void* mlpackGetVecIntPtr(const char* identifier);
 
 /**
  * Get the vector<string> parameter associated with specified identifier.
  */
-extern char *mlpackGetVecStringPtr(const char *identifier, const int i);
+const char* mlpackGetVecStringPtr(const char* identifier, const size_t i);
 
 /**
  * Get the vector<int> parameter's size.
  */
-extern int mlpackVecIntSize(const char *identifier);
+int mlpackVecIntSize(const char* identifier);
 
 /**
  * Get the vector<string> parameter's size.
  */
-extern int mlpackVecStringSize(const char *identifier);
+int mlpackVecStringSize(const char* identifier);
 
 /**
  * Set parameter as passed.
  */
-extern void mlpackSetPassed(const char *name);
+void mlpackSetPassed(const char* name);
 
 /**
  * Reset the status of all timers.
  */
-extern void mlpackResetTimers();
+void mlpackResetTimers();
 
 /**
  * Enable timing.
  */
-extern void mlpackEnableTimers();
+void mlpackEnableTimers();
 
 /**
  * Disable backtraces.
  */
-extern void mlpackDisableBacktrace();
+void mlpackDisableBacktrace();
 
 /**
  * Turn verbose output on.
  */
-extern void mlpackEnableVerbose();
+void mlpackEnableVerbose();
 
 /**
  * Turn verbose output off.
  */
-extern void mlpackDisableVerbose();
+void mlpackDisableVerbose();
 
 /**
  * Clear settings.
  */
-extern void mlpackClearSettings();
+void mlpackClearSettings();
 
 /**
  * Restore Settings.
  */
-extern void mlpackRestoreSettings(const char *name);
+void mlpackRestoreSettings(const char* name);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

@@ -11,8 +11,7 @@ extern "C" void mlpackSetPerceptronModelPtr(
     void* value)
 {
   SetParamPtr<PerceptronModel>(identifier,
-      static_cast<PerceptronModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<PerceptronModel*>(value));
 }
 
 extern "C" void *mlpackGetPerceptronModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetPerceptronModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void perceptronmlpackMain()
+static void PerceptronMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackperceptron()
+extern "C" void mlpackPerceptron()
 {
-  perceptronmlpackMain();
+  PerceptronMlpackMain();
 }
 

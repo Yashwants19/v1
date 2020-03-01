@@ -11,8 +11,7 @@ extern "C" void mlpackSetGMMPtr(
     void* value)
 {
   SetParamPtr<GMM>(identifier,
-      static_cast<GMM*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<GMM*>(value));
 }
 
 extern "C" void *mlpackGetGMMPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetGMMPtr(const char* identifier)
   return modelptr;
 }
 
-static void gmm_trainmlpackMain()
+static void GmmTrainMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackgmm_train()
+extern "C" void mlpackGmmTrain()
 {
-  gmm_trainmlpackMain();
+  GmmTrainMlpackMain();
 }
 

@@ -11,8 +11,7 @@ extern "C" void mlpackSetFastMKSModelPtr(
     void* value)
 {
   SetParamPtr<FastMKSModel>(identifier,
-      static_cast<FastMKSModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<FastMKSModel*>(value));
 }
 
 extern "C" void *mlpackGetFastMKSModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetFastMKSModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void fastmksmlpackMain()
+static void FastmksMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackfastmks()
+extern "C" void mlpackFastmks()
 {
-  fastmksmlpackMain();
+  FastmksMlpackMain();
 }
 

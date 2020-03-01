@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void preprocess_describemlpackMain()
+static void PreprocessDescribeMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackpreprocess_describe()
+extern "C" void mlpackPreprocessDescribe()
 {
-  preprocess_describemlpackMain();
+  PreprocessDescribeMlpackMain();
 }
 

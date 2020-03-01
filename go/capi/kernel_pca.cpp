@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void kernel_pcamlpackMain()
+static void KernelPcaMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackkernel_pca()
+extern "C" void mlpackKernelPca()
 {
-  kernel_pcamlpackMain();
+  KernelPcaMlpackMain();
 }
 

@@ -40,10 +40,9 @@ inline void SetParam(const std::string& identifier, T& value)
  */
 template<typename T>
 inline void SetParamPtr(const std::string& identifier,
-                        T* value,
-                        const bool copy)
+                        T* value)
 {
-  CLI::GetParam<T*>(identifier) = copy ? new T(*value) : value;
+  CLI::GetParam<T*>(identifier) = value;
 }
 
 /**

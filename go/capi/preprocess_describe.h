@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void mlpackpreprocess_describe();
+extern void mlpackPreprocessDescribe();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

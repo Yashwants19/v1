@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void kmeansmlpackMain()
+static void KmeansMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackkmeans()
+extern "C" void mlpackKmeans()
 {
-  kmeansmlpackMain();
+  KmeansMlpackMain();
 }
 

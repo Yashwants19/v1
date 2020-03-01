@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void lmnnmlpackMain()
+static void LmnnMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacklmnn()
+extern "C" void mlpackLmnn()
 {
-  lmnnmlpackMain();
+  LmnnMlpackMain();
 }
 

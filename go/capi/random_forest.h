@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetRandomForestModelPtr(const char* identifier,void* value);
+extern void mlpackSetRandomForestModelPtr(const char* identifier, void* value);
 
 extern void *mlpackGetRandomForestModelPtr(const char* identifier);
 
-extern void mlpackrandom_forest();
+extern void mlpackRandomForest();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

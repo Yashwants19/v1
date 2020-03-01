@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetDecisionTreeModelPtr(const char* identifier,void* value);
+extern void mlpackSetDecisionTreeModelPtr(const char* identifier, void* value);
 
 extern void *mlpackGetDecisionTreeModelPtr(const char* identifier);
 
-extern void mlpackdecision_tree();
+extern void mlpackDecisionTree();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

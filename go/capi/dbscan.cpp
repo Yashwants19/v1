@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void dbscanmlpackMain()
+static void DbscanMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackdbscan()
+extern "C" void mlpackDbscan()
 {
-  dbscanmlpackMain();
+  DbscanMlpackMain();
 }
 

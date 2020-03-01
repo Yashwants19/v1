@@ -11,8 +11,7 @@ extern "C" void mlpackSetNBCModelPtr(
     void* value)
 {
   SetParamPtr<NBCModel>(identifier,
-      static_cast<NBCModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<NBCModel*>(value));
 }
 
 extern "C" void *mlpackGetNBCModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetNBCModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void nbcmlpackMain()
+static void NbcMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacknbc()
+extern "C" void mlpackNbc()
 {
-  nbcmlpackMain();
+  NbcMlpackMain();
 }
 

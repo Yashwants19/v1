@@ -2,91 +2,90 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I. -I/capi -g -Wall
-#cgo LDFLAGS: -L${SRCDIR} -Wl,-rpath,${SRCDIR} -lm -lmlpack -lgo_util
+#cgo LDFLAGS: -L${SRCDIR} -Wl,-rpath,${SRCDIR} -lgo_util
 #include <capi/cli_util.h>
 */
 import "C"
 
 import (
   "runtime"
-  "time"
   "unsafe"
 )
 
-func HasParam(identifier string) bool {
+func hasParam(identifier string) bool  {
   return bool((C.mlpackHasParam(C.CString(identifier))))
 }
 
-func SetPassed(identifier string) {
+func setPassed(identifier string)  {
   C.mlpackSetPassed(C.CString(identifier))
 }
 
-func SetParamDouble(identifier string, value float64) {
+func setParamDouble(identifier string, value float64)  {
   C.mlpackSetParamDouble(C.CString(identifier), C.double(value))
 }
 
-func SetParamInt(identifier string, value int) {
+func setParamInt(identifier string, value int) {
   C.mlpackSetParamInt(C.CString(identifier), C.int(value))
 }
-func SetParamFloat(identifier string, value float64) {
+func setParamFloat(identifier string, value float64) {
   C.mlpackSetParamFloat(C.CString(identifier), C.float(value))
 }
 
-func SetParamBool(identifier string, value bool) {
+func setParamBool(identifier string, value bool) {
   C.mlpackSetParamBool(C.CString(identifier), C.bool(value))
 }
 
-func SetParamString(identifier string, value string) {
+func setParamString(identifier string, value string) {
   C.mlpackSetParamString(C.CString(identifier), C.CString(value))
 }
 
-func SetParamPtr(identifier string, ptr unsafe.Pointer, copy bool) {
-  C.mlpackSetParamPtr(C.CString(identifier), (*C.double)(ptr), C.bool(copy))
+func setParamPtr(identifier string, ptr unsafe.Pointer) {
+  C.mlpackSetParamPtr(C.CString(identifier), (*C.double)(ptr))
 }
-func ResetTimers() {
+func resetTimers() {
   C.mlpackResetTimers()
 }
 
-func EnableTimers() {
+func enableTimers() {
   C.mlpackEnableTimers()
 }
 
-func DisableBacktrace() {
+func disableBacktrace() {
   C.mlpackDisableBacktrace()
 }
 
-func DisableVerbose() {
+func disableVerbose() {
   C.mlpackDisableVerbose()
 }
 
-func EnableVerbose() {
+func enableVerbose() {
   C.mlpackEnableVerbose()
 }
 
-func RestoreSettings(method string) {
+func restoreSettings(method string) {
   C.mlpackRestoreSettings(C.CString(method))
 }
 
-func ClearSettings() {
+func clearSettings() {
   C.mlpackClearSettings()
 }
 
-func GetParamString(identifier string) string {
+func getParamString(identifier string) string {
   val := C.GoString(C.mlpackGetParamString(C.CString(identifier)))
   return val
 }
 
-func GetParamBool(identifier string) bool {
+func getParamBool(identifier string) bool {
   val := bool(C.mlpackGetParamBool(C.CString(identifier)))
   return val
 }
 
-func GetParamInt(identifier string) int {
+func getParamInt(identifier string) int {
   val := int(C.mlpackGetParamInt(C.CString(identifier)))
   return val
 }
 
-func GetParamDouble(identifier string) float64 {
+func getParamDouble(identifier string) float64 {
   val := float64(C.mlpackGetParamDouble(C.CString(identifier)))
   return val
 }
@@ -100,45 +99,42 @@ func (v *mlpackVectorType) allocVecIntPtr(identifier string) {
   runtime.KeepAlive(v)
 }
 
-func SetParamVecInt(identifier string, vecInt []int) {
+func setParamVecInt(identifier string, vecInt []int) {
   ptr := unsafe.Pointer(&vecInt[0])
-  C.mlpackSetParamVectorInt(C.CString(identifier), (*C.int64_t)(ptr),
-                            C.int(len(vecInt)))
+  C.mlpackSetParamVectorInt(C.CString(identifier), (*C.longlong)(ptr),
+                            C.size_t(len(vecInt)))
 }
 
-func SetParamVecString(identifier string, vecString []string) {
+func setParamVecString(identifier string, vecString []string) {
   C.mlpackSetParamVectorStrLen(C.CString(identifier), C.size_t(len(vecString)))
-  for i := 0; i < len(vecString); i++{
+  for i := 0; i < len(vecString); i++ {
     C.mlpackSetParamVectorStr(C.CString(identifier), (C.CString)(vecString[i]),
-                              C.int(i))
+                              C.size_t(i))
   }
 }
 
-func GetParamVecInt(identifier string) []int {
+func getParamVecInt(identifier string) []int {
   e := int(C.mlpackVecIntSize(C.CString(identifier)))
 
   var v mlpackVectorType
   v.allocVecIntPtr(identifier)
-  runtime.GC()
-  time.Sleep(time.Second)
 
   data := (*[1<<30 - 1]int)(v.mem)
   output := data[:e]
   if output != nil {
     return output
   }
-  return nil
+  return []int{}
 }
 
-func GetParamVecString(identifier string) []string {
+func getParamVecString(identifier string) []string {
   e := int(C.mlpackVecStringSize(C.CString(identifier)))
 
   data := make([]string, e)
-  for i := 0; i < e; i++{
+  for i := 0; i < e; i++ {
     data[i] = C.GoString(C.mlpackGetVecStringPtr(C.CString(identifier),
-                         C.int(i)))
+                         C.size_t(i)))
     runtime.GC()
-    time.Sleep(time.Second)
   }
   return data
 }

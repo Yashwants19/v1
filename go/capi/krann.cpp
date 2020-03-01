@@ -11,8 +11,7 @@ extern "C" void mlpackSetRANNModelPtr(
     void* value)
 {
   SetParamPtr<RANNModel>(identifier,
-      static_cast<RANNModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<RANNModel*>(value));
 }
 
 extern "C" void *mlpackGetRANNModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetRANNModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void krannmlpackMain()
+static void KrannMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackkrann()
+extern "C" void mlpackKrann()
 {
-  krannmlpackMain();
+  KrannMlpackMain();
 }
 

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void mlpackdbscan();
+extern void mlpackDbscan();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

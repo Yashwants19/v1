@@ -11,8 +11,7 @@ extern "C" void mlpackSetAdaBoostModelPtr(
     void* value)
 {
   SetParamPtr<AdaBoostModel>(identifier,
-      static_cast<AdaBoostModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<AdaBoostModel*>(value));
 }
 
 extern "C" void *mlpackGetAdaBoostModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetAdaBoostModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void adaboostmlpackMain()
+static void AdaboostMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackadaboost()
+extern "C" void mlpackAdaboost()
 {
-  adaboostmlpackMain();
+  AdaboostMlpackMain();
 }
 

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void mlpackmean_shift();
+extern void mlpackMeanShift();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

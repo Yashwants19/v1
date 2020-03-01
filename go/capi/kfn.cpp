@@ -11,8 +11,7 @@ extern "C" void mlpackSetKFNModelPtr(
     void* value)
 {
   SetParamPtr<KFNModel>(identifier,
-      static_cast<KFNModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<KFNModel*>(value));
 }
 
 extern "C" void *mlpackGetKFNModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetKFNModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void kfnmlpackMain()
+static void KfnMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackkfn()
+extern "C" void mlpackKfn()
 {
-  kfnmlpackMain();
+  KfnMlpackMain();
 }
 

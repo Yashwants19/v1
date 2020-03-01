@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_mean_shift
+#cgo LDFLAGS: -L. -lmlpack_go_mean_shift
 #include <capi/mean_shift.h>
 #include <stdlib.h>
 */
@@ -12,23 +12,21 @@ import (
   "gonum.org/v1/gonum/mat" 
 )
 
-type Mean_shiftOptionalParam struct {
-    Copy_all_inputs bool
-    Force_convergence bool
-    In_place bool
-    Labels_only bool
-    Max_iterations int
+type MeanShiftOptionalParam struct {
+    ForceConvergence bool
+    InPlace bool
+    LabelsOnly bool
+    MaxIterations int
     Radius float64
     Verbose bool
 }
 
-func InitializeMean_shift() *Mean_shiftOptionalParam {
-  return &Mean_shiftOptionalParam{
-    Copy_all_inputs: false,
-    Force_convergence: false,
-    In_place: false,
-    Labels_only: false,
-    Max_iterations: 1000,
+func InitializeMeanShift() *MeanShiftOptionalParam {
+  return &MeanShiftOptionalParam{
+    ForceConvergence: false,
+    InPlace: false,
+    LabelsOnly: false,
+    MaxIterations: 1000,
     Radius: 0,
     Verbose: false,
   }
@@ -39,122 +37,112 @@ func InitializeMean_shift() *Mean_shiftOptionalParam {
   learned cluster assignments either as a column of labels in the input dataset
   or separately.
   
-  The input dataset should be specified with the 'input' parameter, and the
-  radius used for search can be specified with the 'radius' parameter.  The
+  The input dataset should be specified with the "input" parameter, and the
+  radius used for search can be specified with the "radius" parameter.  The
   maximum number of iterations before algorithm termination is controlled with
-  the 'max_iterations' parameter.
+  the "max_iterations" parameter.
   
-  The output labels may be saved with the 'output' output parameter and the
-  centroids of each cluster may be saved with the 'centroid' output parameter.
+  The output labels may be saved with the "output" output parameter and the
+  centroids of each cluster may be saved with the "centroid" output parameter.
   
   For example, to run mean shift clustering on the dataset data and store the
   centroids to centroids, the following command may be used: 
   
-  param := InitializeMean_shift()
-  centroids, _ := Mean_shift(data, )
+    param := mlpack.InitializeMeanShift()
+    Centroids, _ := mlpack.MeanShift(data, )
 
 
   Input parameters:
 
-   - input (mat.Dense): Input dataset to perform clustering on.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - force_convergence (bool): If specified, the mean shift algorithm will
+   - Input (mat.Dense): Input dataset to perform clustering on.
+   - ForceConvergence (bool): If specified, the mean shift algorithm will
         continue running regardless of max_iterations until the clusters
         converge.
-   - in_place (bool): If specified, a column containing the learned
-        cluster assignments will be added to the input dataset file.  In this
-        case, --output_file is overridden.  (Do not use with Python.)
-   - labels_only (bool): If specified, only the output labels will be
+   - InPlace (bool): If specified, a column containing the learned cluster
+        assignments will be added to the input dataset file.  In this case,
+        --output_file is overridden.  (Do not use with Python.)
+   - LabelsOnly (bool): If specified, only the output labels will be
         written to the file specified by --output_file.
-   - max_iterations (int): Maximum number of iterations before mean shift
+   - MaxIterations (int): Maximum number of iterations before mean shift
         terminates.  Default value 1000.
-   - radius (float64): If the distance between two centroids is less than
+   - Radius (float64): If the distance between two centroids is less than
         the given radius, one will be removed.  A radius of 0 or less means an
         estimate will be calculated and used for the radius.  Default value 0.
-   - verbose (bool): Display informational messages and the full list of
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - centroid (mat.Dense): If specified, the centroids of each cluster
+   - Centroid (mat.Dense): If specified, the centroids of each cluster
         will be written to the given matrix.
-   - output (mat.Dense): Matrix to write output labels or labeled data
+   - Output (mat.Dense): Matrix to write output labels or labeled data
         to.
 
-*/
-func Mean_shift(input *mat.Dense, param *Mean_shiftOptionalParam) (*mat.Dense, *mat.Dense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Mean Shift Clustering")
+ */
+func MeanShift(input *mat.Dense, param *MeanShiftOptionalParam) (*mat.Dense, *mat.Dense) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Mean Shift Clustering")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
+  gonumToArmaMat("input", input)
+  setPassed("input")
+
+  // Detect if the parameter was passed; set if so.
+  if param.ForceConvergence != false {
+    setParamBool("force_convergence", param.ForceConvergence)
+    setPassed("force_convergence")
   }
 
   // Detect if the parameter was passed; set if so.
-  GonumToArmaMat("input", input)
-  SetPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Force_convergence != false {
-    SetParamBool("force_convergence", param.Force_convergence)
-    SetPassed("force_convergence")
+  if param.InPlace != false {
+    setParamBool("in_place", param.InPlace)
+    setPassed("in_place")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.In_place != false {
-    SetParamBool("in_place", param.In_place)
-    SetPassed("in_place")
+  if param.LabelsOnly != false {
+    setParamBool("labels_only", param.LabelsOnly)
+    setPassed("labels_only")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Labels_only != false {
-    SetParamBool("labels_only", param.Labels_only)
-    SetPassed("labels_only")
-  }
-
-  // Detect if the parameter was passed; set if so.
-  if param.Max_iterations != 1000 {
-    SetParamInt("max_iterations", param.Max_iterations)
-    SetPassed("max_iterations")
+  if param.MaxIterations != 1000 {
+    setParamInt("max_iterations", param.MaxIterations)
+    setPassed("max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Radius != 0 {
-    SetParamDouble("radius", param.Radius)
-    SetPassed("radius")
+    setParamDouble("radius", param.Radius)
+    setPassed("radius")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("centroid")
-  SetPassed("output")
+  setPassed("centroid")
+  setPassed("output")
 
   // Call the mlpack program.
-  C.mlpackmean_shift()
+  C.mlpackMeanShift()
 
   // Initialize result variable and get output.
-  var centroid_ptr mlpackArma
-  centroid := centroid_ptr.ArmaToGonumMat("centroid")
-  var output_ptr mlpackArma
-  output := output_ptr.ArmaToGonumMat("output")
+  var centroidPtr mlpackArma
+  Centroid := centroidPtr.armaToGonumMat("centroid")
+  var outputPtr mlpackArma
+  Output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return centroid, output
+  return Centroid, Output
 }

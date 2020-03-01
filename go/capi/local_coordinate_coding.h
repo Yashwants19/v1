@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetLocalCoordinateCodingPtr(const char* identifier,void* value);
+extern void mlpackSetLocalCoordinateCodingPtr(const char* identifier, void* value);
 
 extern void *mlpackGetLocalCoordinateCodingPtr(const char* identifier);
 
-extern void mlpacklocal_coordinate_coding();
+extern void mlpackLocalCoordinateCoding();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

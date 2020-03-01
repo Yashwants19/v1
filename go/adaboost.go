@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_adaboost
+#cgo LDFLAGS: -L. -lmlpack_go_adaboost
 #include <capi/adaboost.h>
 #include <stdlib.h>
 */
@@ -11,54 +11,48 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
 type AdaboostOptionalParam struct {
-    Copy_all_inputs bool
-    Input_model *AdaBoostModel
+    InputModel *adaBoostModel
     Iterations int
-    Labels *mat.VecDense
+    Labels *mat.Dense
     Test *mat.Dense
     Tolerance float64
     Training *mat.Dense
     Verbose bool
-    Weak_learner string
+    WeakLearner string
 }
 
 func InitializeAdaboost() *AdaboostOptionalParam {
   return &AdaboostOptionalParam{
-    Copy_all_inputs: false,
-    Input_model: nil,
+    InputModel: nil,
     Iterations: 1000,
     Labels: nil,
     Test: nil,
     Tolerance: 1e-10,
     Training: nil,
     Verbose: false,
-    Weak_learner: "decision_stump",
+    WeakLearner: "decision_stump",
   }
 }
 
-type AdaBoostModel struct {
- mem unsafe.Pointer
+type adaBoostModel struct {
+  mem unsafe.Pointer
 }
 
-func (m *AdaBoostModel) allocAdaBoostModel(identifier string) {
- m.mem = C.mlpackGetAdaBoostModelPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *adaBoostModel) allocAdaBoostModel(identifier string) {
+  m.mem = C.mlpackGetAdaBoostModelPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *AdaBoostModel) getAdaBoostModel(identifier string) {
- m.allocAdaBoostModel(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *adaBoostModel) getAdaBoostModel(identifier string) {
+  m.allocAdaBoostModel(identifier)
 }
 
-func setAdaBoostModel(identifier string, ptr *AdaBoostModel) {
- C.mlpackSetAdaBoostModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setAdaBoostModel(identifier string, ptr *adaBoostModel) {
+  C.mlpackSetAdaBoostModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -75,147 +69,142 @@ func setAdaBoostModel(identifier string, ptr *AdaBoostModel) {
   
   This program allows training of an AdaBoost model, and then application of
   that model to a test dataset.  To train a model, a dataset must be passed with
-  the 'training' option.  Labels can be given with the 'labels' option; if no
+  the "training" option.  Labels can be given with the "labels" option; if no
   labels are specified, the labels will be assumed to be the last column of the
   input dataset.  Alternately, an AdaBoost model may be loaded with the
-  'input_model' option.
+  "input_model" option.
   
   Once a model is trained or loaded, it may be used to provide class predictions
-  for a given test dataset.  A test dataset may be specified with the 'test'
+  for a given test dataset.  A test dataset may be specified with the "test"
   parameter.  The predicted classes for each point in the test dataset are
-  output to the 'predictions' output parameter.  The AdaBoost model itself is
-  output to the 'output_model' output parameter.
+  output to the "predictions" output parameter.  The AdaBoost model itself is
+  output to the "output_model" output parameter.
   
   Note: the following parameter is deprecated and will be removed in mlpack
-  4.0.0: 'output'.
-  Use 'predictions' instead of 'output'.
+  4.0.0: "output".
+  Use "predictions" instead of "output".
   
   For example, to run AdaBoost on an input dataset data with perceptrons as the
   weak learner type, storing the trained model in model, one could use the
   following command: 
   
-  param := InitializeAdaboost()
-  param.Training = data
-  param.Weak_learner = "perceptron"
-  _, model, _ := Adaboost(param)
+    param := mlpack.InitializeAdaboost()
+    param.Training = data
+    param.WeakLearner = "perceptron"
+    _, Model, _, _ := mlpack.Adaboost(param)
   
   Similarly, an already-trained model in model can be used to provide class
   predictions from test data test_data and store the output in predictions with
   the following command: 
   
-  param := InitializeAdaboost()
-  param.Input_model = model
-  param.Test = test_data
-  _, _, predictions := Adaboost(param)
+    param := mlpack.InitializeAdaboost()
+    param.InputModel = &Model
+    param.Test = test_data
+    _, _, Predictions, _ := mlpack.Adaboost(param)
 
 
   Input parameters:
 
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - input_model (AdaBoostModel): Input AdaBoost model.
-   - iterations (int): The maximum number of boosting iterations to be run
+   - InputModel (adaBoostModel): Input AdaBoost model.
+   - Iterations (int): The maximum number of boosting iterations to be run
         (0 will run until convergence.)  Default value 1000.
-   - labels (mat.VecDense): Labels for the training set.
-   - test (mat.Dense): Test dataset.
-   - tolerance (float64): The tolerance for change in values of the
+   - Labels (mat.Dense): Labels for the training set.
+   - Test (mat.Dense): Test dataset.
+   - Tolerance (float64): The tolerance for change in values of the
         weighted error during training.  Default value 1e-10.
-   - training (mat.Dense): Dataset for training AdaBoost.
-   - verbose (bool): Display informational messages and the full list of
+   - Training (mat.Dense): Dataset for training AdaBoost.
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
-   - weak_learner (string): The type of weak learner to use:
+   - WeakLearner (string): The type of weak learner to use:
         'decision_stump', or 'perceptron'.  Default value 'decision_stump'.
 
   Output parameters:
 
-   - output (mat.VecDense): Predicted labels for the test set.
-   - output_model (AdaBoostModel): Output trained AdaBoost model.
-   - predictions (mat.VecDense): Predicted labels for the test set.
+   - Output (mat.Dense): Predicted labels for the test set.
+   - OutputModel (adaBoostModel): Output trained AdaBoost model.
+   - Predictions (mat.Dense): Predicted labels for the test set.
+   - Probabilities (mat.Dense): Predicted class probabilities for each
+        point in the test set.
 
-*/
-func Adaboost(param *AdaboostOptionalParam) (*mat.VecDense, AdaBoostModel, *mat.VecDense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("AdaBoost")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
+ */
+func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Dense, *mat.Dense) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("AdaBoost")
 
   // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setAdaBoostModel("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.InputModel != nil {
+    setAdaBoostModel("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Iterations != 1000 {
-    SetParamInt("iterations", param.Iterations)
-    SetPassed("iterations")
+    setParamInt("iterations", param.Iterations)
+    setPassed("iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    GonumToArmaUrow("labels", param.Labels)
-    SetPassed("labels")
+    gonumToArmaUrow("labels", param.Labels)
+    setPassed("labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    GonumToArmaMat("test", param.Test)
-    SetPassed("test")
+    gonumToArmaMat("test", param.Test)
+    setPassed("test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-10 {
-    SetParamDouble("tolerance", param.Tolerance)
-    SetPassed("tolerance")
+    setParamDouble("tolerance", param.Tolerance)
+    setPassed("tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    GonumToArmaMat("training", param.Training)
-    SetPassed("training")
+    gonumToArmaMat("training", param.Training)
+    setPassed("training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Weak_learner != "decision_stump" {
-    SetParamString("weak_learner", param.Weak_learner)
-    SetPassed("weak_learner")
+  if param.WeakLearner != "decision_stump" {
+    setParamString("weak_learner", param.WeakLearner)
+    setPassed("weak_learner")
   }
 
   // Mark all output options as passed.
-  SetPassed("output")
-  SetPassed("output_model")
-  SetPassed("predictions")
+  setPassed("output")
+  setPassed("output_model")
+  setPassed("predictions")
+  setPassed("probabilities")
 
   // Call the mlpack program.
-  C.mlpackadaboost()
+  C.mlpackAdaboost()
 
   // Initialize result variable and get output.
-  var output_ptr mlpackArma
-  output := output_ptr.ArmaToGonumUrow("output")
-  var output_model AdaBoostModel
-  output_model.getAdaBoostModel("output_model")
-  var predictions_ptr mlpackArma
-  predictions := predictions_ptr.ArmaToGonumUrow("predictions")
+  var outputPtr mlpackArma
+  Output := outputPtr.armaToGonumUrow("output")
+  var OutputModel adaBoostModel
+  OutputModel.getAdaBoostModel("output_model")
+  var predictionsPtr mlpackArma
+  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  var probabilitiesPtr mlpackArma
+  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output, output_model, predictions
+  return Output, OutputModel, Predictions, Probabilities
 }

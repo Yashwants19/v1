@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_gmm_train
+#cgo LDFLAGS: -L. -lmlpack_go_gmm_train
 #include <capi/gmm_train.h>
 #include <stdlib.h>
 */
@@ -11,19 +11,18 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
-type Gmm_trainOptionalParam struct {
-    Copy_all_inputs bool
-    Diagonal_covariance bool
-    Input_model *GMM
-    Max_iterations int
-    No_force_positive bool
+type GmmTrainOptionalParam struct {
+    DiagonalCovariance bool
+    InputModel *gmm
+    KmeansMaxIterations int
+    MaxIterations int
+    NoForcePositive bool
     Noise float64
     Percentage float64
-    Refined_start bool
+    RefinedStart bool
     Samplings int
     Seed int
     Tolerance float64
@@ -31,16 +30,16 @@ type Gmm_trainOptionalParam struct {
     Verbose bool
 }
 
-func InitializeGmm_train() *Gmm_trainOptionalParam {
-  return &Gmm_trainOptionalParam{
-    Copy_all_inputs: false,
-    Diagonal_covariance: false,
-    Input_model: nil,
-    Max_iterations: 250,
-    No_force_positive: false,
+func InitializeGmmTrain() *GmmTrainOptionalParam {
+  return &GmmTrainOptionalParam{
+    DiagonalCovariance: false,
+    InputModel: nil,
+    KmeansMaxIterations: 1000,
+    MaxIterations: 250,
+    NoForcePositive: false,
     Noise: 0,
     Percentage: 0.02,
-    Refined_start: false,
+    RefinedStart: false,
     Samplings: 100,
     Seed: 0,
     Tolerance: 1e-10,
@@ -49,24 +48,21 @@ func InitializeGmm_train() *Gmm_trainOptionalParam {
   }
 }
 
-type GMM struct {
- mem unsafe.Pointer
+type gmm struct {
+  mem unsafe.Pointer
 }
 
-func (m *GMM) allocGMM(identifier string) {
- m.mem = C.mlpackGetGMMPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *gmm) allocGMM(identifier string) {
+  m.mem = C.mlpackGetGMMPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *GMM) getGMM(identifier string) {
- m.allocGMM(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *gmm) getGMM(identifier string) {
+  m.allocGMM(identifier)
 }
 
-func setGMM(identifier string, ptr *GMM) {
- C.mlpackSetGMMPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setGMM(identifier string, ptr *gmm) {
+  C.mlpackSetGMMPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -74,35 +70,35 @@ func setGMM(identifier string, ptr *GMM) {
   using the EM algorithm to find the maximum likelihood estimate.  The model may
   be saved and reused by other mlpack GMM tools.
   
-  The input data to train on must be specified with the 'input' parameter, and
-  the number of Gaussians in the model must be specified with the 'gaussians'
+  The input data to train on must be specified with the "input" parameter, and
+  the number of Gaussians in the model must be specified with the "gaussians"
   parameter.  Optionally, many trials with different random initializations may
   be run, and the result with highest log-likelihood on the training data will
-  be taken.  The number of trials to run is specified with the 'trials'
+  be taken.  The number of trials to run is specified with the "trials"
   parameter.  By default, only one trial is run.
   
   The tolerance for convergence and maximum number of iterations of the EM
-  algorithm are specified with the 'tolerance' and 'max_iterations' parameters,
+  algorithm are specified with the "tolerance" and "max_iterations" parameters,
   respectively.  The GMM may be initialized for training with another model,
-  specified with the 'input_model' parameter. Otherwise, the model is
+  specified with the "input_model" parameter. Otherwise, the model is
   initialized by running k-means on the data.  The k-means clustering
-  initialization can be controlled with the 'refined_start', 'samplings', and
-  'percentage' parameters.  If 'refined_start' is specified, then the
-  Bradley-Fayyad refined start initialization will be used.  This can often lead
-  to better clustering results.
+  initialization can be controlled with the "kmeans_max_iterations",
+  "refined_start", "samplings", and "percentage" parameters.  If "refined_start"
+  is specified, then the Bradley-Fayyad refined start initialization will be
+  used.  This can often lead to better clustering results.
   
   The 'diagonal_covariance' flag will cause the learned covariances to be
   diagonal matrices.  This significantly simplifies the model itself and causes
   training to be faster, but restricts the ability to fit more complex GMMs.
   
   If GMM training fails with an error indicating that a covariance matrix could
-  not be inverted, make sure that the 'no_force_positive' parameter is not
+  not be inverted, make sure that the "no_force_positive" parameter is not
   specified.  Alternately, adding a small amount of Gaussian noise (using the
-  'noise' parameter) to the entire dataset may help prevent Gaussians with zero
+  "noise" parameter) to the entire dataset may help prevent Gaussians with zero
   variance in a particular dimension, which is usually the cause of
   non-invertible covariance matrices.
   
-  The 'no_force_positive' parameter, if set, will avoid the checks after each
+  The "no_force_positive" parameter, if set, will avoid the checks after each
   iteration of the EM algorithm which ensure that the covariance matrices are
   positive definite.  Specifying the flag can cause faster runtime, but may also
   cause non-positive definite covariance matrices, which will cause the program
@@ -112,163 +108,161 @@ func setGMM(identifier string, ptr *GMM) {
   100 iterations of EM and 3 trials, saving the trained GMM to gmm, the
   following command can be used:
   
-  param := InitializeGmm_train()
-  param.Trials = 3
-  gmm := Gmm_train(data, 6, param)
+    param := mlpack.InitializeGmmTrain()
+    param.Trials = 3
+    Gmm := mlpack.GmmTrain(data, 6, param)
   
   To re-train that GMM on another set of data data2, the following command may
   be used: 
   
-  param := InitializeGmm_train()
-  param.Input_model = gmm
-  new_gmm := Gmm_train(data2, 6, param)
+    param := mlpack.InitializeGmmTrain()
+    param.InputModel = &Gmm
+    NewGmm := mlpack.GmmTrain(data2, 6, param)
 
 
   Input parameters:
 
-   - gaussians (int): Number of Gaussians in the GMM.
-   - input (mat.Dense): The training data on which the model will be fit.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - diagonal_covariance (bool): Force the covariance of the Gaussians to
+   - Gaussians (int): Number of Gaussians in the GMM.
+   - Input (mat.Dense): The training data on which the model will be fit.
+   - DiagonalCovariance (bool): Force the covariance of the Gaussians to
         be diagonal.  This can accelerate training time significantly.
-   - input_model (GMM): Initial input GMM model to start training with.
-   - max_iterations (int): Maximum number of iterations of EM algorithm
+   - InputModel (gmm): Initial input GMM model to start training with.
+   - KmeansMaxIterations (int): Maximum number of iterations for the
+        k-means algorithm (used to initialize EM).  Default value 1000.
+   - MaxIterations (int): Maximum number of iterations of EM algorithm
         (passing 0 will run until convergence).  Default value 250.
-   - no_force_positive (bool): Do not force the covariance matrices to be
+   - NoForcePositive (bool): Do not force the covariance matrices to be
         positive definite.
-   - noise (float64): Variance of zero-mean Gaussian noise to add to data.
+   - Noise (float64): Variance of zero-mean Gaussian noise to add to data.
          Default value 0.
-   - percentage (float64): If using --refined_start, specify the
+   - Percentage (float64): If using --refined_start, specify the
         percentage of the dataset used for each sampling (should be between 0.0
         and 1.0).  Default value 0.02.
-   - refined_start (bool): During the initialization, use refined initial
+   - RefinedStart (bool): During the initialization, use refined initial
         positions for k-means clustering (Bradley and Fayyad, 1998).
-   - samplings (int): If using --refined_start, specify the number of
+   - Samplings (int): If using --refined_start, specify the number of
         samplings used for initial points.  Default value 100.
-   - seed (int): Random seed.  If 0, 'std::time(NULL)' is used.  Default
+   - Seed (int): Random seed.  If 0, 'std::time(NULL)' is used.  Default
         value 0.
-   - tolerance (float64): Tolerance for convergence of EM.  Default value
+   - Tolerance (float64): Tolerance for convergence of EM.  Default value
         1e-10.
-   - trials (int): Number of trials to perform in training GMM.  Default
+   - Trials (int): Number of trials to perform in training GMM.  Default
         value 1.
-   - verbose (bool): Display informational messages and the full list of
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - output_model (GMM): Output for trained GMM model.
+   - OutputModel (gmm): Output for trained GMM model.
 
-*/
-func Gmm_train(gaussians int, input *mat.Dense, param *Gmm_trainOptionalParam) (GMM) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Gaussian Mixture Model (GMM) Training")
+ */
+func GmmTrain(gaussians int, input *mat.Dense, param *GmmTrainOptionalParam) (gmm) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Gaussian Mixture Model (GMM) Training")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
+  setParamInt("gaussians", gaussians)
+  setPassed("gaussians")
+
+  // Detect if the parameter was passed; set if so.
+  gonumToArmaMat("input", input)
+  setPassed("input")
+
+  // Detect if the parameter was passed; set if so.
+  if param.DiagonalCovariance != false {
+    setParamBool("diagonal_covariance", param.DiagonalCovariance)
+    setPassed("diagonal_covariance")
   }
 
   // Detect if the parameter was passed; set if so.
-  SetParamInt("gaussians", gaussians)
-  SetPassed("gaussians")
-
-  // Detect if the parameter was passed; set if so.
-  GonumToArmaMat("input", input)
-  SetPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Diagonal_covariance != false {
-    SetParamBool("diagonal_covariance", param.Diagonal_covariance)
-    SetPassed("diagonal_covariance")
+  if param.InputModel != nil {
+    setGMM("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setGMM("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.KmeansMaxIterations != 1000 {
+    setParamInt("kmeans_max_iterations", param.KmeansMaxIterations)
+    setPassed("kmeans_max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Max_iterations != 250 {
-    SetParamInt("max_iterations", param.Max_iterations)
-    SetPassed("max_iterations")
+  if param.MaxIterations != 250 {
+    setParamInt("max_iterations", param.MaxIterations)
+    setPassed("max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.No_force_positive != false {
-    SetParamBool("no_force_positive", param.No_force_positive)
-    SetPassed("no_force_positive")
+  if param.NoForcePositive != false {
+    setParamBool("no_force_positive", param.NoForcePositive)
+    setPassed("no_force_positive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Noise != 0 {
-    SetParamDouble("noise", param.Noise)
-    SetPassed("noise")
+    setParamDouble("noise", param.Noise)
+    setPassed("noise")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Percentage != 0.02 {
-    SetParamDouble("percentage", param.Percentage)
-    SetPassed("percentage")
+    setParamDouble("percentage", param.Percentage)
+    setPassed("percentage")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Refined_start != false {
-    SetParamBool("refined_start", param.Refined_start)
-    SetPassed("refined_start")
+  if param.RefinedStart != false {
+    setParamBool("refined_start", param.RefinedStart)
+    setPassed("refined_start")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Samplings != 100 {
-    SetParamInt("samplings", param.Samplings)
-    SetPassed("samplings")
+    setParamInt("samplings", param.Samplings)
+    setPassed("samplings")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    SetParamInt("seed", param.Seed)
-    SetPassed("seed")
+    setParamInt("seed", param.Seed)
+    setPassed("seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-10 {
-    SetParamDouble("tolerance", param.Tolerance)
-    SetPassed("tolerance")
+    setParamDouble("tolerance", param.Tolerance)
+    setPassed("tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Trials != 1 {
-    SetParamInt("trials", param.Trials)
-    SetPassed("trials")
+    setParamInt("trials", param.Trials)
+    setPassed("trials")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("output_model")
+  setPassed("output_model")
 
   // Call the mlpack program.
-  C.mlpackgmm_train()
+  C.mlpackGmmTrain()
 
   // Initialize result variable and get output.
-  var output_model GMM
-  output_model.getGMM("output_model")
+  var OutputModel gmm
+  OutputModel.getGMM("output_model")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output_model
+  return OutputModel
 }

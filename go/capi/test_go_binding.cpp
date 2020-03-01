@@ -11,8 +11,7 @@ extern "C" void mlpackSetGaussianKernelPtr(
     void* value)
 {
   SetParamPtr<GaussianKernel>(identifier,
-      static_cast<GaussianKernel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<GaussianKernel*>(value));
 }
 
 extern "C" void *mlpackGetGaussianKernelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetGaussianKernelPtr(const char* identifier)
   return modelptr;
 }
 
-static void test_go_bindingmlpackMain()
+static void TestGoBindingMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacktest_go_binding()
+extern "C" void mlpackTestGoBinding()
 {
-  test_go_bindingmlpackMain();
+  TestGoBindingMlpackMain();
 }
 

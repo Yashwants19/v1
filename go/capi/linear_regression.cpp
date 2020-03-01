@@ -11,8 +11,7 @@ extern "C" void mlpackSetLinearRegressionPtr(
     void* value)
 {
   SetParamPtr<LinearRegression>(identifier,
-      static_cast<LinearRegression*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<LinearRegression*>(value));
 }
 
 extern "C" void *mlpackGetLinearRegressionPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetLinearRegressionPtr(const char* identifier)
   return modelptr;
 }
 
-static void linear_regressionmlpackMain()
+static void LinearRegressionMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacklinear_regression()
+extern "C" void mlpackLinearRegression()
 {
-  linear_regressionmlpackMain();
+  LinearRegressionMlpackMain();
 }
 

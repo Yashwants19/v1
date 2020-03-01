@@ -11,8 +11,7 @@ extern "C" void mlpackSetHoeffdingTreeModelPtr(
     void* value)
 {
   SetParamPtr<HoeffdingTreeModel>(identifier,
-      static_cast<HoeffdingTreeModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<HoeffdingTreeModel*>(value));
 }
 
 extern "C" void *mlpackGetHoeffdingTreeModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetHoeffdingTreeModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void hoeffding_treemlpackMain()
+static void HoeffdingTreeMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackhoeffding_tree()
+extern "C" void mlpackHoeffdingTree()
 {
-  hoeffding_treemlpackMain();
+  HoeffdingTreeMlpackMain();
 }
 

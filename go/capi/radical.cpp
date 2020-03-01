@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void radicalmlpackMain()
+static void RadicalMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackradical()
+extern "C" void mlpackRadical()
 {
-  radicalmlpackMain();
+  RadicalMlpackMain();
 }
 

@@ -11,8 +11,7 @@ extern "C" void mlpackSetSoftmaxRegressionPtr(
     void* value)
 {
   SetParamPtr<SoftmaxRegression>(identifier,
-      static_cast<SoftmaxRegression*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<SoftmaxRegression*>(value));
 }
 
 extern "C" void *mlpackGetSoftmaxRegressionPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetSoftmaxRegressionPtr(const char* identifier)
   return modelptr;
 }
 
-static void softmax_regressionmlpackMain()
+static void SoftmaxRegressionMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacksoftmax_regression()
+extern "C" void mlpackSoftmaxRegression()
 {
-  softmax_regressionmlpackMain();
+  SoftmaxRegressionMlpackMain();
 }
 

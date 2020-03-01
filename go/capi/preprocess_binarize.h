@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern void mlpackpreprocess_binarize();
+extern void mlpackPreprocessBinarize();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

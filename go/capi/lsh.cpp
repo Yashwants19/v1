@@ -11,8 +11,7 @@ extern "C" void mlpackSetLSHSearchPtr(
     void* value)
 {
   SetParamPtr<LSHSearch<>>(identifier,
-      static_cast<LSHSearch<>*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<LSHSearch<>*>(value));
 }
 
 extern "C" void *mlpackGetLSHSearchPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetLSHSearchPtr(const char* identifier)
   return modelptr;
 }
 
-static void lshmlpackMain()
+static void LshMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacklsh()
+extern "C" void mlpackLsh()
 {
-  lshmlpackMain();
+  LshMlpackMain();
 }
 

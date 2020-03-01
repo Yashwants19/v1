@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetSparseCodingPtr(const char* identifier,void* value);
+extern void mlpackSetSparseCodingPtr(const char* identifier, void* value);
 
 extern void *mlpackGetSparseCodingPtr(const char* identifier);
 
-extern void mlpacksparse_coding();
+extern void mlpackSparseCoding();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

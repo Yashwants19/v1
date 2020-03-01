@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_linear_regression
+#cgo LDFLAGS: -L. -lmlpack_go_linear_regression
 #include <capi/linear_regression.h>
 #include <stdlib.h>
 */
@@ -11,50 +11,44 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
-type Linear_regressionOptionalParam struct {
-    Copy_all_inputs bool
-    Input_model *LinearRegression
+type LinearRegressionOptionalParam struct {
+    InputModel *linearRegression
     Lambda float64
     Test *mat.Dense
     Training *mat.Dense
-    Training_responses *mat.VecDense
+    TrainingResponses *mat.Dense
     Verbose bool
 }
 
-func InitializeLinear_regression() *Linear_regressionOptionalParam {
-  return &Linear_regressionOptionalParam{
-    Copy_all_inputs: false,
-    Input_model: nil,
+func InitializeLinearRegression() *LinearRegressionOptionalParam {
+  return &LinearRegressionOptionalParam{
+    InputModel: nil,
     Lambda: 0,
     Test: nil,
     Training: nil,
-    Training_responses: nil,
+    TrainingResponses: nil,
     Verbose: false,
   }
 }
 
-type LinearRegression struct {
- mem unsafe.Pointer
+type linearRegression struct {
+  mem unsafe.Pointer
 }
 
-func (m *LinearRegression) allocLinearRegression(identifier string) {
- m.mem = C.mlpackGetLinearRegressionPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *linearRegression) allocLinearRegression(identifier string) {
+  m.mem = C.mlpackGetLinearRegressionPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *LinearRegression) getLinearRegression(identifier string) {
- m.allocLinearRegression(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *linearRegression) getLinearRegression(identifier string) {
+  m.allocLinearRegression(identifier)
 }
 
-func setLinearRegression(identifier string, ptr *LinearRegression) {
- C.mlpackSetLinearRegressionPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setLinearRegression(identifier string, ptr *linearRegression) {
+  C.mlpackSetLinearRegressionPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -63,131 +57,121 @@ func setLinearRegression(identifier string, ptr *LinearRegression) {
   
     y = X * b + e
   
-  where X (specified by 'training') and y (specified either as the last column
-  of the input matrix 'training' or via the 'training_responses' parameter) are
+  where X (specified by "training") and y (specified either as the last column
+  of the input matrix "training" or via the "training_responses" parameter) are
   known and b is the desired variable.  If the covariance matrix (X'X) is not
   invertible, or if the solution is overdetermined, then specify a Tikhonov
-  regularization constant (with 'lambda') greater than 0, which will regularize
+  regularization constant (with "lambda") greater than 0, which will regularize
   the covariance matrix to make it invertible.  The calculated b may be saved
-  with the 'output_predictions' output parameter.
+  with the "output_predictions" output parameter.
   
   Optionally, the calculated value of b is used to predict the responses for
-  another matrix X' (specified by the 'test' parameter):
+  another matrix X' (specified by the "test" parameter):
   
      y' = X' * b
   
-  and the predicted responses y' may be saved with the 'output_predictions'
+  and the predicted responses y' may be saved with the "output_predictions"
   output parameter.  This type of regression is related to least-angle
   regression, which mlpack implements as the 'lars' program.
   
   For example, to run a linear regression on the dataset X with responses y,
   saving the trained model to lr_model, the following command could be used:
   
-  param := InitializeLinear_regression()
-  param.Training = X
-  param.Training_responses = y
-  lr_model, _ := Linear_regression(param)
+    param := mlpack.InitializeLinearRegression()
+    param.Training = X
+    param.TrainingResponses = y
+    LrModel, _ := mlpack.LinearRegression(param)
   
   Then, to use lr_model to predict responses for a test set X_test, saving the
   predictions to X_test_responses, the following command could be used:
   
-  param := InitializeLinear_regression()
-  param.Input_model = lr_model
-  param.Test = X_test
-  _, X_test_responses := Linear_regression(param)
+    param := mlpack.InitializeLinearRegression()
+    param.InputModel = &LrModel
+    param.Test = X_test
+    _, XTestResponses := mlpack.LinearRegression(param)
 
 
   Input parameters:
 
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - input_model (LinearRegression): Existing LinearRegression model to
+   - InputModel (linearRegression): Existing LinearRegression model to
         use.
-   - lambda (float64): Tikhonov regularization for ridge regression.  If
+   - Lambda (float64): Tikhonov regularization for ridge regression.  If
         0, the method reduces to linear regression.  Default value 0.
-   - test (mat.Dense): Matrix containing X' (test regressors).
-   - training (mat.Dense): Matrix containing training set X (regressors).
-   - training_responses (mat.VecDense): Optional vector containing y
+   - Test (mat.Dense): Matrix containing X' (test regressors).
+   - Training (mat.Dense): Matrix containing training set X (regressors).
+   - TrainingResponses (mat.Dense): Optional vector containing y
         (responses). If not given, the responses are assumed to be the last row
         of the input file.
-   - verbose (bool): Display informational messages and the full list of
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - output_model (LinearRegression): Output LinearRegression model.
-   - output_predictions (mat.VecDense): If --test_file is specified, this
+   - OutputModel (linearRegression): Output LinearRegression model.
+   - OutputPredictions (mat.Dense): If --test_file is specified, this
         matrix is where the predicted responses will be saved.
 
-*/
-func Linear_regression(param *Linear_regressionOptionalParam) (LinearRegression, *mat.VecDense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Simple Linear Regression and Prediction")
+ */
+func LinearRegression(param *LinearRegressionOptionalParam) (linearRegression, *mat.Dense) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Simple Linear Regression and Prediction")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
-
-  // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setLinearRegression("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.InputModel != nil {
+    setLinearRegression("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda != 0 {
-    SetParamDouble("lambda", param.Lambda)
-    SetPassed("lambda")
+    setParamDouble("lambda", param.Lambda)
+    setPassed("lambda")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    GonumToArmaMat("test", param.Test)
-    SetPassed("test")
+    gonumToArmaMat("test", param.Test)
+    setPassed("test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    GonumToArmaMat("training", param.Training)
-    SetPassed("training")
+    gonumToArmaMat("training", param.Training)
+    setPassed("training")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Training_responses != nil {
-    GonumToArmaRow("training_responses", param.Training_responses)
-    SetPassed("training_responses")
+  if param.TrainingResponses != nil {
+    gonumToArmaRow("training_responses", param.TrainingResponses)
+    setPassed("training_responses")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("output_model")
-  SetPassed("output_predictions")
+  setPassed("output_model")
+  setPassed("output_predictions")
 
   // Call the mlpack program.
-  C.mlpacklinear_regression()
+  C.mlpackLinearRegression()
 
   // Initialize result variable and get output.
-  var output_model LinearRegression
-  output_model.getLinearRegression("output_model")
-  var output_predictions_ptr mlpackArma
-  output_predictions := output_predictions_ptr.ArmaToGonumRow("output_predictions")
+  var OutputModel linearRegression
+  OutputModel.getLinearRegression("output_model")
+  var outputPredictionsPtr mlpackArma
+  OutputPredictions := outputPredictionsPtr.armaToGonumRow("output_predictions")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output_model, output_predictions
+  return OutputModel, OutputPredictions
 }

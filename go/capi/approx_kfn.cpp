@@ -11,8 +11,7 @@ extern "C" void mlpackSetApproxKFNModelPtr(
     void* value)
 {
   SetParamPtr<ApproxKFNModel>(identifier,
-      static_cast<ApproxKFNModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<ApproxKFNModel*>(value));
 }
 
 extern "C" void *mlpackGetApproxKFNModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetApproxKFNModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void approx_kfnmlpackMain()
+static void ApproxKfnMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackapprox_kfn()
+extern "C" void mlpackApproxKfn()
 {
-  approx_kfnmlpackMain();
+  ApproxKfnMlpackMain();
 }
 

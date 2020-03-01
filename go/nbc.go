@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_nbc
+#cgo LDFLAGS: -L. -lmlpack_go_nbc
 #include <capi/nbc.h>
 #include <stdlib.h>
 */
@@ -11,15 +11,13 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
 type NbcOptionalParam struct {
-    Copy_all_inputs bool
-    Incremental_variance bool
-    Input_model *NBCModel
-    Labels *mat.VecDense
+    IncrementalVariance bool
+    InputModel *nbcModel
+    Labels *mat.Dense
     Test *mat.Dense
     Training *mat.Dense
     Verbose bool
@@ -27,9 +25,8 @@ type NbcOptionalParam struct {
 
 func InitializeNbc() *NbcOptionalParam {
   return &NbcOptionalParam{
-    Copy_all_inputs: false,
-    Incremental_variance: false,
-    Input_model: nil,
+    IncrementalVariance: false,
+    InputModel: nil,
     Labels: nil,
     Test: nil,
     Training: nil,
@@ -37,24 +34,21 @@ func InitializeNbc() *NbcOptionalParam {
   }
 }
 
-type NBCModel struct {
- mem unsafe.Pointer
+type nbcModel struct {
+  mem unsafe.Pointer
 }
 
-func (m *NBCModel) allocNBCModel(identifier string) {
- m.mem = C.mlpackGetNBCModelPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *nbcModel) allocNBCModel(identifier string) {
+  m.mem = C.mlpackGetNBCModelPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *NBCModel) getNBCModel(identifier string) {
- m.allocNBCModel(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *nbcModel) getNBCModel(identifier string) {
+  m.allocNBCModel(identifier)
 }
 
-func setNBCModel(identifier string, ptr *NBCModel) {
- C.mlpackSetNBCModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setNBCModel(identifier string, ptr *nbcModel) {
+  C.mlpackSetNBCModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -62,148 +56,137 @@ func setNBCModel(identifier string, ptr *NBCModel) {
   set, or loads a model from the given model file, and then may use that trained
   model to classify the points in a given test set.
   
-  The training set is specified with the 'training' parameter.  Labels may be
-  either the last row of the training set, or alternately the 'labels' parameter
+  The training set is specified with the "training" parameter.  Labels may be
+  either the last row of the training set, or alternately the "labels" parameter
   may be specified to pass a separate matrix of labels.
   
   If training is not desired, a pre-existing model may be loaded with the
-  'input_model' parameter.
+  "input_model" parameter.
   
   
   
-  The 'incremental_variance' parameter can be used to force the training to use
+  The "incremental_variance" parameter can be used to force the training to use
   an incremental algorithm for calculating variance.  This is slower, but can
   help avoid loss of precision in some cases.
   
   If classifying a test set is desired, the test set may be specified with the
-  'test' parameter, and the classifications may be saved with the
-  'predictions'predictions  parameter.  If saving the trained model is desired,
-  this may be done with the 'output_model' output parameter.
+  "test" parameter, and the classifications may be saved with the
+  "predictions"predictions  parameter.  If saving the trained model is desired,
+  this may be done with the "output_model" output parameter.
   
-  Note: the 'output' and 'output_probs' parameters are deprecated and will be
-  removed in mlpack 4.0.0.  Use 'predictions' and 'probabilities' instead.
+  Note: the "output" and "output_probs" parameters are deprecated and will be
+  removed in mlpack 4.0.0.  Use "predictions" and "probabilities" instead.
   
   For example, to train a Naive Bayes classifier on the dataset data with labels
   labels and save the model to nbc_model, the following command may be used:
   
-  param := InitializeNbc()
-  param.Training = data
-  param.Labels = labels
-  _, nbc_model, _, _, _ := Nbc(param)
+    param := mlpack.InitializeNbc()
+    param.Training = data
+    param.Labels = labels
+    _, NbcModel, _, _, _ := mlpack.Nbc(param)
   
   Then, to use nbc_model to predict the classes of the dataset test_set and save
   the predicted classes to predictions, the following command may be used:
   
-  param := InitializeNbc()
-  param.Input_model = nbc_model
-  param.Test = test_set
-  predictions, _, _, _, _ := Nbc(param)
+    param := mlpack.InitializeNbc()
+    param.InputModel = &NbcModel
+    param.Test = test_set
+    Predictions, _, _, _, _ := mlpack.Nbc(param)
 
 
   Input parameters:
 
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - incremental_variance (bool): The variance of each class will be
+   - IncrementalVariance (bool): The variance of each class will be
         calculated incrementally.
-   - input_model (NBCModel): Input Naive Bayes model.
-   - labels (mat.VecDense): A file containing labels for the training
-        set.
-   - test (mat.Dense): A matrix containing the test set.
-   - training (mat.Dense): A matrix containing the training set.
-   - verbose (bool): Display informational messages and the full list of
+   - InputModel (nbcModel): Input Naive Bayes model.
+   - Labels (mat.Dense): A file containing labels for the training set.
+   - Test (mat.Dense): A matrix containing the test set.
+   - Training (mat.Dense): A matrix containing the training set.
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - output (mat.VecDense): The matrix in which the predicted labels for
-        the test set will be written (deprecated).
-   - output_model (NBCModel): File to save trained Naive Bayes model to.
-   - output_probs (mat.Dense): The matrix in which the predicted
+   - Output (mat.Dense): The matrix in which the predicted labels for the
+        test set will be written (deprecated).
+   - OutputModel (nbcModel): File to save trained Naive Bayes model to.
+   - OutputProbs (mat.Dense): The matrix in which the predicted
         probability of labels for the test set will be written (deprecated).
-   - predictions (mat.VecDense): The matrix in which the predicted labels
-        for the test set will be written.
-   - probabilities (mat.Dense): The matrix in which the predicted
+   - Predictions (mat.Dense): The matrix in which the predicted labels for
+        the test set will be written.
+   - Probabilities (mat.Dense): The matrix in which the predicted
         probability of labels for the test set will be written.
 
-*/
-func Nbc(param *NbcOptionalParam) (*mat.VecDense, NBCModel, *mat.Dense, *mat.VecDense, *mat.Dense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Parametric Naive Bayes Classifier")
+ */
+func Nbc(param *NbcOptionalParam) (*mat.Dense, nbcModel, *mat.Dense, *mat.Dense, *mat.Dense) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Parametric Naive Bayes Classifier")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
+  if param.IncrementalVariance != false {
+    setParamBool("incremental_variance", param.IncrementalVariance)
+    setPassed("incremental_variance")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Incremental_variance != false {
-    SetParamBool("incremental_variance", param.Incremental_variance)
-    SetPassed("incremental_variance")
-  }
-
-  // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setNBCModel("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.InputModel != nil {
+    setNBCModel("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    GonumToArmaUrow("labels", param.Labels)
-    SetPassed("labels")
+    gonumToArmaUrow("labels", param.Labels)
+    setPassed("labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    GonumToArmaMat("test", param.Test)
-    SetPassed("test")
+    gonumToArmaMat("test", param.Test)
+    setPassed("test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    GonumToArmaMat("training", param.Training)
-    SetPassed("training")
+    gonumToArmaMat("training", param.Training)
+    setPassed("training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("output")
-  SetPassed("output_model")
-  SetPassed("output_probs")
-  SetPassed("predictions")
-  SetPassed("probabilities")
+  setPassed("output")
+  setPassed("output_model")
+  setPassed("output_probs")
+  setPassed("predictions")
+  setPassed("probabilities")
 
   // Call the mlpack program.
-  C.mlpacknbc()
+  C.mlpackNbc()
 
   // Initialize result variable and get output.
-  var output_ptr mlpackArma
-  output := output_ptr.ArmaToGonumUrow("output")
-  var output_model NBCModel
-  output_model.getNBCModel("output_model")
-  var output_probs_ptr mlpackArma
-  output_probs := output_probs_ptr.ArmaToGonumMat("output_probs")
-  var predictions_ptr mlpackArma
-  predictions := predictions_ptr.ArmaToGonumUrow("predictions")
-  var probabilities_ptr mlpackArma
-  probabilities := probabilities_ptr.ArmaToGonumMat("probabilities")
+  var outputPtr mlpackArma
+  Output := outputPtr.armaToGonumUrow("output")
+  var OutputModel nbcModel
+  OutputModel.getNBCModel("output_model")
+  var outputProbsPtr mlpackArma
+  OutputProbs := outputProbsPtr.armaToGonumMat("output_probs")
+  var predictionsPtr mlpackArma
+  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  var probabilitiesPtr mlpackArma
+  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output, output_model, output_probs, predictions, probabilities
+  return Output, OutputModel, OutputProbs, Predictions, Probabilities
 }

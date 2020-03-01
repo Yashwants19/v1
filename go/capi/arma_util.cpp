@@ -24,11 +24,11 @@ extern "C" {
 /**
  * Pass Gonum Dense pointer and wrap an Armadillo mat around it.
  */
-void mlpackToArmaMat(const char *identifier, const double mat[],
-                     int row, int col)
+void mlpackToArmaMat(const char* identifier, double* mat,
+                     const size_t row, const size_t col)
 {
   // Advanced constructor.
-  arma::mat m(const_cast<double*>(mat), row, col, false, true);
+  arma::mat m(mat, row, col, false, true);
 
   // Set input parameter with corresponding matrix in CLI.
   SetParam(identifier, m);
@@ -37,15 +37,14 @@ void mlpackToArmaMat(const char *identifier, const double mat[],
 /**
  * Pass Gonum Dense pointer and wrap an Armadillo mat around it.
  */
-void mlpackToArmaUmat(const char *identifier, const double mat[],
-                      int row, int col)
+void mlpackToArmaUmat(const char* identifier, double* mat,
+                      const size_t row, const size_t col)
 {
   // Advanced constructor.
-  arma::mat m(const_cast<double*>(mat), row, col, false, true);
+  arma::mat m(mat, row, col, false, true);
 
   // Advanced constructor
-  arma::Mat<size_t> matr(arma::conv_to<arma::Mat<size_t>>::from(m).memptr(),
-                         row, col, false, true);
+  arma::Mat<size_t> matr = arma::conv_to<arma::Mat<size_t>>::from(m);
 
   // Set input parameter with corresponding matrix in CLI.
   SetParam(identifier, matr);
@@ -54,10 +53,10 @@ void mlpackToArmaUmat(const char *identifier, const double mat[],
 /**
  * Pass Gonum VecDense pointer and wrap an Armadillo rowvec around it.
  */
-void mlpackToArmaRow(const char *identifier, const double rowvec[], int elem)
+void mlpackToArmaRow(const char* identifier, double* rowvec, const size_t elem)
 {
   // Advanced constructor.
-  arma::rowvec m(const_cast<double*>(rowvec), elem, false, true);
+  arma::rowvec m(rowvec, elem, false, true);
 
   // Set input parameter with corresponding row in CLI.
   SetParam(identifier, m);
@@ -66,14 +65,13 @@ void mlpackToArmaRow(const char *identifier, const double rowvec[], int elem)
 /**
  * Pass Gonum VecDense pointer and wrap an Armadillo rowvec around it.
  */
-void mlpackToArmaUrow(const char *identifier, const double rowvec[], int elem)
+void mlpackToArmaUrow(const char* identifier, double* rowvec, const size_t elem)
 {
   // Advanced constructor.
-  arma::rowvec m(const_cast<double*>(rowvec), elem, false, true);
+  arma::rowvec m(rowvec, elem, false, true);
 
   // Advanced constructor
-  arma::Row<size_t> matr(arma::conv_to<arma::Row<size_t>>::from(m).memptr(),
-                            elem, false, true);
+  arma::Row<size_t> matr = arma::conv_to<arma::Row<size_t>>::from(m);
 
   // Set input parameter with corresponding row in CLI.
   SetParam(identifier, matr);
@@ -82,10 +80,10 @@ void mlpackToArmaUrow(const char *identifier, const double rowvec[], int elem)
 /**
  * Pass Gonum VecDense pointer and wrap an Armadillo colvec around it.
  */
-void mlpackToArmaCol(const char *identifier, const double colvec[], int elem)
+void mlpackToArmaCol(const char* identifier, double* colvec, const size_t elem)
 {
   // Advanced constructor.
-  arma::colvec m(const_cast<double*>(colvec), elem, false, true);
+  arma::colvec m(colvec, elem, false, true);
 
   // Set input parameter with corresponding column in CLI.
   SetParam(identifier, m);
@@ -94,14 +92,13 @@ void mlpackToArmaCol(const char *identifier, const double colvec[], int elem)
 /**
  * Pass Gonum VecDense pointer and wrap an Armadillo colvec around it.
  */
-void mlpackToArmaUcol(const char *identifier, const double colvec[], int elem)
+void mlpackToArmaUcol(const char* identifier, double* colvec, const size_t elem)
 {
   // Advanced constructor.
-  arma::colvec m(const_cast<double*>(colvec), elem, false, true);
+  arma::colvec m(colvec, elem, false, true);
 
   // Advanced constructor
-  arma::Col<size_t> matr(arma::conv_to<arma::Col<size_t>>::from(m).memptr(),
-                            elem, false, true);
+  arma::Col<size_t> matr = arma::conv_to<arma::Col<size_t>>::from(m);
 
   // Set input parameter with corresponding column in CLI.
   SetParam(identifier, matr);
@@ -109,21 +106,21 @@ void mlpackToArmaUcol(const char *identifier, const double colvec[], int elem)
 /**
  * Return the memory pointer of an Armadillo mat object.
  */
-void *mlpackArmaPtrMat(const char *identifier)
+void* mlpackArmaPtrMat(const char* identifier)
 {
   arma::mat& output = CLI::GetParam<arma::mat>(identifier);
   if (output.is_empty())
   {
     return NULL;
   }
-  void *ptr = GetMemory(output);
+  void* ptr = GetMemory(output);
   return ptr;
 }
 
 /**
  * Return the memory pointer of an Armadillo umat object.
  */
-void *mlpackArmaPtrUmat(const char *identifier)
+void* mlpackArmaPtrUmat(const char* identifier)
 {
   arma::Mat<size_t>& m = CLI::GetParam<arma::Mat<size_t>>(identifier);
 
@@ -134,34 +131,28 @@ void *mlpackArmaPtrUmat(const char *identifier)
   {
     return NULL;
   }
-  else
-  {
-  void *ptr = GetMemory(output);
+  void* ptr = GetMemory(output);
   return ptr;
-  }
 }
 
 /**
  * Return the memory pointer of an Armadillo row object.
  */
-void *mlpackArmaPtrRow(const char *identifier)
+void* mlpackArmaPtrRow(const char* identifier)
 {
   arma::Row<double>& output = CLI::GetParam<arma::Row<double>>(identifier);
   if (output.is_empty())
   {
     return NULL;
   }
-  else
-  {
-  void *ptr = GetMemory(output);
+  void* ptr = GetMemory(output);
   return ptr;
-  }
 }
 
 /**
  * Return the memory pointer of an Armadillo urow object.
  */
-void *mlpackArmaPtrUrow(const char *identifier)
+void* mlpackArmaPtrUrow(const char* identifier)
 {
   arma::Row<size_t>& m = CLI::GetParam<arma::Row<size_t>>(identifier);
 
@@ -172,34 +163,28 @@ void *mlpackArmaPtrUrow(const char *identifier)
   {
     return NULL;
   }
-  else
-  {
-  void *ptr = GetMemory(output);
+  void* ptr = GetMemory(output);
   return ptr;
-  }
 }
 
 /**
  * Return the memory pointer of an Armadillo col object.
  */
-void *mlpackArmaPtrCol(const char *identifier)
+void* mlpackArmaPtrCol(const char* identifier)
 {
   arma::Col<double>& output = CLI::GetParam<arma::Col<double>>(identifier);
   if (output.is_empty())
   {
     return NULL;
   }
-  else
-  {
-  void *ptr = GetMemory(output);
+  void* ptr = GetMemory(output);
   return ptr;
-  }
 }
 
 /**
  * Return the memory pointer of an Armadillo ucol object.
  */
-void *mlpackArmaPtrUcol(const char *identifier)
+void* mlpackArmaPtrUcol(const char* identifier)
 {
   arma::Col<size_t>& m = CLI::GetParam<arma::Col<size_t>>(identifier);
 
@@ -210,17 +195,14 @@ void *mlpackArmaPtrUcol(const char *identifier)
   {
     return NULL;
   }
-  else
-  {
-  void *ptr = GetMemory(output);
+  void* ptr = GetMemory(output);
   return ptr;
-  }
 }
 
 /**
  * Return the number of rows in a Armadillo mat.
  */
-int mlpackNumRowMat(const char *identifier)
+int mlpackNumRowMat(const char* identifier)
 {
   return CLI::GetParam<arma::mat>(identifier).n_rows;
 }
@@ -228,7 +210,7 @@ int mlpackNumRowMat(const char *identifier)
 /**
  * Return the number of columns in an Armadillo mat.
  */
-int mlpackNumColMat(const char *identifier)
+int mlpackNumColMat(const char* identifier)
 {
   return CLI::GetParam<arma::mat>(identifier).n_cols;
 }
@@ -236,7 +218,7 @@ int mlpackNumColMat(const char *identifier)
 /**
  * Return the number of elements in an Armadillo mat.
  */
-int mlpackNumElemMat(const char *identifier)
+int mlpackNumElemMat(const char* identifier)
 {
   return CLI::GetParam<arma::mat>(identifier).n_elem;
 }
@@ -244,7 +226,7 @@ int mlpackNumElemMat(const char *identifier)
 /**
  * Return the number of rows in an Armadillo umat.
  */
-int mlpackNumRowUmat(const char *identifier)
+int mlpackNumRowUmat(const char* identifier)
 {
   return CLI::GetParam<arma::Mat<size_t>>(identifier).n_rows;
 }
@@ -252,7 +234,7 @@ int mlpackNumRowUmat(const char *identifier)
 /**
  * Return the number of columns in an Armadillo umat.
  */
-int mlpackNumColUmat(const char *identifier)
+int mlpackNumColUmat(const char* identifier)
 {
   return CLI::GetParam<arma::Mat<size_t>>(identifier).n_cols;
 }
@@ -260,7 +242,7 @@ int mlpackNumColUmat(const char *identifier)
 /**
  * Return the number of elements in an Armadillo umat.
  */
-int mlpackNumElemUmat(const char *identifier)
+int mlpackNumElemUmat(const char* identifier)
 {
   return CLI::GetParam<arma::Mat<size_t>>(identifier).n_elem;
 }
@@ -268,7 +250,7 @@ int mlpackNumElemUmat(const char *identifier)
 /**
  * Return the number of elements in an Armadillo row.
  */
-int mlpackNumElemRow(const char *identifier)
+int mlpackNumElemRow(const char* identifier)
 {
   return CLI::GetParam<arma::Row<double>>(identifier).n_elem;
 }
@@ -276,7 +258,7 @@ int mlpackNumElemRow(const char *identifier)
 /**
  * Return the number of elements in an Armadillo urow.
  */
-int mlpackNumElemUrow(const char *identifier)
+int mlpackNumElemUrow(const char* identifier)
 {
   return CLI::GetParam<arma::Row<size_t>>(identifier).n_elem;
 }
@@ -284,7 +266,7 @@ int mlpackNumElemUrow(const char *identifier)
 /**
  * Return the number of elements in an Armadillo col.
  */
-int mlpackNumElemCol(const char *identifier)
+int mlpackNumElemCol(const char* identifier)
 {
   return CLI::GetParam<arma::Col<double>>(identifier).n_elem;
 }
@@ -292,7 +274,7 @@ int mlpackNumElemCol(const char *identifier)
 /**
  * Return the number of elements in an Armadillo ucol.
  */
-int mlpackNumElemUcol(const char *identifier)
+int mlpackNumElemUcol(const char* identifier)
 {
   return CLI::GetParam<arma::Col<size_t>>(identifier).n_elem;
 }
@@ -302,7 +284,7 @@ int mlpackNumElemUcol(const char *identifier)
  */
 void mlpackToArmaMatWithInfo(const char* identifier,
                              const bool* dimensions,
-                             const double memptr[],
+                             double* memptr,
                              const size_t rows,
                              const size_t cols)
 {
@@ -313,7 +295,7 @@ void mlpackToArmaMatWithInfo(const char* identifier,
         data::Datatype::numeric;
   }
 
-  arma::mat m(const_cast<double*>(memptr), rows, cols, false, true);
+  arma::mat m(memptr, rows, cols, false, true);
   std::get<0>(CLI::GetParam<std::tuple<data::DatasetInfo, arma::mat>>(
       identifier)) = std::move(d);
   std::get<1>(CLI::GetParam<std::tuple<data::DatasetInfo, arma::mat>>(
@@ -322,7 +304,7 @@ void mlpackToArmaMatWithInfo(const char* identifier,
 }
 
 /**
- * Get the number of element in a matrix with DatasetInfo parameter.
+ * Get the number of elements in a matrix with DatasetInfo parameter.
  */
 int mlpackArmaMatWithInfoElements(const char* identifier)
 {
@@ -352,7 +334,7 @@ int mlpackArmaMatWithInfoCols(const char* identifier)
  * Get a pointer to the memory of the matrix.  The calling function is expected
  * to own the memory.
  */
-void *mlpackArmaPtrMatWithInfoPtr(const char* identifier)
+void* mlpackArmaPtrMatWithInfoPtr(const char* identifier)
 {
   typedef std::tuple<data::DatasetInfo, arma::mat> TupleType;
   arma::mat& m = std::get<1>(CLI::GetParam<TupleType>(identifier));
@@ -360,11 +342,8 @@ void *mlpackArmaPtrMatWithInfoPtr(const char* identifier)
   {
     return NULL;
   }
-  else
-  {
-  void *ptr = GetMemory(m);
+  void* ptr = GetMemory(m);
   return ptr;
-  }
 }
 
 } // extern "C"

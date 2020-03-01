@@ -11,8 +11,7 @@ extern "C" void mlpackSetLocalCoordinateCodingPtr(
     void* value)
 {
   SetParamPtr<LocalCoordinateCoding>(identifier,
-      static_cast<LocalCoordinateCoding*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<LocalCoordinateCoding*>(value));
 }
 
 extern "C" void *mlpackGetLocalCoordinateCodingPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetLocalCoordinateCodingPtr(const char* identifier)
   return modelptr;
 }
 
-static void local_coordinate_codingmlpackMain()
+static void LocalCoordinateCodingMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacklocal_coordinate_coding()
+extern "C" void mlpackLocalCoordinateCoding()
 {
-  local_coordinate_codingmlpackMain();
+  LocalCoordinateCodingMlpackMain();
 }
 

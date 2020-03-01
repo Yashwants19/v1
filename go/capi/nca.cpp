@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void ncamlpackMain()
+static void NcaMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacknca()
+extern "C" void mlpackNca()
 {
-  ncamlpackMain();
+  NcaMlpackMain();
 }
 

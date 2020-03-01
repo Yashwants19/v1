@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_kernel_pca
+#cgo LDFLAGS: -L. -lmlpack_go_kernel_pca
 #include <capi/kernel_pca.h>
 #include <stdlib.h>
 */
@@ -12,28 +12,26 @@ import (
   "gonum.org/v1/gonum/mat" 
 )
 
-type Kernel_pcaOptionalParam struct {
+type KernelPcaOptionalParam struct {
     Bandwidth float64
     Center bool
-    Copy_all_inputs bool
     Degree float64
-    Kernel_scale float64
-    New_dimensionality int
-    Nystroem_method bool
+    KernelScale float64
+    NewDimensionality int
+    NystroemMethod bool
     Offset float64
     Sampling string
     Verbose bool
 }
 
-func InitializeKernel_pca() *Kernel_pcaOptionalParam {
-  return &Kernel_pcaOptionalParam{
+func InitializeKernelPca() *KernelPcaOptionalParam {
+  return &KernelPcaOptionalParam{
     Bandwidth: 1,
     Center: false,
-    Copy_all_inputs: false,
     Degree: 1,
-    Kernel_scale: 1,
-    New_dimensionality: 0,
-    Nystroem_method: false,
+    KernelScale: 1,
+    NewDimensionality: 0,
+    NystroemMethod: false,
     Offset: 0,
     Sampling: "kmeans",
     Verbose: false,
@@ -51,8 +49,8 @@ func InitializeKernel_pca() *Kernel_pcaOptionalParam {
   For example, the following command will perform KPCA on the dataset input
   using the Gaussian kernel, and saving the transformed data to transformed: 
   
-  param := InitializeKernel_pca()
-  transformed := Kernel_pca(input, "gaussian", )
+    param := mlpack.InitializeKernelPca()
+    Transformed := mlpack.KernelPca(input, "gaussian", )
   
   The kernels that are supported are listed below:
   
@@ -78,139 +76,128 @@ func InitializeKernel_pca() *Kernel_pcaOptionalParam {
       K(x, y) = 1 - (x^T y) / (|| x || * || y ||)
   
   The parameters for each of the kernels should be specified with the options
-  'bandwidth', 'kernel_scale', 'offset', or 'degree' (or a combination of those
+  "bandwidth", "kernel_scale", "offset", or "degree" (or a combination of those
   parameters).
   
-  Optionally, the Nyström method ("Using the Nystroem method to speed up kernel
+  Optionally, the Nystroem method ("Using the Nystroem method to speed up kernel
   machines", 2001) can be used to calculate the kernel matrix by specifying the
-  'nystroem_method' parameter. This approach works by using a subset of the data
+  "nystroem_method" parameter. This approach works by using a subset of the data
   as basis to reconstruct the kernel matrix; to specify the sampling scheme, the
-  'sampling' parameter is used.  The sampling scheme for the Nyström method can
+  "sampling" parameter is used.  The sampling scheme for the Nystroem method can
   be chosen from the following list: 'kmeans', 'random', 'ordered'.
 
 
   Input parameters:
 
-   - input (mat.Dense): Input dataset to perform KPCA on.
-   - kernel (string): The kernel to use; see the above documentation for
+   - Input (mat.Dense): Input dataset to perform KPCA on.
+   - Kernel (string): The kernel to use; see the above documentation for
         the list of usable kernels.
-   - bandwidth (float64): Bandwidth, for 'gaussian' and 'laplacian'
+   - Bandwidth (float64): Bandwidth, for 'gaussian' and 'laplacian'
         kernels.  Default value 1.
-   - center (bool): If set, the transformed data will be centered about
+   - Center (bool): If set, the transformed data will be centered about
         the origin.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - degree (float64): Degree of polynomial, for 'polynomial' kernel. 
+   - Degree (float64): Degree of polynomial, for 'polynomial' kernel. 
         Default value 1.
-   - kernel_scale (float64): Scale, for 'hyptan' kernel.  Default value
-        1.
-   - new_dimensionality (int): If not 0, reduce the dimensionality of the
+   - KernelScale (float64): Scale, for 'hyptan' kernel.  Default value 1.
+   - NewDimensionality (int): If not 0, reduce the dimensionality of the
         output dataset by ignoring the dimensions with the smallest eigenvalues.
          Default value 0.
-   - nystroem_method (bool): If set, the Nystroem method will be used.
-   - offset (float64): Offset, for 'hyptan' and 'polynomial' kernels. 
+   - NystroemMethod (bool): If set, the Nystroem method will be used.
+   - Offset (float64): Offset, for 'hyptan' and 'polynomial' kernels. 
         Default value 0.
-   - sampling (string): Sampling scheme to use for the Nystroem method:
+   - Sampling (string): Sampling scheme to use for the Nystroem method:
         'kmeans', 'random', 'ordered'  Default value 'kmeans'.
-   - verbose (bool): Display informational messages and the full list of
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - output (mat.Dense): Matrix to save modified dataset to.
+   - Output (mat.Dense): Matrix to save modified dataset to.
 
-*/
-func Kernel_pca(input *mat.Dense, kernel string, param *Kernel_pcaOptionalParam) (*mat.Dense) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Kernel Principal Components Analysis")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
+ */
+func KernelPca(input *mat.Dense, kernel string, param *KernelPcaOptionalParam) (*mat.Dense) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Kernel Principal Components Analysis")
 
   // Detect if the parameter was passed; set if so.
-  GonumToArmaMat("input", input)
-  SetPassed("input")
+  gonumToArmaMat("input", input)
+  setPassed("input")
 
   // Detect if the parameter was passed; set if so.
-  SetParamString("kernel", kernel)
-  SetPassed("kernel")
+  setParamString("kernel", kernel)
+  setPassed("kernel")
 
   // Detect if the parameter was passed; set if so.
   if param.Bandwidth != 1 {
-    SetParamDouble("bandwidth", param.Bandwidth)
-    SetPassed("bandwidth")
+    setParamDouble("bandwidth", param.Bandwidth)
+    setPassed("bandwidth")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Center != false {
-    SetParamBool("center", param.Center)
-    SetPassed("center")
+    setParamBool("center", param.Center)
+    setPassed("center")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Degree != 1 {
-    SetParamDouble("degree", param.Degree)
-    SetPassed("degree")
+    setParamDouble("degree", param.Degree)
+    setPassed("degree")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Kernel_scale != 1 {
-    SetParamDouble("kernel_scale", param.Kernel_scale)
-    SetPassed("kernel_scale")
+  if param.KernelScale != 1 {
+    setParamDouble("kernel_scale", param.KernelScale)
+    setPassed("kernel_scale")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.New_dimensionality != 0 {
-    SetParamInt("new_dimensionality", param.New_dimensionality)
-    SetPassed("new_dimensionality")
+  if param.NewDimensionality != 0 {
+    setParamInt("new_dimensionality", param.NewDimensionality)
+    setPassed("new_dimensionality")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Nystroem_method != false {
-    SetParamBool("nystroem_method", param.Nystroem_method)
-    SetPassed("nystroem_method")
+  if param.NystroemMethod != false {
+    setParamBool("nystroem_method", param.NystroemMethod)
+    setPassed("nystroem_method")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Offset != 0 {
-    SetParamDouble("offset", param.Offset)
-    SetPassed("offset")
+    setParamDouble("offset", param.Offset)
+    setPassed("offset")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Sampling != "kmeans" {
-    SetParamString("sampling", param.Sampling)
-    SetPassed("sampling")
+    setParamString("sampling", param.Sampling)
+    setPassed("sampling")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("output")
+  setPassed("output")
 
   // Call the mlpack program.
-  C.mlpackkernel_pca()
+  C.mlpackKernelPca()
 
   // Initialize result variable and get output.
-  var output_ptr mlpackArma
-  output := output_ptr.ArmaToGonumMat("output")
+  var outputPtr mlpackArma
+  Output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return output
+  return Output
 }

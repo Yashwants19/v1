@@ -11,8 +11,7 @@ extern "C" void mlpackSetCFModelPtr(
     void* value)
 {
   SetParamPtr<CFModel>(identifier,
-      static_cast<CFModel*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<CFModel*>(value));
 }
 
 extern "C" void *mlpackGetCFModelPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetCFModelPtr(const char* identifier)
   return modelptr;
 }
 
-static void cfmlpackMain()
+static void CfMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackcf()
+extern "C" void mlpackCf()
 {
-  cfmlpackMain();
+  CfMlpackMain();
 }
 

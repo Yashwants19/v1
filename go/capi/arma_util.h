@@ -22,158 +22,158 @@ extern "C" {
 #endif
 
 /**
- * Pass Gonum Dense pointer and wrap an Armadillo mat around it.
+ * Pass Gonum Dense poconst size_t er and wrap an Armadillo mat around it.
  */
-extern void mlpackToArmaMat(const char *identifier,
-                            const double mat[],
-                            int row,
-                            int col);
+void mlpackToArmaMat(const char* identifier,
+                            double* mat,
+                            const size_t row,
+                            const size_t col);
 
 /**
- * Pass Gonum Dense pointer and wrap an Armadillo mat around it.
+ * Pass Gonum Dense poconst size_t er and wrap an Armadillo mat around it.
  */
-extern void mlpackToArmaUmat(const char *identifier,
-                             const double mat[],
-                             int row,
-                             int col);
+void mlpackToArmaUmat(const char* identifier,
+                             double* mat,
+                             const size_t row,
+                             const size_t col);
 
 /**
- * Pass Gonum VecDense pointer and wrap an Armadillo rowvec around it.
+ * Pass Gonum VecDense poconst size_t er and wrap an Armadillo rowvec around it.
  */
-extern void mlpackToArmaRow(const char *identifier,
-                            const double rowvec[],
-                            int elem);
+void mlpackToArmaRow(const char* identifier,
+                            double* rowvec,
+                            const size_t elem);
 
 /**
- * Pass Gonum VecDense pointer and wrap an Armadillo rowvec around it.
+ * Pass Gonum VecDense poconst size_t er and wrap an Armadillo rowvec around it.
  */
-extern void mlpackToArmaUrow(const char *identifier,
-                             const double rowvec[],
-                             int elem);
+void mlpackToArmaUrow(const char* identifier,
+                             double* rowvec,
+                             const size_t elem);
 
 /**
- * Pass Gonum VecDense pointer and wrap an Armadillo colvec around it.
+ * Pass Gonum VecDense poconst size_t er and wrap an Armadillo colvec around it.
  */
-extern void mlpackToArmaCol(const char *identifier,
-                            const double colvec[],
-                            int elem);
+void mlpackToArmaCol(const char* identifier,
+                            double* colvec,
+                            const size_t elem);
 
 /**
- * Pass Gonum VecDense pointer and wrap an Armadillo colvec around it.
+ * Pass Gonum VecDense poconst size_t er and wrap an Armadillo colvec around it.
  */
-extern void mlpackToArmaUcol(const char *identifier,
-                             const double colvec[],
-                             int elem);
+void mlpackToArmaUcol(const char* identifier,
+                             double* colvec,
+                             const size_t elem);
 
 /**
- * Call CLI::SetParam<std::tuple<data::DatasetInfo, arma::mat>>().
+ * Return the memory poconst size_t er of an Armadillo mat object.
  */
-extern void mlpackToArmaMatWithInfo(const char* identifier,
-                                    const bool* dimensions,
-                                    const double memptr[],
-                                    const size_t rows,
-                                    const size_t cols);
+void* mlpackArmaPtrMat(const char* identifier);
 
 /**
- * Return the memory pointer of an Armadillo mat object.
+ * Return the memory poconst size_t er of an Armadillo umat object.
  */
-extern void *mlpackArmaPtrMat(const char *identifier);
+void* mlpackArmaPtrUmat(const char* identifier);
 
 /**
- * Return the memory pointer of an Armadillo umat object.
+ * Return the memory poconst size_t er of an Armadillo row object.
  */
-extern void *mlpackArmaPtrUmat(const char *identifier);
+void* mlpackArmaPtrRow(const char* identifier);
 
 /**
- * Return the memory pointer of an Armadillo row object.
+ * Return the memory poconst size_t er of an Armadillo urow object.
  */
-extern void *mlpackArmaPtrRow(const char *identifier);
+void* mlpackArmaPtrUrow(const char* identifier);
 
 /**
- * Return the memory pointer of an Armadillo urow object.
+ * Return the memory poconst size_t er of an Armadillo col object.
  */
-extern void *mlpackArmaPtrUrow(const char *identifier);
+void* mlpackArmaPtrCol(const char* identifier);
 
 /**
- * Return the memory pointer of an Armadillo col object.
+ * Return the memory poconst size_t er of an Armadillo ucol object.
  */
-extern void *mlpackArmaPtrCol(const char *identifier);
-
-/**
- * Return the memory pointer of an Armadillo ucol object.
- */
-extern void *mlpackArmaPtrUcol(const char *identifier);
-
-/**
- * Get the number of rows in a matrix with DatasetInfo parameter.
- */
-extern int mlpackArmaMatWithInfoElements(const char *identifier);
-
-/**
- * Get the number of rows in a matrix with DatasetInfo parameter.
- */
-extern int mlpackArmaMatWithInfoRows(const char *identifier);
-
-/**
- * Get the number of columns in a matrix with DatasetInfo parameter.
- */
-extern int mlpackArmaMatWithInfoCols(const char *identifier);
-
-/**
- * Get a pointer to the memory of the matrix.  The calling function is expected
- * to own the memory.
- */
-extern void *mlpackArmaPtrMatWithInfoPtr(const char *identifier);
+void* mlpackArmaPtrUcol(const char* identifier);
 
 /**
  * Return the number of rows in a Armadillo mat.
  */
-extern int mlpackNumRowMat(const char *identifier);
+int mlpackNumRowMat(const char* identifier);
 
 /**
  * Return the number of columns in an Armadillo mat.
  */
-extern int mlpackNumColMat(const char *identifier);
+int mlpackNumColMat(const char* identifier);
 
 /**
  * Return the number of elements in an Armadillo mat.
  */
-extern int mlpackNumElemMat(const char *identifier);
+int mlpackNumElemMat(const char* identifier);
 
 /**
  * Return the number of rows in an Armadillo umat.
  */
-extern int mlpackNumRowUmat(const char *identifier);
+int mlpackNumRowUmat(const char* identifier);
 
 /**
  * Return the number of columns in an Armadillo umat.
  */
-extern int mlpackNumColUmat(const char *identifier);
+int mlpackNumColUmat(const char* identifier);
 
 /**
  * Return the number of elements in an Armadillo umat.
  */
-extern int mlpackNumElemUmat(const char *identifier);
+int mlpackNumElemUmat(const char* identifier);
 
 /**
  * Return the number of elements in an Armadillo row.
  */
-extern int mlpackNumElemRow(const char *identifier);
+int mlpackNumElemRow(const char* identifier);
 
 /**
  * Return the number of elements in an Armadillo urow.
  */
-extern int mlpackNumElemUrow(const char *identifier);
+int mlpackNumElemUrow(const char* identifier);
 
 /**
  * Return the number of elements in an Armadillo col.
  */
-extern int mlpackNumElemCol(const char *identifier);
+int mlpackNumElemCol(const char* identifier);
 
 /**
  * Return the number of elements in an Armadillo ucol.
  */
-extern int mlpackNumElemUcol(const char *identifier);
+int mlpackNumElemUcol(const char* identifier);
+
+/**
+ * Call CLI::SetParam<std::tuple<data::DatasetInfo, arma::mat>>().
+ */
+void mlpackToArmaMatWithInfo(const char* identifier,
+                                    const bool* dimensions,
+                                    double* memptr,
+                                    const size_t rows,
+                                    const size_t cols);
+
+/**
+ * Get the number of elements in a matrix with DatasetInfo parameter.
+ */
+int mlpackArmaMatWithInfoElements(const char* identifier);
+
+/**
+ * Get the number of rows in a matrix with DatasetInfo parameter.
+ */
+int mlpackArmaMatWithInfoRows(const char* identifier);
+
+/**
+ * Get the number of columns in a matrix with DatasetInfo parameter.
+ */
+int mlpackArmaMatWithInfoCols(const char* identifier);
+
+/**
+ * Get a poconst size_t er to the memory of the matrix.  The calling function is expected
+ * to own the memory.
+ */
+void* mlpackArmaPtrMatWithInfoPtr(const char* identifier);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_lsh
+#cgo LDFLAGS: -L. -lmlpack_go_lsh
 #include <capi/lsh.h>
 #include <stdlib.h>
 */
@@ -11,64 +11,58 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
 type LshOptionalParam struct {
-    Bucket_size int
-    Copy_all_inputs bool
-    Hash_width float64
-    Input_model *LSHSearch
+    BucketSize int
+    HashWidth float64
+    InputModel *lshSearch
     K int
-    Num_probes int
+    NumProbes int
     Projections int
     Query *mat.Dense
     Reference *mat.Dense
-    Second_hash_size int
+    SecondHashSize int
     Seed int
     Tables int
-    True_neighbors *mat.Dense
+    TrueNeighbors *mat.Dense
     Verbose bool
 }
 
 func InitializeLsh() *LshOptionalParam {
   return &LshOptionalParam{
-    Bucket_size: 500,
-    Copy_all_inputs: false,
-    Hash_width: 0,
-    Input_model: nil,
+    BucketSize: 500,
+    HashWidth: 0,
+    InputModel: nil,
     K: 0,
-    Num_probes: 0,
+    NumProbes: 0,
     Projections: 10,
     Query: nil,
     Reference: nil,
-    Second_hash_size: 99901,
+    SecondHashSize: 99901,
     Seed: 0,
     Tables: 30,
-    True_neighbors: nil,
+    TrueNeighbors: nil,
     Verbose: false,
   }
 }
 
-type LSHSearch struct {
- mem unsafe.Pointer
+type lshSearch struct {
+  mem unsafe.Pointer
 }
 
-func (m *LSHSearch) allocLSHSearch(identifier string) {
- m.mem = C.mlpackGetLSHSearchPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *lshSearch) allocLSHSearch(identifier string) {
+  m.mem = C.mlpackGetLSHSearchPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *LSHSearch) getLSHSearch(identifier string) {
- m.allocLSHSearch(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *lshSearch) getLSHSearch(identifier string) {
+  m.allocLSHSearch(identifier)
 }
 
-func setLSHSearch(identifier string, ptr *LSHSearch) {
- C.mlpackSetLSHSearchPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setLSHSearch(identifier string, ptr *lshSearch) {
+  C.mlpackSetLSHSearchPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -81,10 +75,10 @@ func setLSHSearch(identifier string, ptr *LSHSearch) {
   point in input and store the distances in distances and the neighbors in
   neighbors:
   
-  param := InitializeLsh()
-  param.K = 5
-  param.Reference = input
-  distances, neighbors, _ := Lsh(param)
+    param := mlpack.InitializeLsh()
+    param.K = 5
+    param.Reference = input
+    Distances, Neighbors, _ := mlpack.Lsh(param)
   
   The output is organized such that row i and column j in the neighbors output
   corresponds to the index of the point in the reference set which is the j'th
@@ -93,7 +87,7 @@ func setLSHSearch(identifier string, ptr *LSHSearch) {
   those two points.
   
   Because this is approximate-nearest-neighbors search, results may be different
-  from run to run.  Thus, the 'seed' parameter can be specified to set the
+  from run to run.  Thus, the "seed" parameter can be specified to set the
   random seed.
   
   This program also has many other parameters to control its functionality; see
@@ -102,152 +96,142 @@ func setLSHSearch(identifier string, ptr *LSHSearch) {
 
   Input parameters:
 
-   - bucket_size (int): The size of a bucket in the second level hash. 
+   - BucketSize (int): The size of a bucket in the second level hash. 
         Default value 500.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - hash_width (float64): The hash width for the first-level hashing in
+   - HashWidth (float64): The hash width for the first-level hashing in
         the LSH preprocessing. By default, the LSH class automatically estimates
         a hash width for its use.  Default value 0.
-   - input_model (LSHSearch): Input LSH model.
-   - k (int): Number of nearest neighbors to find.  Default value 0.
-   - num_probes (int): Number of additional probes for multiprobe LSH; if
+   - InputModel (lshSearch): Input LSH model.
+   - K (int): Number of nearest neighbors to find.  Default value 0.
+   - NumProbes (int): Number of additional probes for multiprobe LSH; if
         0, traditional LSH is used.  Default value 0.
-   - projections (int): The number of hash functions for each table 
+   - Projections (int): The number of hash functions for each table 
         Default value 10.
-   - query (mat.Dense): Matrix containing query points (optional).
-   - reference (mat.Dense): Matrix containing the reference dataset.
-   - second_hash_size (int): The size of the second level hash table. 
+   - Query (mat.Dense): Matrix containing query points (optional).
+   - Reference (mat.Dense): Matrix containing the reference dataset.
+   - SecondHashSize (int): The size of the second level hash table. 
         Default value 99901.
-   - seed (int): Random seed.  If 0, 'std::time(NULL)' is used.  Default
+   - Seed (int): Random seed.  If 0, 'std::time(NULL)' is used.  Default
         value 0.
-   - tables (int): The number of hash tables to be used.  Default value
+   - Tables (int): The number of hash tables to be used.  Default value
         30.
-   - true_neighbors (mat.Dense): Matrix of true neighbors to compute
-        recall with (the recall is printed when -v is specified).
-   - verbose (bool): Display informational messages and the full list of
+   - TrueNeighbors (mat.Dense): Matrix of true neighbors to compute recall
+        with (the recall is printed when -v is specified).
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - distances (mat.Dense): Matrix to output distances into.
-   - neighbors (mat.Dense): Matrix to output neighbors into.
-   - output_model (LSHSearch): Output for trained LSH model.
+   - Distances (mat.Dense): Matrix to output distances into.
+   - Neighbors (mat.Dense): Matrix to output neighbors into.
+   - OutputModel (lshSearch): Output for trained LSH model.
 
-*/
-func Lsh(param *LshOptionalParam) (*mat.Dense, *mat.Dense, LSHSearch) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("K-Approximate-Nearest-Neighbor Search with LSH")
+ */
+func Lsh(param *LshOptionalParam) (*mat.Dense, *mat.Dense, lshSearch) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("K-Approximate-Nearest-Neighbor Search with LSH")
 
   // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
+  if param.BucketSize != 500 {
+    setParamInt("bucket_size", param.BucketSize)
+    setPassed("bucket_size")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Bucket_size != 500 {
-    SetParamInt("bucket_size", param.Bucket_size)
-    SetPassed("bucket_size")
+  if param.HashWidth != 0 {
+    setParamDouble("hash_width", param.HashWidth)
+    setPassed("hash_width")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Hash_width != 0 {
-    SetParamDouble("hash_width", param.Hash_width)
-    SetPassed("hash_width")
-  }
-
-  // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setLSHSearch("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.InputModel != nil {
+    setLSHSearch("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    SetParamInt("k", param.K)
-    SetPassed("k")
+    setParamInt("k", param.K)
+    setPassed("k")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Num_probes != 0 {
-    SetParamInt("num_probes", param.Num_probes)
-    SetPassed("num_probes")
+  if param.NumProbes != 0 {
+    setParamInt("num_probes", param.NumProbes)
+    setPassed("num_probes")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Projections != 10 {
-    SetParamInt("projections", param.Projections)
-    SetPassed("projections")
+    setParamInt("projections", param.Projections)
+    setPassed("projections")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    GonumToArmaMat("query", param.Query)
-    SetPassed("query")
+    gonumToArmaMat("query", param.Query)
+    setPassed("query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    GonumToArmaMat("reference", param.Reference)
-    SetPassed("reference")
+    gonumToArmaMat("reference", param.Reference)
+    setPassed("reference")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Second_hash_size != 99901 {
-    SetParamInt("second_hash_size", param.Second_hash_size)
-    SetPassed("second_hash_size")
+  if param.SecondHashSize != 99901 {
+    setParamInt("second_hash_size", param.SecondHashSize)
+    setPassed("second_hash_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    SetParamInt("seed", param.Seed)
-    SetPassed("seed")
+    setParamInt("seed", param.Seed)
+    setPassed("seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tables != 30 {
-    SetParamInt("tables", param.Tables)
-    SetPassed("tables")
+    setParamInt("tables", param.Tables)
+    setPassed("tables")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.True_neighbors != nil {
-    GonumToArmaUmat("true_neighbors", param.True_neighbors)
-    SetPassed("true_neighbors")
+  if param.TrueNeighbors != nil {
+    gonumToArmaUmat("true_neighbors", param.TrueNeighbors)
+    setPassed("true_neighbors")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("distances")
-  SetPassed("neighbors")
-  SetPassed("output_model")
+  setPassed("distances")
+  setPassed("neighbors")
+  setPassed("output_model")
 
   // Call the mlpack program.
-  C.mlpacklsh()
+  C.mlpackLsh()
 
   // Initialize result variable and get output.
-  var distances_ptr mlpackArma
-  distances := distances_ptr.ArmaToGonumMat("distances")
-  var neighbors_ptr mlpackArma
-  neighbors := neighbors_ptr.ArmaToGonumUmat("neighbors")
-  var output_model LSHSearch
-  output_model.getLSHSearch("output_model")
+  var distancesPtr mlpackArma
+  Distances := distancesPtr.armaToGonumMat("distances")
+  var neighborsPtr mlpackArma
+  Neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  var OutputModel lshSearch
+  OutputModel.getLSHSearch("output_model")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return distances, neighbors, output_model
+  return Distances, Neighbors, OutputModel
 }

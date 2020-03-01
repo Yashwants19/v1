@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-extern void mlpackSetNBCModelPtr(const char* identifier,void* value);
+extern void mlpackSetNBCModelPtr(const char* identifier, void* value);
 
 extern void *mlpackGetNBCModelPtr(const char* identifier);
 
-extern void mlpacknbc();
+extern void mlpackNbc();
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

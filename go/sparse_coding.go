@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lm -lmlpack -lmlpack_go_sparse_coding
+#cgo LDFLAGS: -L. -lmlpack_go_sparse_coding
 #include <capi/sparse_coding.h>
 #include <stdlib.h>
 */
@@ -11,39 +11,36 @@ import "C"
 import (
   "gonum.org/v1/gonum/mat" 
   "runtime" 
-  "time" 
   "unsafe" 
 )
 
-type Sparse_codingOptionalParam struct {
+type SparseCodingOptionalParam struct {
     Atoms int
-    Copy_all_inputs bool
-    Initial_dictionary *mat.Dense
-    Input_model *SparseCoding
+    InitialDictionary *mat.Dense
+    InputModel *sparseCoding
     Lambda1 float64
     Lambda2 float64
-    Max_iterations int
-    Newton_tolerance float64
+    MaxIterations int
+    NewtonTolerance float64
     Normalize bool
-    Objective_tolerance float64
+    ObjectiveTolerance float64
     Seed int
     Test *mat.Dense
     Training *mat.Dense
     Verbose bool
 }
 
-func InitializeSparse_coding() *Sparse_codingOptionalParam {
-  return &Sparse_codingOptionalParam{
+func InitializeSparseCoding() *SparseCodingOptionalParam {
+  return &SparseCodingOptionalParam{
     Atoms: 15,
-    Copy_all_inputs: false,
-    Initial_dictionary: nil,
-    Input_model: nil,
+    InitialDictionary: nil,
+    InputModel: nil,
     Lambda1: 0,
     Lambda2: 0,
-    Max_iterations: 0,
-    Newton_tolerance: 1e-06,
+    MaxIterations: 0,
+    NewtonTolerance: 1e-06,
     Normalize: false,
-    Objective_tolerance: 0.01,
+    ObjectiveTolerance: 0.01,
     Seed: 0,
     Test: nil,
     Training: nil,
@@ -51,24 +48,21 @@ func InitializeSparse_coding() *Sparse_codingOptionalParam {
   }
 }
 
-type SparseCoding struct {
- mem unsafe.Pointer
+type sparseCoding struct {
+  mem unsafe.Pointer
 }
 
-func (m *SparseCoding) allocSparseCoding(identifier string) {
- m.mem = C.mlpackGetSparseCodingPtr(C.CString(identifier))
- runtime.KeepAlive(m)
+func (m *sparseCoding) allocSparseCoding(identifier string) {
+  m.mem = C.mlpackGetSparseCodingPtr(C.CString(identifier))
+  runtime.KeepAlive(m)
 }
 
-func (m *SparseCoding) getSparseCoding(identifier string) {
- m.allocSparseCoding(identifier)
- time.Sleep(time.Second)
- runtime.GC()
- time.Sleep(time.Second)
+func (m *sparseCoding) getSparseCoding(identifier string) {
+  m.allocSparseCoding(identifier)
 }
 
-func setSparseCoding(identifier string, ptr *SparseCoding) {
- C.mlpackSetSparseCodingPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
+func setSparseCoding(identifier string, ptr *sparseCoding) {
+  C.mlpackSetSparseCodingPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -91,180 +85,170 @@ func setSparseCoding(identifier string, ptr *SparseCoding) {
   other matrices, and saved for future usage.
   
   To run this program, either an input matrix or an already-saved sparse coding
-  model must be specified.  An input matrix may be specified with the 'training'
+  model must be specified.  An input matrix may be specified with the "training"
   option, along with the number of atoms in the dictionary (specified with the
-  'atoms' parameter).  It is also possible to specify an initial dictionary for
-  the optimization, with the 'initial_dictionary' parameter.  An input model may
-  be specified with the 'input_model' parameter.
+  "atoms" parameter).  It is also possible to specify an initial dictionary for
+  the optimization, with the "initial_dictionary" parameter.  An input model may
+  be specified with the "input_model" parameter.
   
   As an example, to build a sparse coding model on the dataset data using 200
   atoms and an l1-regularization parameter of 0.1, saving the model into model,
   use 
   
-  param := InitializeSparse_coding()
-  param.Training = data
-  param.Atoms = 200
-  param.Lambda1 = 0.1
-  _, _, model := Sparse_coding(param)
+    param := mlpack.InitializeSparseCoding()
+    param.Training = data
+    param.Atoms = 200
+    param.Lambda1 = 0.1
+    _, _, Model := mlpack.SparseCoding(param)
   
   Then, this model could be used to encode a new matrix, otherdata, and save the
   output codes to codes: 
   
-  param := InitializeSparse_coding()
-  param.Input_model = model
-  param.Test = otherdata
-  codes, _, _ := Sparse_coding(param)
+    param := mlpack.InitializeSparseCoding()
+    param.InputModel = &Model
+    param.Test = otherdata
+    Codes, _, _ := mlpack.SparseCoding(param)
 
 
   Input parameters:
 
-   - atoms (int): Number of atoms in the dictionary.  Default value 15.
-   - copy_all_inputs (bool): If specified, all input parameters will be
-        deep copied before the method is run.  This is useful for debugging
-        problems where the input parameters are being modified by the algorithm,
-        but can slow down the code.
-   - initial_dictionary (mat.Dense): Optional initial dictionary matrix.
-   - input_model (SparseCoding): File containing input sparse coding
+   - Atoms (int): Number of atoms in the dictionary.  Default value 15.
+   - InitialDictionary (mat.Dense): Optional initial dictionary matrix.
+   - InputModel (sparseCoding): File containing input sparse coding
         model.
-   - lambda1 (float64): Sparse coding l1-norm regularization parameter. 
+   - Lambda1 (float64): Sparse coding l1-norm regularization parameter. 
         Default value 0.
-   - lambda2 (float64): Sparse coding l2-norm regularization parameter. 
+   - Lambda2 (float64): Sparse coding l2-norm regularization parameter. 
         Default value 0.
-   - max_iterations (int): Maximum number of iterations for sparse coding
+   - MaxIterations (int): Maximum number of iterations for sparse coding
         (0 indicates no limit).  Default value 0.
-   - newton_tolerance (float64): Tolerance for convergence of Newton
+   - NewtonTolerance (float64): Tolerance for convergence of Newton
         method.  Default value 1e-06.
-   - normalize (bool): If set, the input data matrix will be normalized
+   - Normalize (bool): If set, the input data matrix will be normalized
         before coding.
-   - objective_tolerance (float64): Tolerance for convergence of the
+   - ObjectiveTolerance (float64): Tolerance for convergence of the
         objective function.  Default value 0.01.
-   - seed (int): Random seed.  If 0, 'std::time(NULL)' is used.  Default
+   - Seed (int): Random seed.  If 0, 'std::time(NULL)' is used.  Default
         value 0.
-   - test (mat.Dense): Optional matrix to be encoded by trained model.
-   - training (mat.Dense): Matrix of training data (X).
-   - verbose (bool): Display informational messages and the full list of
+   - Test (mat.Dense): Optional matrix to be encoded by trained model.
+   - Training (mat.Dense): Matrix of training data (X).
+   - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - codes (mat.Dense): Matrix to save the output sparse codes of the test
+   - Codes (mat.Dense): Matrix to save the output sparse codes of the test
         matrix (--test_file) to.
-   - dictionary (mat.Dense): Matrix to save the output dictionary to.
-   - output_model (SparseCoding): File to save trained sparse coding model
+   - Dictionary (mat.Dense): Matrix to save the output dictionary to.
+   - OutputModel (sparseCoding): File to save trained sparse coding model
         to.
 
-*/
-func Sparse_coding(param *Sparse_codingOptionalParam) (*mat.Dense, *mat.Dense, SparseCoding) {
-  ResetTimers()
-  EnableTimers()
-  DisableBacktrace()
-  DisableVerbose()
-  RestoreSettings("Sparse Coding")
-
-  // Detect if the parameter was passed; set if so.
-  if param.Copy_all_inputs == true {
-    SetParamBool("copy_all_inputs", param.Copy_all_inputs)
-    SetPassed("copy_all_inputs")
-  }
+ */
+func SparseCoding(param *SparseCodingOptionalParam) (*mat.Dense, *mat.Dense, sparseCoding) {
+  resetTimers()
+  enableTimers()
+  disableBacktrace()
+  disableVerbose()
+  restoreSettings("Sparse Coding")
 
   // Detect if the parameter was passed; set if so.
   if param.Atoms != 15 {
-    SetParamInt("atoms", param.Atoms)
-    SetPassed("atoms")
+    setParamInt("atoms", param.Atoms)
+    setPassed("atoms")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Initial_dictionary != nil {
-    GonumToArmaMat("initial_dictionary", param.Initial_dictionary)
-    SetPassed("initial_dictionary")
+  if param.InitialDictionary != nil {
+    gonumToArmaMat("initial_dictionary", param.InitialDictionary)
+    setPassed("initial_dictionary")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Input_model != nil {
-    setSparseCoding("input_model", param.Input_model)
-    SetPassed("input_model")
+  if param.InputModel != nil {
+    setSparseCoding("input_model", param.InputModel)
+    setPassed("input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda1 != 0 {
-    SetParamDouble("lambda1", param.Lambda1)
-    SetPassed("lambda1")
+    setParamDouble("lambda1", param.Lambda1)
+    setPassed("lambda1")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda2 != 0 {
-    SetParamDouble("lambda2", param.Lambda2)
-    SetPassed("lambda2")
+    setParamDouble("lambda2", param.Lambda2)
+    setPassed("lambda2")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Max_iterations != 0 {
-    SetParamInt("max_iterations", param.Max_iterations)
-    SetPassed("max_iterations")
+  if param.MaxIterations != 0 {
+    setParamInt("max_iterations", param.MaxIterations)
+    setPassed("max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Newton_tolerance != 1e-06 {
-    SetParamDouble("newton_tolerance", param.Newton_tolerance)
-    SetPassed("newton_tolerance")
+  if param.NewtonTolerance != 1e-06 {
+    setParamDouble("newton_tolerance", param.NewtonTolerance)
+    setPassed("newton_tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Normalize != false {
-    SetParamBool("normalize", param.Normalize)
-    SetPassed("normalize")
+    setParamBool("normalize", param.Normalize)
+    setPassed("normalize")
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Objective_tolerance != 0.01 {
-    SetParamDouble("objective_tolerance", param.Objective_tolerance)
-    SetPassed("objective_tolerance")
+  if param.ObjectiveTolerance != 0.01 {
+    setParamDouble("objective_tolerance", param.ObjectiveTolerance)
+    setPassed("objective_tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    SetParamInt("seed", param.Seed)
-    SetPassed("seed")
+    setParamInt("seed", param.Seed)
+    setPassed("seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    GonumToArmaMat("test", param.Test)
-    SetPassed("test")
+    gonumToArmaMat("test", param.Test)
+    setPassed("test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    GonumToArmaMat("training", param.Training)
-    SetPassed("training")
+    gonumToArmaMat("training", param.Training)
+    setPassed("training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    SetParamBool("verbose", param.Verbose)
-    SetPassed("verbose")
-    EnableVerbose()
+    setParamBool("verbose", param.Verbose)
+    setPassed("verbose")
+    enableVerbose()
   }
 
   // Mark all output options as passed.
-  SetPassed("codes")
-  SetPassed("dictionary")
-  SetPassed("output_model")
+  setPassed("codes")
+  setPassed("dictionary")
+  setPassed("output_model")
 
   // Call the mlpack program.
-  C.mlpacksparse_coding()
+  C.mlpackSparseCoding()
 
   // Initialize result variable and get output.
-  var codes_ptr mlpackArma
-  codes := codes_ptr.ArmaToGonumMat("codes")
-  var dictionary_ptr mlpackArma
-  dictionary := dictionary_ptr.ArmaToGonumMat("dictionary")
-  var output_model SparseCoding
-  output_model.getSparseCoding("output_model")
+  var codesPtr mlpackArma
+  Codes := codesPtr.armaToGonumMat("codes")
+  var dictionaryPtr mlpackArma
+  Dictionary := dictionaryPtr.armaToGonumMat("dictionary")
+  var OutputModel sparseCoding
+  OutputModel.getSparseCoding("output_model")
 
   // Clear settings.
-  ClearSettings()
+  clearSettings()
 
   // Return output(s).
-  return codes, dictionary, output_model
+  return Codes, Dictionary, OutputModel
 }

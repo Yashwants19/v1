@@ -11,8 +11,7 @@ extern "C" void mlpackSetDTreePtr(
     void* value)
 {
   SetParamPtr<DTree<>>(identifier,
-      static_cast<DTree<>*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<DTree<>*>(value));
 }
 
 extern "C" void *mlpackGetDTreePtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetDTreePtr(const char* identifier)
   return modelptr;
 }
 
-static void detmlpackMain()
+static void DetMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackdet()
+extern "C" void mlpackDet()
 {
-  detmlpackMain();
+  DetMlpackMain();
 }
 

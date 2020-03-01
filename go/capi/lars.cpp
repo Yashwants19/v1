@@ -11,8 +11,7 @@ extern "C" void mlpackSetLARSPtr(
     void* value)
 {
   SetParamPtr<LARS>(identifier,
-      static_cast<LARS*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<LARS*>(value));
 }
 
 extern "C" void *mlpackGetLARSPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetLARSPtr(const char* identifier)
   return modelptr;
 }
 
-static void larsmlpackMain()
+static void LarsMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacklars()
+extern "C" void mlpackLars()
 {
-  larsmlpackMain();
+  LarsMlpackMain();
 }
 

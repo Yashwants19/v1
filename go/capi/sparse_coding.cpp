@@ -11,8 +11,7 @@ extern "C" void mlpackSetSparseCodingPtr(
     void* value)
 {
   SetParamPtr<SparseCoding>(identifier,
-      static_cast<SparseCoding*>(value),
-      CLI::HasParam("copy_all_inputs"));
+      static_cast<SparseCoding*>(value));
 }
 
 extern "C" void *mlpackGetSparseCodingPtr(const char* identifier)
@@ -21,13 +20,13 @@ extern "C" void *mlpackGetSparseCodingPtr(const char* identifier)
   return modelptr;
 }
 
-static void sparse_codingmlpackMain()
+static void SparseCodingMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpacksparse_coding()
+extern "C" void mlpackSparseCoding()
 {
-  sparse_codingmlpackMain();
+  SparseCodingMlpackMain();
 }
 

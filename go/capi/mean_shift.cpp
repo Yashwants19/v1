@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void mean_shiftmlpackMain()
+static void MeanShiftMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackmean_shift()
+extern "C" void mlpackMeanShift()
 {
-  mean_shiftmlpackMain();
+  MeanShiftMlpackMain();
 }
 

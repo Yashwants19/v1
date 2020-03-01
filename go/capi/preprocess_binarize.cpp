@@ -6,13 +6,13 @@ using namespace mlpack;
 using namespace mlpack::util;
 using namespace std;
 
-static void preprocess_binarizemlpackMain()
+static void PreprocessBinarizeMlpackMain()
 {
   mlpackMain();
 }
 
-extern "C" void mlpackpreprocess_binarize()
+extern "C" void mlpackPreprocessBinarize()
 {
-  preprocess_binarizemlpackMain();
+  PreprocessBinarizeMlpackMain();
 }
 
