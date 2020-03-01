@@ -4,4 +4,4 @@
 // programs, Go bindings, and C++ classes which can then be integrated into 
 // larger-scale machine learning solutions.
 
-package mlpack // import "mlpack.org/v1"
+package mlpack // import "github.com/Yashwants19/v1/mlpack"
