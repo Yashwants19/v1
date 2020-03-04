@@ -538,7 +538,7 @@ func TestGonumMatrixWithInfo(t *testing.T) {
         "matrix_withInfo we pass in with double the element of the matrix .")
 
   x := mlpack.DataAndInfo()
-  x.Categoricals = []bool{
+  x.Categories = []bool{
     false, false, false, false, false,
   }
 
