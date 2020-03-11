@@ -31,7 +31,7 @@ type KfnOptionalParam struct {
     Verbose bool
 }
 
-func InitializeKfn() *KfnOptionalParam {
+func KfnOptions() *KfnOptionalParam {
   return &KfnOptionalParam{
     Algorithm: "dual_tree",
     Epsilon: 0,
@@ -76,10 +76,12 @@ func setKFNModel(identifier string, ptr *kfnModel) {
   eachpoint in input and store the distances in distances and the neighbors in
   neighbors: 
   
-    param := mlpack.InitializeKfn()
-    param.K = 5
-    param.Reference = input
-    Distances, Neighbors, _ := mlpack.Kfn(param)
+      // Initialize optional parameters for Kfn().
+      param := mlpack.KfnOptions()
+      param.K = 5
+      param.Reference = input
+      
+      distances, neighbors, _ := mlpack.Kfn(param)
   
   The output files are organized such that row i and column j in the neighbors
   output matrix corresponds to the index of the point in the reference set which
@@ -123,9 +125,9 @@ func setKFNModel(identifier string, ptr *kfnModel) {
 
   Output parameters:
 
-   - Distances (mat.Dense): Matrix to output distances into.
-   - Neighbors (mat.Dense): Matrix to output neighbors into.
-   - OutputModel (kfnModel): If specified, the kFN model will be output
+   - distances (mat.Dense): Matrix to output distances into.
+   - neighbors (mat.Dense): Matrix to output neighbors into.
+   - outputModel (kfnModel): If specified, the kFN model will be output
         here.
 
  */
@@ -231,15 +233,15 @@ func Kfn(param *KfnOptionalParam) (*mat.Dense, *mat.Dense, kfnModel) {
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  Distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat("distances")
   var neighborsPtr mlpackArma
-  Neighbors := neighborsPtr.armaToGonumUmat("neighbors")
-  var OutputModel kfnModel
-  OutputModel.getKFNModel("output_model")
+  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  var outputModel kfnModel
+  outputModel.getKFNModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Distances, Neighbors, OutputModel
+  return distances, neighbors, outputModel
 }

@@ -34,7 +34,7 @@ type LinearSvmOptionalParam struct {
     Verbose bool
 }
 
-func InitializeLinearSvm() *LinearSvmOptionalParam {
+func LinearSvmOptions() *LinearSvmOptionalParam {
   return &LinearSvmOptionalParam{
     Delta: 1,
     Epochs: 50,
@@ -77,60 +77,64 @@ func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
   An implementation of linear SVMs that uses either L-BFGS or parallel SGD
   (stochastic gradient descent) to train the model.
   
-  This program allows loading a linear SVM model (via the "input_model"
+  This program allows loading a linear SVM model (via the "InputModel"
   parameter) or training a linear SVM model given training data (specified with
-  the "training" parameter), or both those things at once.  In addition, this
-  program allows classification on a test dataset (specified with the "test"
-  parameter) and the classification results may be saved with the "predictions"
+  the "Training" parameter), or both those things at once.  In addition, this
+  program allows classification on a test dataset (specified with the "Test"
+  parameter) and the classification results may be saved with the "Predictions"
   output parameter. The trained linear SVM model may be saved using the
-  "output_model" output parameter.
+  "OutputModel" output parameter.
   
   The training data, if specified, may have class labels as its last dimension. 
-  Alternately, the "labels" parameter may be used to specify a separate vector
+  Alternately, the "Labels" parameter may be used to specify a separate vector
   of labels.
   
   When a model is being trained, there are many options.  L2 regularization (to
-  prevent overfitting) can be specified with the "lambda" option, and the number
-  of classes can be manually specified with the "num_classes"and if an intercept
-  term is not desired in the model, the "no_intercept" parameter can be
+  prevent overfitting) can be specified with the "Lambda" option, and the number
+  of classes can be manually specified with the "NumClasses"and if an intercept
+  term is not desired in the model, the "NoIntercept" parameter can be
   specified.Margin of difference between correct class and other classes can be
-  specified with the "delta" option.The optimizer used to train the model can be
-  specified with the "optimizer" parameter.  Available options are 'psgd'
+  specified with the "Delta" option.The optimizer used to train the model can be
+  specified with the "Optimizer" parameter.  Available options are 'psgd'
   (parallel stochastic gradient descent) and 'lbfgs' (the L-BFGS optimizer). 
-  There are also various parameters for the optimizer; the "max_iterations"
+  There are also various parameters for the optimizer; the "MaxIterations"
   parameter specifies the maximum number of allowed iterations, and the
-  "tolerance" parameter specifies the tolerance for convergence.  For the
-  parallel SGD optimizer, the "step_size" parameter controls the step size taken
+  "Tolerance" parameter specifies the tolerance for convergence.  For the
+  parallel SGD optimizer, the "StepSize" parameter controls the step size taken
   at each iteration by the optimizer and the maximum number of epochs (specified
-  with "epochs"). If the objective function for your data is oscillating between
+  with "Epochs"). If the objective function for your data is oscillating between
   Inf and 0, the step size is probably too large.  There are more parameters for
   the optimizers, but the C++ interface must be used to access these.
   
   Optionally, the model can be used to predict the labels for another matrix of
-  data points, if "test" is specified.  The "test" parameter can be specified
-  without the "training" parameter, so long as an existing linear SVM model is
-  given with the "input_model" parameter.  The output predictions from the
-  linear SVM model may be saved with the "predictions" parameter.
+  data points, if "Test" is specified.  The "Test" parameter can be specified
+  without the "Training" parameter, so long as an existing linear SVM model is
+  given with the "InputModel" parameter.  The output predictions from the linear
+  SVM model may be saved with the "Predictions" parameter.
   
   As an example, to train a LinaerSVM on the data 'data' with labels 'labels'
   with L2 regularization of 0.1, saving the model to 'lsvm_model', the following
   command may be used:
   
-    param := mlpack.InitializeLinearSvm()
-    param.Training = data
-    param.Labels = labels
-    param.Lambda = 0.1
-    param.Delta = 1
-    param.NumClasses = 0
-    LsvmModel, _, _ := mlpack.LinearSvm(param)
+      // Initialize optional parameters for LinearSvm().
+      param := mlpack.LinearSvmOptions()
+      param.Training = data
+      param.Labels = labels
+      param.Lambda = 0.1
+      param.Delta = 1
+      param.NumClasses = 0
+      
+      lsvm_model, _, _ := mlpack.LinearSvm(param)
   
   Then, to use that model to predict classes for the dataset 'test', storing the
   output predictions in 'predictions', the following command may be used: 
   
-    param := mlpack.InitializeLinearSvm()
-    param.InputModel = &LsvmModel
-    param.Test = test
-    _, Predictions, _ := mlpack.LinearSvm(param)
+      // Initialize optional parameters for LinearSvm().
+      param := mlpack.LinearSvmOptions()
+      param.InputModel = &lsvm_model
+      param.Test = test
+      
+      _, predictions, _ := mlpack.LinearSvm(param)
 
 
   Input parameters:
@@ -169,10 +173,10 @@ func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
 
   Output parameters:
 
-   - OutputModel (linearsvmModel): Output for trained linear svm model.
-   - Predictions (mat.Dense): If test data is specified, this matrix is
+   - outputModel (linearsvmModel): Output for trained linear svm model.
+   - predictions (mat.Dense): If test data is specified, this matrix is
         where the predictions for the test set will be saved.
-   - Probabilities (mat.Dense): If test data is specified, this matrix is
+   - probabilities (mat.Dense): If test data is specified, this matrix is
         where the class probabilities for the test set will be saved.
 
  */
@@ -295,16 +299,16 @@ func LinearSvm(param *LinearSvmOptionalParam) (linearsvmModel, *mat.Dense, *mat.
   C.mlpackLinearSvm()
 
   // Initialize result variable and get output.
-  var OutputModel linearsvmModel
-  OutputModel.getLinearSVMModel("output_model")
+  var outputModel linearsvmModel
+  outputModel.getLinearSVMModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
   var probabilitiesPtr mlpackArma
-  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
+  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, Predictions, Probabilities
+  return outputModel, predictions, probabilities
 }

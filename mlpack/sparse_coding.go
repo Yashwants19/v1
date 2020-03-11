@@ -30,7 +30,7 @@ type SparseCodingOptionalParam struct {
     Verbose bool
 }
 
-func InitializeSparseCoding() *SparseCodingOptionalParam {
+func SparseCodingOptions() *SparseCodingOptionalParam {
   return &SparseCodingOptionalParam{
     Atoms: 15,
     InitialDictionary: nil,
@@ -85,29 +85,33 @@ func setSparseCoding(identifier string, ptr *sparseCoding) {
   other matrices, and saved for future usage.
   
   To run this program, either an input matrix or an already-saved sparse coding
-  model must be specified.  An input matrix may be specified with the "training"
+  model must be specified.  An input matrix may be specified with the "Training"
   option, along with the number of atoms in the dictionary (specified with the
-  "atoms" parameter).  It is also possible to specify an initial dictionary for
-  the optimization, with the "initial_dictionary" parameter.  An input model may
-  be specified with the "input_model" parameter.
+  "Atoms" parameter).  It is also possible to specify an initial dictionary for
+  the optimization, with the "InitialDictionary" parameter.  An input model may
+  be specified with the "InputModel" parameter.
   
   As an example, to build a sparse coding model on the dataset data using 200
   atoms and an l1-regularization parameter of 0.1, saving the model into model,
   use 
   
-    param := mlpack.InitializeSparseCoding()
-    param.Training = data
-    param.Atoms = 200
-    param.Lambda1 = 0.1
-    _, _, Model := mlpack.SparseCoding(param)
+      // Initialize optional parameters for SparseCoding().
+      param := mlpack.SparseCodingOptions()
+      param.Training = data
+      param.Atoms = 200
+      param.Lambda1 = 0.1
+      
+      _, _, model := mlpack.SparseCoding(param)
   
   Then, this model could be used to encode a new matrix, otherdata, and save the
   output codes to codes: 
   
-    param := mlpack.InitializeSparseCoding()
-    param.InputModel = &Model
-    param.Test = otherdata
-    Codes, _, _ := mlpack.SparseCoding(param)
+      // Initialize optional parameters for SparseCoding().
+      param := mlpack.SparseCodingOptions()
+      param.InputModel = &model
+      param.Test = otherdata
+      
+      codes, _, _ := mlpack.SparseCoding(param)
 
 
   Input parameters:
@@ -137,10 +141,10 @@ func setSparseCoding(identifier string, ptr *sparseCoding) {
 
   Output parameters:
 
-   - Codes (mat.Dense): Matrix to save the output sparse codes of the test
+   - codes (mat.Dense): Matrix to save the output sparse codes of the test
         matrix (--test_file) to.
-   - Dictionary (mat.Dense): Matrix to save the output dictionary to.
-   - OutputModel (sparseCoding): File to save trained sparse coding model
+   - dictionary (mat.Dense): Matrix to save the output dictionary to.
+   - outputModel (sparseCoding): File to save trained sparse coding model
         to.
 
  */
@@ -240,15 +244,15 @@ func SparseCoding(param *SparseCodingOptionalParam) (*mat.Dense, *mat.Dense, spa
 
   // Initialize result variable and get output.
   var codesPtr mlpackArma
-  Codes := codesPtr.armaToGonumMat("codes")
+  codes := codesPtr.armaToGonumMat("codes")
   var dictionaryPtr mlpackArma
-  Dictionary := dictionaryPtr.armaToGonumMat("dictionary")
-  var OutputModel sparseCoding
-  OutputModel.getSparseCoding("output_model")
+  dictionary := dictionaryPtr.armaToGonumMat("dictionary")
+  var outputModel sparseCoding
+  outputModel.getSparseCoding("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Codes, Dictionary, OutputModel
+  return codes, dictionary, outputModel
 }

@@ -20,7 +20,7 @@ type PcaOptionalParam struct {
     Verbose bool
 }
 
-func InitializePca() *PcaOptionalParam {
+func PcaOptions() *PcaOptionalParam {
   return &PcaOptionalParam{
     DecompositionMethod: "exact",
     NewDimensionality: 0,
@@ -37,29 +37,31 @@ func InitializePca() *PcaOptionalParam {
   dimensionality reduction by ignoring the principal components with the
   smallest eigenvalues.
   
-  Use the "input" parameter to specify the dataset to perform PCA on.  A desired
-  new dimensionality can be specified with the "new_dimensionality" parameter,
-  or the desired variance to retain can be specified with the "var_to_retain"
+  Use the "Input" parameter to specify the dataset to perform PCA on.  A desired
+  new dimensionality can be specified with the "NewDimensionality" parameter, or
+  the desired variance to retain can be specified with the "VarToRetain"
   parameter.  If desired, the dataset can be scaled before running PCA with the
-  "scale" parameter.
+  "Scale" parameter.
   
   Multiple different decomposition techniques can be used.  The method to use
-  can be specified with the "decomposition_method" parameter, and it may take
-  the values 'exact', 'randomized', or 'quic'.
+  can be specified with the "DecompositionMethod" parameter, and it may take the
+  values 'exact', 'randomized', or 'quic'.
   
   For example, to reduce the dimensionality of the matrix data to 5 dimensions
   using randomized SVD for the decomposition, storing the output matrix to
   data_mod, the following command can be used:
   
-    param := mlpack.InitializePca()
-    param.NewDimensionality = 5
-    param.DecompositionMethod = "randomized"
-    DataMod := mlpack.Pca(data, param)
+      // Initialize optional parameters for Pca().
+      param := mlpack.PcaOptions()
+      param.NewDimensionality = 5
+      param.DecompositionMethod = "randomized"
+      
+      data_mod := mlpack.Pca(data, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input dataset to perform PCA on.
+   - input (mat.Dense): Input dataset to perform PCA on.
    - DecompositionMethod (string): Method used for the principal
         components analysis: 'exact', 'randomized', 'randomized-block-krylov',
         'quic'.  Default value 'exact'.
@@ -75,7 +77,7 @@ func InitializePca() *PcaOptionalParam {
 
   Output parameters:
 
-   - Output (mat.Dense): Matrix to save modified dataset to.
+   - output (mat.Dense): Matrix to save modified dataset to.
 
  */
 func Pca(input *mat.Dense, param *PcaOptionalParam) (*mat.Dense) {
@@ -128,11 +130,11 @@ func Pca(input *mat.Dense, param *PcaOptionalParam) (*mat.Dense) {
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output
+  return output
 }

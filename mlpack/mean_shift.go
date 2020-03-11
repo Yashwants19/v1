@@ -21,7 +21,7 @@ type MeanShiftOptionalParam struct {
     Verbose bool
 }
 
-func InitializeMeanShift() *MeanShiftOptionalParam {
+func MeanShiftOptions() *MeanShiftOptionalParam {
   return &MeanShiftOptionalParam{
     ForceConvergence: false,
     InPlace: false,
@@ -37,24 +37,26 @@ func InitializeMeanShift() *MeanShiftOptionalParam {
   learned cluster assignments either as a column of labels in the input dataset
   or separately.
   
-  The input dataset should be specified with the "input" parameter, and the
-  radius used for search can be specified with the "radius" parameter.  The
+  The input dataset should be specified with the "Input" parameter, and the
+  radius used for search can be specified with the "Radius" parameter.  The
   maximum number of iterations before algorithm termination is controlled with
-  the "max_iterations" parameter.
+  the "MaxIterations" parameter.
   
-  The output labels may be saved with the "output" output parameter and the
-  centroids of each cluster may be saved with the "centroid" output parameter.
+  The output labels may be saved with the "Output" output parameter and the
+  centroids of each cluster may be saved with the "Centroid" output parameter.
   
   For example, to run mean shift clustering on the dataset data and store the
   centroids to centroids, the following command may be used: 
   
-    param := mlpack.InitializeMeanShift()
-    Centroids, _ := mlpack.MeanShift(data, )
+      // Initialize optional parameters for MeanShift().
+      param := mlpack.MeanShiftOptions()
+      
+      centroids, _ := mlpack.MeanShift(data, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input dataset to perform clustering on.
+   - input (mat.Dense): Input dataset to perform clustering on.
    - ForceConvergence (bool): If specified, the mean shift algorithm will
         continue running regardless of max_iterations until the clusters
         converge.
@@ -73,9 +75,9 @@ func InitializeMeanShift() *MeanShiftOptionalParam {
 
   Output parameters:
 
-   - Centroid (mat.Dense): If specified, the centroids of each cluster
+   - centroid (mat.Dense): If specified, the centroids of each cluster
         will be written to the given matrix.
-   - Output (mat.Dense): Matrix to write output labels or labeled data
+   - output (mat.Dense): Matrix to write output labels or labeled data
         to.
 
  */
@@ -136,13 +138,13 @@ func MeanShift(input *mat.Dense, param *MeanShiftOptionalParam) (*mat.Dense, *ma
 
   // Initialize result variable and get output.
   var centroidPtr mlpackArma
-  Centroid := centroidPtr.armaToGonumMat("centroid")
+  centroid := centroidPtr.armaToGonumMat("centroid")
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Centroid, Output
+  return centroid, output
 }

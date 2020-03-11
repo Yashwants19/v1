@@ -31,7 +31,7 @@ type NcaOptionalParam struct {
     Wolfe float64
 }
 
-func InitializeNca() *NcaOptionalParam {
+func NcaOptions() *NcaOptionalParam {
   return &NcaOptionalParam{
     ArmijoConstant: 0.0001,
     BatchSize: 50,
@@ -62,8 +62,8 @@ func InitializeNca() *NcaOptionalParam {
   neighbor assignments.
   
   To work, this algorithm needs labeled data.  It can be given as the last row
-  of the input dataset (specified with "input"), or alternatively as a separate
-  matrix (specified with "labels").
+  of the input dataset (specified with "Input"), or alternatively as a separate
+  matrix (specified with "Labels").
   
   This implementation of NCA uses stochastic gradient descent, mini-batch
   stochastic gradient descent, or the L_BFGS optimizer.  These optimizers do not
@@ -72,43 +72,42 @@ func InitializeNca() *NcaOptionalParam {
   random seed or other optimizer parameters.
   
   Stochastic gradient descent, specified by the value 'sgd' for the parameter
-  "optimizer", depends primarily on three parameters: the step size (specified
-  with "step_size"), the batch size (specified with "batch_size"), and the
-  maximum number of iterations (specified with "max_iterations").  In addition,
-  a normalized starting point can be used by specifying the "normalize"
-  parameter, which is necessary if many warnings of the form 'Denominator of p_i
-  is 0!' are given.  Tuning the step size can be a tedious affair.  In general,
-  the step size is too large if the objective is not mostly uniformly
-  decreasing, or if zero-valued denominator warnings are being issued.  The step
-  size is too small if the objective is changing very slowly.  Setting the
-  termination condition can be done easily once a good step size parameter is
-  found; either increase the maximum iterations to a large number and allow SGD
-  to find a minimum, or set the maximum iterations to 0 (allowing infinite
-  iterations) and set the tolerance (specified by "tolerance") to define the
-  maximum allowed difference between objectives for SGD to terminate.  Be
-  careful---setting the tolerance instead of the maximum iterations can take a
-  very long time and may actually never converge due to the properties of the
-  SGD optimizer. Note that a single iteration of SGD refers to a single point,
-  so to take a single pass over the dataset, set the value of the
-  "max_iterations" parameter equal to the number of points in the dataset.
+  "Optimizer", depends primarily on three parameters: the step size (specified
+  with "StepSize"), the batch size (specified with "BatchSize"), and the maximum
+  number of iterations (specified with "MaxIterations").  In addition, a
+  normalized starting point can be used by specifying the "Normalize" parameter,
+  which is necessary if many warnings of the form 'Denominator of p_i is 0!' are
+  given.  Tuning the step size can be a tedious affair.  In general, the step
+  size is too large if the objective is not mostly uniformly decreasing, or if
+  zero-valued denominator warnings are being issued.  The step size is too small
+  if the objective is changing very slowly.  Setting the termination condition
+  can be done easily once a good step size parameter is found; either increase
+  the maximum iterations to a large number and allow SGD to find a minimum, or
+  set the maximum iterations to 0 (allowing infinite iterations) and set the
+  tolerance (specified by "Tolerance") to define the maximum allowed difference
+  between objectives for SGD to terminate.  Be careful---setting the tolerance
+  instead of the maximum iterations can take a very long time and may actually
+  never converge due to the properties of the SGD optimizer. Note that a single
+  iteration of SGD refers to a single point, so to take a single pass over the
+  dataset, set the value of the "MaxIterations" parameter equal to the number of
+  points in the dataset.
   
   The L-BFGS optimizer, specified by the value 'lbfgs' for the parameter
-  "optimizer", uses a back-tracking line search algorithm to minimize a
-  function.  The following parameters are used by L-BFGS: "num_basis" (specifies
-  the number of memory points used by L-BFGS), "max_iterations",
-  "armijo_constant", "wolfe", "tolerance" (the optimization is terminated when
-  the gradient norm is below this value), "max_line_search_trials", "min_step",
-  and "max_step" (which both refer to the line search routine).  For more
-  details on the L-BFGS optimizer, consult either the mlpack L-BFGS
-  documentation (in lbfgs.hpp) or the vast set of published literature on
-  L-BFGS.
+  "Optimizer", uses a back-tracking line search algorithm to minimize a
+  function.  The following parameters are used by L-BFGS: "NumBasis" (specifies
+  the number of memory points used by L-BFGS), "MaxIterations",
+  "ArmijoConstant", "Wolfe", "Tolerance" (the optimization is terminated when
+  the gradient norm is below this value), "MaxLineSearchTrials", "MinStep", and
+  "MaxStep" (which both refer to the line search routine).  For more details on
+  the L-BFGS optimizer, consult either the mlpack L-BFGS documentation (in
+  lbfgs.hpp) or the vast set of published literature on L-BFGS.
   
   By default, the SGD optimizer is used.
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input dataset to run NCA on.
+   - input (mat.Dense): Input dataset to run NCA on.
    - ArmijoConstant (float64): Armijo constant for L-BFGS.  Default value
         0.0001.
    - BatchSize (int): Batch size for mini-batch SGD.  Default value 50.
@@ -143,7 +142,7 @@ func InitializeNca() *NcaOptionalParam {
 
   Output parameters:
 
-   - Output (mat.Dense): Output matrix for learned distance matrix.
+   - output (mat.Dense): Output matrix for learned distance matrix.
 
  */
 func Nca(input *mat.Dense, param *NcaOptionalParam) (*mat.Dense) {
@@ -262,11 +261,11 @@ func Nca(input *mat.Dense, param *NcaOptionalParam) (*mat.Dense) {
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output
+  return output
 }

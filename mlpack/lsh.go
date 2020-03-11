@@ -30,7 +30,7 @@ type LshOptionalParam struct {
     Verbose bool
 }
 
-func InitializeLsh() *LshOptionalParam {
+func LshOptions() *LshOptionalParam {
   return &LshOptionalParam{
     BucketSize: 500,
     HashWidth: 0,
@@ -75,10 +75,12 @@ func setLSHSearch(identifier string, ptr *lshSearch) {
   point in input and store the distances in distances and the neighbors in
   neighbors:
   
-    param := mlpack.InitializeLsh()
-    param.K = 5
-    param.Reference = input
-    Distances, Neighbors, _ := mlpack.Lsh(param)
+      // Initialize optional parameters for Lsh().
+      param := mlpack.LshOptions()
+      param.K = 5
+      param.Reference = input
+      
+      distances, neighbors, _ := mlpack.Lsh(param)
   
   The output is organized such that row i and column j in the neighbors output
   corresponds to the index of the point in the reference set which is the j'th
@@ -87,7 +89,7 @@ func setLSHSearch(identifier string, ptr *lshSearch) {
   those two points.
   
   Because this is approximate-nearest-neighbors search, results may be different
-  from run to run.  Thus, the "seed" parameter can be specified to set the
+  from run to run.  Thus, the "Seed" parameter can be specified to set the
   random seed.
   
   This program also has many other parameters to control its functionality; see
@@ -122,9 +124,9 @@ func setLSHSearch(identifier string, ptr *lshSearch) {
 
   Output parameters:
 
-   - Distances (mat.Dense): Matrix to output distances into.
-   - Neighbors (mat.Dense): Matrix to output neighbors into.
-   - OutputModel (lshSearch): Output for trained LSH model.
+   - distances (mat.Dense): Matrix to output distances into.
+   - neighbors (mat.Dense): Matrix to output neighbors into.
+   - outputModel (lshSearch): Output for trained LSH model.
 
  */
 func Lsh(param *LshOptionalParam) (*mat.Dense, *mat.Dense, lshSearch) {
@@ -223,15 +225,15 @@ func Lsh(param *LshOptionalParam) (*mat.Dense, *mat.Dense, lshSearch) {
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  Distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat("distances")
   var neighborsPtr mlpackArma
-  Neighbors := neighborsPtr.armaToGonumUmat("neighbors")
-  var OutputModel lshSearch
-  OutputModel.getLSHSearch("output_model")
+  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  var outputModel lshSearch
+  outputModel.getLSHSearch("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Distances, Neighbors, OutputModel
+  return distances, neighbors, outputModel
 }

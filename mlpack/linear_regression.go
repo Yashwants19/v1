@@ -23,7 +23,7 @@ type LinearRegressionOptionalParam struct {
     Verbose bool
 }
 
-func InitializeLinearRegression() *LinearRegressionOptionalParam {
+func LinearRegressionOptions() *LinearRegressionOptionalParam {
   return &LinearRegressionOptionalParam{
     InputModel: nil,
     Lambda: 0,
@@ -57,38 +57,42 @@ func setLinearRegression(identifier string, ptr *linearRegression) {
   
     y = X * b + e
   
-  where X (specified by "training") and y (specified either as the last column
-  of the input matrix "training" or via the "training_responses" parameter) are
+  where X (specified by "Training") and y (specified either as the last column
+  of the input matrix "Training" or via the "TrainingResponses" parameter) are
   known and b is the desired variable.  If the covariance matrix (X'X) is not
   invertible, or if the solution is overdetermined, then specify a Tikhonov
-  regularization constant (with "lambda") greater than 0, which will regularize
+  regularization constant (with "Lambda") greater than 0, which will regularize
   the covariance matrix to make it invertible.  The calculated b may be saved
-  with the "output_predictions" output parameter.
+  with the "OutputPredictions" output parameter.
   
   Optionally, the calculated value of b is used to predict the responses for
-  another matrix X' (specified by the "test" parameter):
+  another matrix X' (specified by the "Test" parameter):
   
      y' = X' * b
   
-  and the predicted responses y' may be saved with the "output_predictions"
+  and the predicted responses y' may be saved with the "OutputPredictions"
   output parameter.  This type of regression is related to least-angle
   regression, which mlpack implements as the 'lars' program.
   
   For example, to run a linear regression on the dataset X with responses y,
   saving the trained model to lr_model, the following command could be used:
   
-    param := mlpack.InitializeLinearRegression()
-    param.Training = X
-    param.TrainingResponses = y
-    LrModel, _ := mlpack.LinearRegression(param)
+      // Initialize optional parameters for LinearRegression().
+      param := mlpack.LinearRegressionOptions()
+      param.Training = X
+      param.TrainingResponses = y
+      
+      lr_model, _ := mlpack.LinearRegression(param)
   
   Then, to use lr_model to predict responses for a test set X_test, saving the
   predictions to X_test_responses, the following command could be used:
   
-    param := mlpack.InitializeLinearRegression()
-    param.InputModel = &LrModel
-    param.Test = X_test
-    _, XTestResponses := mlpack.LinearRegression(param)
+      // Initialize optional parameters for LinearRegression().
+      param := mlpack.LinearRegressionOptions()
+      param.InputModel = &lr_model
+      param.Test = X_test
+      
+      _, X_test_responses := mlpack.LinearRegression(param)
 
 
   Input parameters:
@@ -107,8 +111,8 @@ func setLinearRegression(identifier string, ptr *linearRegression) {
 
   Output parameters:
 
-   - OutputModel (linearRegression): Output LinearRegression model.
-   - OutputPredictions (mat.Dense): If --test_file is specified, this
+   - outputModel (linearRegression): Output LinearRegression model.
+   - outputPredictions (mat.Dense): If --test_file is specified, this
         matrix is where the predicted responses will be saved.
 
  */
@@ -164,14 +168,14 @@ func LinearRegression(param *LinearRegressionOptionalParam) (linearRegression, *
   C.mlpackLinearRegression()
 
   // Initialize result variable and get output.
-  var OutputModel linearRegression
-  OutputModel.getLinearRegression("output_model")
+  var outputModel linearRegression
+  outputModel.getLinearRegression("output_model")
   var outputPredictionsPtr mlpackArma
-  OutputPredictions := outputPredictionsPtr.armaToGonumRow("output_predictions")
+  outputPredictions := outputPredictionsPtr.armaToGonumRow("output_predictions")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, OutputPredictions
+  return outputModel, outputPredictions
 }

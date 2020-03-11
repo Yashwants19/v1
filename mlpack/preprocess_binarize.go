@@ -18,7 +18,7 @@ type PreprocessBinarizeOptionalParam struct {
     Verbose bool
 }
 
-func InitializePreprocessBinarize() *PreprocessBinarizeOptionalParam {
+func PreprocessBinarizeOptions() *PreprocessBinarizeOptionalParam {
   return &PreprocessBinarizeOptionalParam{
     Dimension: 0,
     Threshold: 0,
@@ -30,32 +30,36 @@ func InitializePreprocessBinarize() *PreprocessBinarizeOptionalParam {
   This utility takes a dataset and binarizes the variables into either 0 or 1
   given threshold. User can apply binarization on a dimension or the whole
   dataset.  The dimension to apply binarization to can be specified using the
-  "dimension" parameter; if left unspecified, every dimension will be binarized.
-   The threshold for binarization can also be specified with the "threshold"
+  "Dimension" parameter; if left unspecified, every dimension will be binarized.
+   The threshold for binarization can also be specified with the "Threshold"
   parameter; the default threshold is 0.0.
   
-  The binarized matrix may be saved with the "output" output parameter.
+  The binarized matrix may be saved with the "Output" output parameter.
   
   For example, if we want to set all variables greater than 5 in the dataset X
   to 1 and variables less than or equal to 5.0 to 0, and save the result to Y,
   we could run
   
-    param := mlpack.InitializePreprocessBinarize()
-    param.Threshold = 5
-    Y := mlpack.PreprocessBinarize(X, param)
+      // Initialize optional parameters for PreprocessBinarize().
+      param := mlpack.PreprocessBinarizeOptions()
+      param.Threshold = 5
+      
+      Y := mlpack.PreprocessBinarize(X, param)
   
   But if we want to apply this to only the first (0th) dimension of X,  we could
   instead run
   
-    param := mlpack.InitializePreprocessBinarize()
-    param.Threshold = 5
-    param.Dimension = 0
-    Y := mlpack.PreprocessBinarize(X, param)
+      // Initialize optional parameters for PreprocessBinarize().
+      param := mlpack.PreprocessBinarizeOptions()
+      param.Threshold = 5
+      param.Dimension = 0
+      
+      Y := mlpack.PreprocessBinarize(X, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input data matrix.
+   - input (mat.Dense): Input data matrix.
    - Dimension (int): Dimension to apply the binarization. If not set, the
         program will binarize every dimension by default.  Default value 0.
    - Threshold (float64): Threshold to be applied for binarization. If not
@@ -65,7 +69,7 @@ func InitializePreprocessBinarize() *PreprocessBinarizeOptionalParam {
 
   Output parameters:
 
-   - Output (mat.Dense): Matrix in which to save the output.
+   - output (mat.Dense): Matrix in which to save the output.
 
  */
 func PreprocessBinarize(input *mat.Dense, param *PreprocessBinarizeOptionalParam) (*mat.Dense) {
@@ -106,11 +110,11 @@ func PreprocessBinarize(input *mat.Dense, param *PreprocessBinarizeOptionalParam
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output
+  return output
 }

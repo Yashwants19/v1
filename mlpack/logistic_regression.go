@@ -29,7 +29,7 @@ type LogisticRegressionOptionalParam struct {
     Verbose bool
 }
 
-func InitializeLogisticRegression() *LogisticRegressionOptionalParam {
+func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
   return &LogisticRegressionOptionalParam{
     BatchSize: 64,
     DecisionBoundary: 0.5,
@@ -72,46 +72,46 @@ func setLogisticRegression(identifier string, ptr *logisticRegression) {
   
   where y takes values 0 or 1.
   
-  This program allows loading a logistic regression model (via the "input_model"
+  This program allows loading a logistic regression model (via the "InputModel"
   parameter) or training a logistic regression model given training data
-  (specified with the "training" parameter), or both those things at once.  In
+  (specified with the "Training" parameter), or both those things at once.  In
   addition, this program allows classification on a test dataset (specified with
-  the "test" parameter) and the classification results may be saved with the
-  "predictions" output parameter. The trained logistic regression model may be
-  saved using the "output_model" output parameter.
+  the "Test" parameter) and the classification results may be saved with the
+  "Predictions" output parameter. The trained logistic regression model may be
+  saved using the "OutputModel" output parameter.
   
   The training data, if specified, may have class labels as its last dimension. 
-  Alternately, the "labels" parameter may be used to specify a separate matrix
+  Alternately, the "Labels" parameter may be used to specify a separate matrix
   of labels.
   
   When a model is being trained, there are many options.  L2 regularization (to
-  prevent overfitting) can be specified with the "lambda" option, and the
-  optimizer used to train the model can be specified with the "optimizer"
+  prevent overfitting) can be specified with the "Lambda" option, and the
+  optimizer used to train the model can be specified with the "Optimizer"
   parameter.  Available options are 'sgd' (stochastic gradient descent) and
   'lbfgs' (the L-BFGS optimizer).  There are also various parameters for the
-  optimizer; the "max_iterations" parameter specifies the maximum number of
-  allowed iterations, and the "tolerance" parameter specifies the tolerance for
-  convergence.  For the SGD optimizer, the "step_size" parameter controls the
+  optimizer; the "MaxIterations" parameter specifies the maximum number of
+  allowed iterations, and the "Tolerance" parameter specifies the tolerance for
+  convergence.  For the SGD optimizer, the "StepSize" parameter controls the
   step size taken at each iteration by the optimizer.  The batch size for SGD is
-  controlled with the "batch_size" parameter. If the objective function for your
+  controlled with the "BatchSize" parameter. If the objective function for your
   data is oscillating between Inf and 0, the step size is probably too large. 
   There are more parameters for the optimizers, but the C++ interface must be
   used to access these.
   
   For SGD, an iteration refers to a single point. So to take a single pass over
-  the dataset with SGD, "max_iterations" should be set to the number of points
-  in the dataset.
+  the dataset with SGD, "MaxIterations" should be set to the number of points in
+  the dataset.
   
   Optionally, the model can be used to predict the responses for another matrix
-  of data points, if "test" is specified.  The "test" parameter can be specified
-  without the "training" parameter, so long as an existing logistic regression
-  model is given with the "input_model" parameter.  The output predictions from
-  the logistic regression model may be saved with the "predictions" parameter.
+  of data points, if "Test" is specified.  The "Test" parameter can be specified
+  without the "Training" parameter, so long as an existing logistic regression
+  model is given with the "InputModel" parameter.  The output predictions from
+  the logistic regression model may be saved with the "Predictions" parameter.
   
   Note : The following parameters are deprecated and will be removed in mlpack
-  4: "output", "output_probabilities"
-  Use "predictions" instead of "output"
-  Use "probabilities" instead of "output_probabilities"
+  4: "Output", "OutputProbabilities"
+  Use "Predictions" instead of "Output"
+  Use "Probabilities" instead of "OutputProbabilities"
   
   This implementation of logistic regression does not support the general
   multi-class case but instead only the two-class case.  Any labels must be
@@ -121,19 +121,23 @@ func setLogisticRegression(identifier string, ptr *logisticRegression) {
   labels 'labels' with L2 regularization of 0.1, saving the model to 'lr_model',
   the following command may be used:
   
-    param := mlpack.InitializeLogisticRegression()
-    param.Training = data
-    param.Labels = labels
-    param.Lambda = 0.1
-    _, LrModel, _, _, _ := mlpack.LogisticRegression(param)
+      // Initialize optional parameters for LogisticRegression().
+      param := mlpack.LogisticRegressionOptions()
+      param.Training = data
+      param.Labels = labels
+      param.Lambda = 0.1
+      
+      _, lr_model, _, _, _ := mlpack.LogisticRegression(param)
   
   Then, to use that model to predict classes for the dataset 'test', storing the
   output predictions in 'predictions', the following command may be used: 
   
-    param := mlpack.InitializeLogisticRegression()
-    param.InputModel = &LrModel
-    param.Test = test
-    Predictions, _, _, _, _ := mlpack.LogisticRegression(param)
+      // Initialize optional parameters for LogisticRegression().
+      param := mlpack.LogisticRegressionOptions()
+      param.InputModel = &lr_model
+      param.Test = test
+      
+      predictions, _, _, _, _ := mlpack.LogisticRegression(param)
 
 
   Input parameters:
@@ -163,15 +167,15 @@ func setLogisticRegression(identifier string, ptr *logisticRegression) {
 
   Output parameters:
 
-   - Output (mat.Dense): If test data is specified, this matrix is where
+   - output (mat.Dense): If test data is specified, this matrix is where
         the predictions for the test set will be saved.
-   - OutputModel (logisticRegression): Output for trained logistic
+   - outputModel (logisticRegression): Output for trained logistic
         regression model.
-   - OutputProbabilities (mat.Dense): If test data is specified, this
+   - outputProbabilities (mat.Dense): If test data is specified, this
         matrix is where the class probabilities for the test set will be saved.
-   - Predictions (mat.Dense): If test data is specified, this matrix is
+   - predictions (mat.Dense): If test data is specified, this matrix is
         where the predictions for the test set will be saved.
-   - Probabilities (mat.Dense): If test data is specified, this matrix is
+   - probabilities (mat.Dense): If test data is specified, this matrix is
         where the class probabilities for the test set will be saved.
 
  */
@@ -267,19 +271,19 @@ func LogisticRegression(param *LogisticRegressionOptionalParam) (*mat.Dense, log
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumUrow("output")
-  var OutputModel logisticRegression
-  OutputModel.getLogisticRegression("output_model")
+  output := outputPtr.armaToGonumUrow("output")
+  var outputModel logisticRegression
+  outputModel.getLogisticRegression("output_model")
   var outputProbabilitiesPtr mlpackArma
-  OutputProbabilities := outputProbabilitiesPtr.armaToGonumMat("output_probabilities")
+  outputProbabilities := outputProbabilitiesPtr.armaToGonumMat("output_probabilities")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
   var probabilitiesPtr mlpackArma
-  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
+  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output, OutputModel, OutputProbabilities, Predictions, Probabilities
+  return output, outputModel, outputProbabilities, predictions, probabilities
 }

@@ -23,7 +23,7 @@ type PerceptronOptionalParam struct {
     Verbose bool
 }
 
-func InitializePerceptron() *PerceptronOptionalParam {
+func PerceptronOptions() *PerceptronOptionalParam {
   return &PerceptronOptionalParam{
     InputModel: nil,
     Labels: nil,
@@ -56,25 +56,25 @@ func setPerceptronModel(identifier string, ptr *perceptronModel) {
   The perceptron makes its predictions based on a linear predictor function
   combining a set of weights with the feature vector.  The perceptron learning
   rule is able to converge, given enough iterations (specified using the
-  "max_iterations" parameter), if the data supplied is linearly separable.  The
+  "MaxIterations" parameter), if the data supplied is linearly separable.  The
   perceptron is parameterized by a matrix of weight vectors that denote the
   numerical weights of the neural network.
   
-  This program allows loading a perceptron from a model (via the "input_model"
-  parameter) or training a perceptron given training data (via the "training"
+  This program allows loading a perceptron from a model (via the "InputModel"
+  parameter) or training a perceptron given training data (via the "Training"
   parameter), or both those things at once.  In addition, this program allows
-  classification on a test dataset (via the "test" parameter) and the
-  classification results on the test set may be saved with the "predictions"
-  output parameter.  The perceptron model may be saved with the "output_model"
+  classification on a test dataset (via the "Test" parameter) and the
+  classification results on the test set may be saved with the "Predictions"
+  output parameter.  The perceptron model may be saved with the "OutputModel"
   output parameter.
   
   Note: the following parameter is deprecated and will be removed in mlpack
-  4.0.0: "output".
-  Use "predictions" instead of "output".
+  4.0.0: "Output".
+  Use "Predictions" instead of "Output".
   
-  The training data given with the "training" option may have class labels as
+  The training data given with the "Training" option may have class labels as
   its last dimension (so, if the training data is in CSV format, labels should
-  be the last column).  Alternately, the "labels" parameter may be used to
+  be the last column).  Alternately, the "Labels" parameter may be used to
   specify a separate matrix of labels.
   
   All these options make it easy to train a perceptron, and then re-use that
@@ -82,23 +82,27 @@ func setPerceptronModel(identifier string, ptr *perceptronModel) {
   on training_data with labels training_labels, and saves the model to
   perceptron_model.
   
-    param := mlpack.InitializePerceptron()
-    param.Training = training_data
-    param.Labels = training_labels
-    _, PerceptronModel, _ := mlpack.Perceptron(param)
+      // Initialize optional parameters for Perceptron().
+      param := mlpack.PerceptronOptions()
+      param.Training = training_data
+      param.Labels = training_labels
+      
+      _, perceptron_model, _ := mlpack.Perceptron(param)
   
   Then, this model can be re-used for classification on the test data test_data.
    The example below does precisely that, saving the predicted classes to
   predictions.
   
-    param := mlpack.InitializePerceptron()
-    param.InputModel = &PerceptronModel
-    param.Test = test_data
-    _, _, Predictions := mlpack.Perceptron(param)
+      // Initialize optional parameters for Perceptron().
+      param := mlpack.PerceptronOptions()
+      param.InputModel = &perceptron_model
+      param.Test = test_data
+      
+      _, _, predictions := mlpack.Perceptron(param)
   
   Note that all of the options may be specified at once: predictions may be
   calculated right after training a model, and model training can occur even if
-  an existing perceptron model is passed with the "input_model" parameter. 
+  an existing perceptron model is passed with the "InputModel" parameter. 
   However, note that the number of classes and the dimensionality of all data
   must match.  So you cannot pass a perceptron model trained on 2 classes and
   then re-train with a 4-class dataset.  Similarly, attempting classification on
@@ -119,10 +123,10 @@ func setPerceptronModel(identifier string, ptr *perceptronModel) {
 
   Output parameters:
 
-   - Output (mat.Dense): The matrix in which the predicted labels for the
+   - output (mat.Dense): The matrix in which the predicted labels for the
         test set will be written.
-   - OutputModel (perceptronModel): Output for trained perceptron model.
-   - Predictions (mat.Dense): The matrix in which the predicted labels for
+   - outputModel (perceptronModel): Output for trained perceptron model.
+   - predictions (mat.Dense): The matrix in which the predicted labels for
         the test set will be written.
 
  */
@@ -180,15 +184,15 @@ func Perceptron(param *PerceptronOptionalParam) (*mat.Dense, perceptronModel, *m
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumUrow("output")
-  var OutputModel perceptronModel
-  OutputModel.getPerceptronModel("output_model")
+  output := outputPtr.armaToGonumUrow("output")
+  var outputModel perceptronModel
+  outputModel.getPerceptronModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output, OutputModel, Predictions
+  return output, outputModel, predictions
 }

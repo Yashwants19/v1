@@ -30,7 +30,7 @@ type FastmksOptionalParam struct {
     Verbose bool
 }
 
-func InitializeFastmks() *FastmksOptionalParam {
+func FastmksOptions() *FastmksOptionalParam {
   return &FastmksOptionalParam{
     Bandwidth: 1,
     Base: 2,
@@ -70,7 +70,7 @@ func setFastMKSModel(identifier string, ptr *fastmksModel) {
   set and a reference set (which can optionally be the same set). More
   specifically, for each point in the query set, the k points in the reference
   set with maximum kernel evaluations are found.  The kernel function used is
-  specified with the "kernel" parameter.
+  specified with the "Kernel" parameter.
   
   For example, the following command will calculate, for each point in the query
   set query, the five points in the reference set reference with maximum kernel
@@ -78,12 +78,14 @@ func setFastMKSModel(identifier string, ptr *fastmksModel) {
   the  kernels output parameter and the indices may be saved with the indices
   output parameter.
   
-    param := mlpack.InitializeFastmks()
-    param.K = 5
-    param.Reference = reference
-    param.Query = query
-    param.Kernel = "linear"
-    Indices, Kernels, _ := mlpack.Fastmks(param)
+      // Initialize optional parameters for Fastmks().
+      param := mlpack.FastmksOptions()
+      param.K = 5
+      param.Reference = reference
+      param.Query = query
+      param.Kernel = "linear"
+      
+      indices, kernels, _ := mlpack.Fastmks(param)
   
   The output matrices are organized such that row i and column j in the indices
   matrix corresponds to the index of the point in the reference set that has
@@ -92,7 +94,7 @@ func setFastMKSModel(identifier string, ptr *fastmksModel) {
   between those two points.
   
   This program performs FastMKS using a cover tree.  The base used to build the
-  cover tree can be specified with the "base" parameter.
+  cover tree can be specified with the "Base" parameter.
 
 
   Input parameters:
@@ -121,9 +123,9 @@ func setFastMKSModel(identifier string, ptr *fastmksModel) {
 
   Output parameters:
 
-   - Indices (mat.Dense): Output matrix of indices.
-   - Kernels (mat.Dense): Output matrix of kernels.
-   - OutputModel (fastmksModel): Output for FastMKS model.
+   - indices (mat.Dense): Output matrix of indices.
+   - kernels (mat.Dense): Output matrix of kernels.
+   - outputModel (fastmksModel): Output for FastMKS model.
 
  */
 func Fastmks(param *FastmksOptionalParam) (*mat.Dense, *mat.Dense, fastmksModel) {
@@ -222,15 +224,15 @@ func Fastmks(param *FastmksOptionalParam) (*mat.Dense, *mat.Dense, fastmksModel)
 
   // Initialize result variable and get output.
   var indicesPtr mlpackArma
-  Indices := indicesPtr.armaToGonumUmat("indices")
+  indices := indicesPtr.armaToGonumUmat("indices")
   var kernelsPtr mlpackArma
-  Kernels := kernelsPtr.armaToGonumMat("kernels")
-  var OutputModel fastmksModel
-  OutputModel.getFastMKSModel("output_model")
+  kernels := kernelsPtr.armaToGonumMat("kernels")
+  var outputModel fastmksModel
+  outputModel.getFastMKSModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Indices, Kernels, OutputModel
+  return indices, kernels, outputModel
 }

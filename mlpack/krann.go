@@ -33,7 +33,7 @@ type KrannOptionalParam struct {
     Verbose bool
 }
 
-func InitializeKrann() *KrannOptionalParam {
+func KrannOptions() *KrannOptionalParam {
   return &KrannOptionalParam{
     Alpha: 0.95,
     FirstLeafExact: false,
@@ -82,11 +82,13 @@ func setRANNModel(identifier string, ptr *rannModel) {
   data (with probability 0.95) for each point in input and store the distances
   in distances and the neighbors in neighbors.csv:
   
-    param := mlpack.InitializeKrann()
-    param.Reference = input
-    param.K = 5
-    param.Tau = 0.1
-    Distances, Neighbors, _ := mlpack.Krann(param)
+      // Initialize optional parameters for Krann().
+      param := mlpack.KrannOptions()
+      param.Reference = input
+      param.K = 5
+      param.Tau = 0.1
+      
+      distances, neighbors, _ := mlpack.Krann(param)
   
   Note that tau must be set such that the number of points in the corresponding
   percentile of the data is greater than k.  Thus, if we choose tau = 0.1 with a
@@ -134,9 +136,9 @@ func setRANNModel(identifier string, ptr *rannModel) {
 
   Output parameters:
 
-   - Distances (mat.Dense): Matrix to output distances into.
-   - Neighbors (mat.Dense): Matrix to output neighbors into.
-   - OutputModel (rannModel): If specified, the kNN model will be output
+   - distances (mat.Dense): Matrix to output distances into.
+   - neighbors (mat.Dense): Matrix to output neighbors into.
+   - outputModel (rannModel): If specified, the kNN model will be output
         here.
 
  */
@@ -254,15 +256,15 @@ func Krann(param *KrannOptionalParam) (*mat.Dense, *mat.Dense, rannModel) {
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  Distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat("distances")
   var neighborsPtr mlpackArma
-  Neighbors := neighborsPtr.armaToGonumUmat("neighbors")
-  var OutputModel rannModel
-  OutputModel.getRANNModel("output_model")
+  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  var outputModel rannModel
+  outputModel.getRANNModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Distances, Neighbors, OutputModel
+  return distances, neighbors, outputModel
 }

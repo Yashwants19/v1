@@ -29,7 +29,7 @@ type RangeSearchOptionalParam struct {
     Verbose bool
 }
 
-func InitializeRangeSearch() *RangeSearchOptionalParam {
+func RangeSearchOptions() *RangeSearchOptionalParam {
   return &RangeSearchOptionalParam{
     InputModel: nil,
     LeafSize: 20,
@@ -120,11 +120,11 @@ func setRSModel(identifier string, ptr *rsModel) {
 
   Output parameters:
 
-   - DistancesFile (string): File to output distances into.  Default value
+   - distancesFile (string): File to output distances into.  Default value
         ''.
-   - NeighborsFile (string): File to output neighbors into.  Default value
+   - neighborsFile (string): File to output neighbors into.  Default value
         ''.
-   - OutputModel (rsModel): If specified, the range search model will be
+   - outputModel (rsModel): If specified, the range search model will be
         saved to the given file.
 
  */
@@ -217,14 +217,14 @@ func RangeSearch(param *RangeSearchOptionalParam) (string, string, rsModel) {
   C.mlpackRangeSearch()
 
   // Initialize result variable and get output.
-  DistancesFile := getParamString("distances_file")
-  NeighborsFile := getParamString("neighbors_file")
-  var OutputModel rsModel
-  OutputModel.getRSModel("output_model")
+  distancesFile := getParamString("distances_file")
+  neighborsFile := getParamString("neighbors_file")
+  var outputModel rsModel
+  outputModel.getRSModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return DistancesFile, NeighborsFile, OutputModel
+  return distancesFile, neighborsFile, outputModel
 }

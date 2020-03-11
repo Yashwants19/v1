@@ -28,7 +28,7 @@ type LocalCoordinateCodingOptionalParam struct {
     Verbose bool
 }
 
-func InitializeLocalCoordinateCoding() *LocalCoordinateCodingOptionalParam {
+func LocalCoordinateCodingOptions() *LocalCoordinateCodingOptionalParam {
   return &LocalCoordinateCodingOptionalParam{
     Atoms: 0,
     InitialDictionary: nil,
@@ -80,31 +80,35 @@ func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
   
   To run this program, the input matrix X must be specified (with -i), along
   with the number of atoms in the dictionary (-k).  An initial dictionary may
-  also be specified with the "initial_dictionary" parameter.  The l1-norm
-  regularization parameter is specified with the "lambda" parameter.  For
+  also be specified with the "InitialDictionary" parameter.  The l1-norm
+  regularization parameter is specified with the "Lambda" parameter.  For
   example, to run LCC on the dataset data using 200 atoms and an
-  l1-regularization parameter of 0.1, saving the dictionary "dictionary" and the
-  codes into "codes", use
+  l1-regularization parameter of 0.1, saving the dictionary "Dictionary" and the
+  codes into "Codes", use
   
-    param := mlpack.InitializeLocalCoordinateCoding()
-    param.Training = data
-    param.Atoms = 200
-    param.Lambda = 0.1
-    Codes, Dict, _ := mlpack.LocalCoordinateCoding(param)
+      // Initialize optional parameters for LocalCoordinateCoding().
+      param := mlpack.LocalCoordinateCodingOptions()
+      param.Training = data
+      param.Atoms = 200
+      param.Lambda = 0.1
+      
+      codes, dict, _ := mlpack.LocalCoordinateCoding(param)
   
-  The maximum number of iterations may be specified with the "max_iterations"
+  The maximum number of iterations may be specified with the "MaxIterations"
   parameter. Optionally, the input data matrix X can be normalized before coding
-  with the "normalize" parameter.
+  with the "Normalize" parameter.
   
-  An LCC model may be saved using the "output_model" output parameter.  Then, to
+  An LCC model may be saved using the "OutputModel" output parameter.  Then, to
   encode new points from the dataset points with the previously saved model
   lcc_model, saving the new codes to new_codes, the following command can be
   used:
   
-    param := mlpack.InitializeLocalCoordinateCoding()
-    param.InputModel = &LccModel
-    param.Test = points
-    NewCodes, _, _ := mlpack.LocalCoordinateCoding(param)
+      // Initialize optional parameters for LocalCoordinateCoding().
+      param := mlpack.LocalCoordinateCodingOptions()
+      param.InputModel = &lcc_model
+      param.Test = points
+      
+      new_codes, _, _ := mlpack.LocalCoordinateCoding(param)
 
 
   Input parameters:
@@ -129,9 +133,9 @@ func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
 
   Output parameters:
 
-   - Codes (mat.Dense): Output codes matrix.
-   - Dictionary (mat.Dense): Output dictionary matrix.
-   - OutputModel (localCoordinateCoding): Output for trained LCC model.
+   - codes (mat.Dense): Output codes matrix.
+   - dictionary (mat.Dense): Output dictionary matrix.
+   - outputModel (localCoordinateCoding): Output for trained LCC model.
 
  */
 func LocalCoordinateCoding(param *LocalCoordinateCodingOptionalParam) (*mat.Dense, *mat.Dense, localCoordinateCoding) {
@@ -218,15 +222,15 @@ func LocalCoordinateCoding(param *LocalCoordinateCodingOptionalParam) (*mat.Dens
 
   // Initialize result variable and get output.
   var codesPtr mlpackArma
-  Codes := codesPtr.armaToGonumMat("codes")
+  codes := codesPtr.armaToGonumMat("codes")
   var dictionaryPtr mlpackArma
-  Dictionary := dictionaryPtr.armaToGonumMat("dictionary")
-  var OutputModel localCoordinateCoding
-  OutputModel.getLocalCoordinateCoding("output_model")
+  dictionary := dictionaryPtr.armaToGonumMat("dictionary")
+  var outputModel localCoordinateCoding
+  outputModel.getLocalCoordinateCoding("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Codes, Dictionary, OutputModel
+  return codes, dictionary, outputModel
 }

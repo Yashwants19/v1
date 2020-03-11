@@ -25,7 +25,7 @@ type PreprocessScaleOptionalParam struct {
     Verbose bool
 }
 
-func InitializePreprocessScale() *PreprocessScaleOptionalParam {
+func PreprocessScaleOptions() *PreprocessScaleOptionalParam {
   return &PreprocessScaleOptionalParam{
     Epsilon: 1e-06,
     InputModel: nil,
@@ -59,54 +59,62 @@ func setScalingModel(identifier string, ptr *scalingModel) {
   This utility takes a dataset and performs feature scaling using one of the six
   scaler methods namely: 'max_abs_scaler', 'mean_normalization',
   'min_max_scaler' ,'standard_scaler', 'pca_whitening' and 'zca_whitening'. The
-  function takes a matrix as "input" and a scaling method type which you can
-  specify using "scaler_method" parameter; the default is standard scaler, and
+  function takes a matrix as "Input" and a scaling method type which you can
+  specify using "ScalerMethod" parameter; the default is standard scaler, and
   outputs a matrix with scaled feature.
   
-  The output scaled feature matrix may be saved with the "output" output
+  The output scaled feature matrix may be saved with the "Output" output
   parameters.
   
-  The model to scale features can be saved using "output_model" and later can be
-  loaded back using"input_model".
+  The model to scale features can be saved using "OutputModel" and later can be
+  loaded back using"InputModel".
   
   So, a simple example where we want to scale the dataset X into X_scaled with 
   standard_scaler as scaler_method, we could run 
   
-    param := mlpack.InitializePreprocessScale()
-    param.ScalerMethod = "standard_scaler"
-    XScaled, _ := mlpack.PreprocessScale(X, param)
+      // Initialize optional parameters for PreprocessScale().
+      param := mlpack.PreprocessScaleOptions()
+      param.ScalerMethod = "standard_scaler"
+      
+      X_scaled, _ := mlpack.PreprocessScale(X, param)
   
   A simple example where we want to whiten the dataset X into X_whitened with 
   PCA as whitening_method and use 0.01 as regularization parameter, we could run
   
   
-    param := mlpack.InitializePreprocessScale()
-    param.ScalerMethod = "pca_whitening"
-    param.Epsilon = 0.01
-    XScaled, _ := mlpack.PreprocessScale(X, param)
+      // Initialize optional parameters for PreprocessScale().
+      param := mlpack.PreprocessScaleOptions()
+      param.ScalerMethod = "pca_whitening"
+      param.Epsilon = 0.01
+      
+      X_scaled, _ := mlpack.PreprocessScale(X, param)
   
-  You can also retransform the scaled dataset back using"inverse_scaling". An
-  example to rescale : X_scaled into Xusing the saved model "input_model" is:
+  You can also retransform the scaled dataset back using"InverseScaling". An
+  example to rescale : X_scaled into Xusing the saved model "InputModel" is:
   
-    param := mlpack.InitializePreprocessScale()
-    param.InverseScaling = true
-    param.InputModel = &Saved
-    X, _ := mlpack.PreprocessScale(X_scaled, param)
+      // Initialize optional parameters for PreprocessScale().
+      param := mlpack.PreprocessScaleOptions()
+      param.InverseScaling = true
+      param.InputModel = &saved
+      
+      X, _ := mlpack.PreprocessScale(X_scaled, param)
   
   Another simple example where we want to scale the dataset X into X_scaled with
    min_max_scaler as scaler method, where scaling range is 1 to 3 instead of
   default 0 to 1. We could run 
   
-    param := mlpack.InitializePreprocessScale()
-    param.ScalerMethod = "min_max_scaler"
-    param.MinValue = 1
-    param.MaxValue = 3
-    XScaled, _ := mlpack.PreprocessScale(X, param)
+      // Initialize optional parameters for PreprocessScale().
+      param := mlpack.PreprocessScaleOptions()
+      param.ScalerMethod = "min_max_scaler"
+      param.MinValue = 1
+      param.MaxValue = 3
+      
+      X_scaled, _ := mlpack.PreprocessScale(X, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Matrix containing data.
+   - input (mat.Dense): Matrix containing data.
    - Epsilon (float64): regularization Parameter for pcawhitening, or
         zcawhitening, should be between -1 to 1.  Default value 1e-06.
    - InputModel (scalingModel): Input Scaling model.
@@ -123,8 +131,8 @@ func setScalingModel(identifier string, ptr *scalingModel) {
 
   Output parameters:
 
-   - Output (mat.Dense): Matrix to save scaled data to.
-   - OutputModel (scalingModel): Output scaling model.
+   - output (mat.Dense): Matrix to save scaled data to.
+   - outputModel (scalingModel): Output scaling model.
 
  */
 func PreprocessScale(input *mat.Dense, param *PreprocessScaleOptionalParam) (*mat.Dense, scalingModel) {
@@ -196,13 +204,13 @@ func PreprocessScale(input *mat.Dense, param *PreprocessScaleOptionalParam) (*ma
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
-  var OutputModel scalingModel
-  OutputModel.getScalingModel("output_model")
+  output := outputPtr.armaToGonumMat("output")
+  var outputModel scalingModel
+  outputModel.getScalingModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output, OutputModel
+  return output, outputModel
 }

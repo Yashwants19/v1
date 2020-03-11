@@ -27,7 +27,7 @@ type SoftmaxRegressionOptionalParam struct {
     Verbose bool
 }
 
-func InitializeSoftmaxRegression() *SoftmaxRegressionOptionalParam {
+func SoftmaxRegressionOptions() *SoftmaxRegressionOptionalParam {
   return &SoftmaxRegressionOptionalParam{
     InputModel: nil,
     Labels: nil,
@@ -66,42 +66,45 @@ func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
   predictions (and optionally their accuracy) for test data.
   
   Training a softmax regression model is done by giving a file of training
-  points with the "training" parameter and their corresponding labels with the
-  "labels" parameter. The number of classes can be manually specified with the
-  "number_of_classes" parameter, and the maximum number of iterations of the
-  L-BFGS optimizer can be specified with the "max_iterations" parameter.  The L2
-  regularization constant can be specified with the "lambda" parameter and if an
-  intercept term is not desired in the model, the "no_intercept" parameter can
-  be specified.
+  points with the "Training" parameter and their corresponding labels with the
+  "Labels" parameter. The number of classes can be manually specified with the
+  "NumberOfClasses" parameter, and the maximum number of iterations of the
+  L-BFGS optimizer can be specified with the "MaxIterations" parameter.  The L2
+  regularization constant can be specified with the "Lambda" parameter and if an
+  intercept term is not desired in the model, the "NoIntercept" parameter can be
+  specified.
   
-  The trained model can be saved with the "output_model" output parameter. If
+  The trained model can be saved with the "OutputModel" output parameter. If
   training is not desired, but only testing is, a model can be loaded with the
-  "input_model" parameter.  At the current time, a loaded model cannot be
-  trained further, so specifying both "input_model" and "training" is not
-  allowed.
+  "InputModel" parameter.  At the current time, a loaded model cannot be trained
+  further, so specifying both "InputModel" and "Training" is not allowed.
   
   The program is also able to evaluate a model on test data.  A test dataset can
-  be specified with the "test" parameter. Class predictions can be saved with
-  the "predictions" output parameter.  If labels are specified for the test data
-  with the "test_labels" parameter, then the program will print the accuracy of
+  be specified with the "Test" parameter. Class predictions can be saved with
+  the "Predictions" output parameter.  If labels are specified for the test data
+  with the "TestLabels" parameter, then the program will print the accuracy of
   the predictions on the given test set and its corresponding labels.
   
   For example, to train a softmax regression model on the data dataset with
   labels labels with a maximum of 1000 iterations for training, saving the
   trained model to sr_model, the following command can be used: 
   
-    param := mlpack.InitializeSoftmaxRegression()
-    param.Training = dataset
-    param.Labels = labels
-    SrModel, _ := mlpack.SoftmaxRegression(param)
+      // Initialize optional parameters for SoftmaxRegression().
+      param := mlpack.SoftmaxRegressionOptions()
+      param.Training = dataset
+      param.Labels = labels
+      
+      sr_model, _ := mlpack.SoftmaxRegression(param)
   
   Then, to use sr_model to classify the test points in test_points, saving the
   output predictions to predictions, the following command can be used:
   
-    param := mlpack.InitializeSoftmaxRegression()
-    param.InputModel = &SrModel
-    param.Test = test_points
-    _, Predictions := mlpack.SoftmaxRegression(param)
+      // Initialize optional parameters for SoftmaxRegression().
+      param := mlpack.SoftmaxRegressionOptions()
+      param.InputModel = &sr_model
+      param.Test = test_points
+      
+      _, predictions := mlpack.SoftmaxRegression(param)
 
 
   Input parameters:
@@ -126,9 +129,9 @@ func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
 
   Output parameters:
 
-   - OutputModel (softmaxRegression): File to save trained softmax
+   - outputModel (softmaxRegression): File to save trained softmax
         regression model to.
-   - Predictions (mat.Dense): Matrix to save predictions for test dataset
+   - predictions (mat.Dense): Matrix to save predictions for test dataset
         into.
 
  */
@@ -208,14 +211,14 @@ func SoftmaxRegression(param *SoftmaxRegressionOptionalParam) (softmaxRegression
   C.mlpackSoftmaxRegression()
 
   // Initialize result variable and get output.
-  var OutputModel softmaxRegression
-  OutputModel.getSoftmaxRegression("output_model")
+  var outputModel softmaxRegression
+  outputModel.getSoftmaxRegression("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, Predictions
+  return outputModel, predictions
 }

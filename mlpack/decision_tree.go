@@ -22,14 +22,14 @@ type DecisionTreeOptionalParam struct {
     MinimumLeafSize int
     PrintTrainingAccuracy bool
     PrintTrainingError bool
-    Test *MatrixWithInfo
+    Test *matrixWithInfo
     TestLabels *mat.Dense
-    Training *MatrixWithInfo
+    Training *matrixWithInfo
     Verbose bool
     Weights *mat.Dense
 }
 
-func InitializeDecisionTree() *DecisionTreeOptionalParam {
+func DecisionTreeOptions() *DecisionTreeOptionalParam {
   return &DecisionTreeOptionalParam{
     InputModel: nil,
     Labels: nil,
@@ -68,48 +68,52 @@ func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
   or categorical features, and associated labels for each point in the dataset,
   this program can train a decision tree on that data.
   
-  The training set and associated labels are specified with the "training" and
-  "labels" parameters, respectively.  The labels should be in the range [0,
-  num_classes - 1]. Optionally, if "labels" is not specified, the labels are
+  The training set and associated labels are specified with the "Training" and
+  "Labels" parameters, respectively.  The labels should be in the range [0,
+  num_classes - 1]. Optionally, if "Labels" is not specified, the labels are
   assumed to be the last dimension of the training dataset.
   
-  When a model is trained, the "output_model" output parameter may be used to
+  When a model is trained, the "OutputModel" output parameter may be used to
   save the trained model.  A model may be loaded for predictions with the
-  "input_model" parameter.  The "input_model" parameter may not be specified
-  when the "training" parameter is specified.  The "minimum_leaf_size" parameter
+  "InputModel" parameter.  The "InputModel" parameter may not be specified when
+  the "Training" parameter is specified.  The "MinimumLeafSize" parameter
   specifies the minimum number of training points that must fall into each leaf
-  for it to be split.  The "minimum_gain_split" parameter specifies the minimum
-  gain that is needed for the node to split.  The "maximum_depth" parameter
-  specifies the maximum depth of the tree.  If "print_training_error" is
+  for it to be split.  The "MinimumGainSplit" parameter specifies the minimum
+  gain that is needed for the node to split.  The "MaximumDepth" parameter
+  specifies the maximum depth of the tree.  If "PrintTrainingError" is
   specified, the training error will be printed.
   
-  Test data may be specified with the "test" parameter, and if performance
+  Test data may be specified with the "Test" parameter, and if performance
   numbers are desired for that test set, labels may be specified with the
-  "test_labels" parameter.  Predictions for each test point may be saved via the
-  "predictions" output parameter.  Class probabilities for each prediction may
-  be saved with the "probabilities" output parameter.
+  "TestLabels" parameter.  Predictions for each test point may be saved via the
+  "Predictions" output parameter.  Class probabilities for each prediction may
+  be saved with the "Probabilities" output parameter.
   
   For example, to train a decision tree with a minimum leaf size of 20 on the
   dataset contained in data with labels labels, saving the output model to tree
   and printing the training error, one could call
   
-    param := mlpack.InitializeDecisionTree()
-    param.Training = data
-    param.Labels = labels
-    param.MinimumLeafSize = 20
-    param.MinimumGainSplit = 0.001
-    param.PrintTrainingAccuracy = true
-    Tree, _, _ := mlpack.DecisionTree(param)
+      // Initialize optional parameters for DecisionTree().
+      param := mlpack.DecisionTreeOptions()
+      param.Training = data
+      param.Labels = labels
+      param.MinimumLeafSize = 20
+      param.MinimumGainSplit = 0.001
+      param.PrintTrainingAccuracy = true
+      
+      tree, _, _ := mlpack.DecisionTree(param)
   
   Then, to use that model to classify points in test_set and print the test
   error given the labels test_labels using that model, while saving the
   predictions for each point to predictions, one could call 
   
-    param := mlpack.InitializeDecisionTree()
-    param.InputModel = &Tree
-    param.Test = test_set
-    param.TestLabels = test_labels
-    _, Predictions, _ := mlpack.DecisionTree(param)
+      // Initialize optional parameters for DecisionTree().
+      param := mlpack.DecisionTreeOptions()
+      param.InputModel = &tree
+      param.Test = test_set
+      param.TestLabels = test_labels
+      
+      _, predictions, _ := mlpack.DecisionTree(param)
 
 
   Input parameters:
@@ -126,19 +130,19 @@ func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
    - PrintTrainingAccuracy (bool): Print the training accuracy.
    - PrintTrainingError (bool): Print the training error (deprecated; will
         be removed in mlpack 4.0.0).
-   - Test (MatrixWithInfo): Testing dataset (may be categorical).
+   - Test (matrixWithInfo): Testing dataset (may be categorical).
    - TestLabels (mat.Dense): Test point labels, if accuracy calculation is
         desired.
-   - Training (MatrixWithInfo): Training dataset (may be categorical).
+   - Training (matrixWithInfo): Training dataset (may be categorical).
    - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
    - Weights (mat.Dense): The weight of labels
 
   Output parameters:
 
-   - OutputModel (decisionTreeModel): Output for trained decision tree.
-   - Predictions (mat.Dense): Class predictions for each test point.
-   - Probabilities (mat.Dense): Class probabilities for each test point.
+   - outputModel (decisionTreeModel): Output for trained decision tree.
+   - predictions (mat.Dense): Class predictions for each test point.
+   - probabilities (mat.Dense): Class probabilities for each test point.
 
  */
 func DecisionTree(param *DecisionTreeOptionalParam) (decisionTreeModel, *mat.Dense, *mat.Dense) {
@@ -230,16 +234,16 @@ func DecisionTree(param *DecisionTreeOptionalParam) (decisionTreeModel, *mat.Den
   C.mlpackDecisionTree()
 
   // Initialize result variable and get output.
-  var OutputModel decisionTreeModel
-  OutputModel.getDecisionTreeModel("output_model")
+  var outputModel decisionTreeModel
+  outputModel.getDecisionTreeModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
   var probabilitiesPtr mlpackArma
-  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
+  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, Predictions, Probabilities
+  return outputModel, predictions, probabilities
 }

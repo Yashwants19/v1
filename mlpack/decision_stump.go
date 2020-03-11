@@ -23,7 +23,7 @@ type DecisionStumpOptionalParam struct {
     Verbose bool
 }
 
-func InitializeDecisionStump() *DecisionStumpOptionalParam {
+func DecisionStumpOptions() *DecisionStumpOptionalParam {
   return &DecisionStumpOptionalParam{
     BucketSize: 6,
     InputModel: nil,
@@ -56,7 +56,7 @@ func setDSModel(identifier string, ptr *dsModel) {
   tree.  The decision stump will split on one dimension of the input data, and
   will split into multiple buckets.  The dimension and bins are selected by
   maximizing the information gain of the split.  Optionally, the minimum number
-  of training points in each bin can be specified with the "bucket_size"
+  of training points in each bin can be specified with the "BucketSize"
   parameter.
   
   The decision stump is parameterized by a splitting dimension and a vector of
@@ -66,22 +66,22 @@ func setDSModel(identifier string, ptr *dsModel) {
   loaded, and then that decision tree may be used to classify a given set of
   test points.  The decision tree may also be saved to a file for later usage.
   
-  To train a decision stump, training data should be passed with the "training"
-  parameter, and their corresponding labels should be passed with the "labels"
-  option.  Optionally, if "labels" is not specified, the labels are assumed to
-  be the last dimension of the training dataset.  The "bucket_size" parameter
+  To train a decision stump, training data should be passed with the "Training"
+  parameter, and their corresponding labels should be passed with the "Labels"
+  option.  Optionally, if "Labels" is not specified, the labels are assumed to
+  be the last dimension of the training dataset.  The "BucketSize" parameter
   controls the minimum number of training points in each decision stump bucket.
   
   For classifying a test set, a decision stump may be loaded with the
-  "input_model" parameter (useful for the situation where a stump has already
-  been trained), and a test set may be specified with the "test" parameter.  The
-  predicted labels can be saved with the "predictions" output parameter.
+  "InputModel" parameter (useful for the situation where a stump has already
+  been trained), and a test set may be specified with the "Test" parameter.  The
+  predicted labels can be saved with the "Predictions" output parameter.
   
   Because decision stumps are trained in batch, retraining does not make sense
-  and thus it is not possible to pass both "training" and "input_model";
-  instead, simply build a new decision stump with the training data.
+  and thus it is not possible to pass both "Training" and "InputModel"; instead,
+  simply build a new decision stump with the training data.
   
-  After training, a decision stump can be saved with the "output_model" output
+  After training, a decision stump can be saved with the "OutputModel" output
   parameter.  That stump may later be re-used in subsequent calls to this
   program (or others).
 
@@ -100,8 +100,8 @@ func setDSModel(identifier string, ptr *dsModel) {
 
   Output parameters:
 
-   - OutputModel (dsModel): Output decision stump model to save.
-   - Predictions (mat.Dense): The output matrix that will hold the
+   - outputModel (dsModel): Output decision stump model to save.
+   - predictions (mat.Dense): The output matrix that will hold the
         predicted labels for the test set.
 
  */
@@ -157,14 +157,14 @@ func DecisionStump(param *DecisionStumpOptionalParam) (dsModel, *mat.Dense) {
   C.mlpackDecisionStump()
 
   // Initialize result variable and get output.
-  var OutputModel dsModel
-  OutputModel.getDSModel("output_model")
+  var outputModel dsModel
+  outputModel.getDSModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, Predictions
+  return outputModel, predictions
 }

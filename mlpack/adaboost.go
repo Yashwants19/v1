@@ -25,7 +25,7 @@ type AdaboostOptionalParam struct {
     WeakLearner string
 }
 
-func InitializeAdaboost() *AdaboostOptionalParam {
+func AdaboostOptions() *AdaboostOptionalParam {
   return &AdaboostOptionalParam{
     InputModel: nil,
     Iterations: 1000,
@@ -69,38 +69,42 @@ func setAdaBoostModel(identifier string, ptr *adaBoostModel) {
   
   This program allows training of an AdaBoost model, and then application of
   that model to a test dataset.  To train a model, a dataset must be passed with
-  the "training" option.  Labels can be given with the "labels" option; if no
+  the "Training" option.  Labels can be given with the "Labels" option; if no
   labels are specified, the labels will be assumed to be the last column of the
   input dataset.  Alternately, an AdaBoost model may be loaded with the
-  "input_model" option.
+  "InputModel" option.
   
   Once a model is trained or loaded, it may be used to provide class predictions
-  for a given test dataset.  A test dataset may be specified with the "test"
+  for a given test dataset.  A test dataset may be specified with the "Test"
   parameter.  The predicted classes for each point in the test dataset are
-  output to the "predictions" output parameter.  The AdaBoost model itself is
-  output to the "output_model" output parameter.
+  output to the "Predictions" output parameter.  The AdaBoost model itself is
+  output to the "OutputModel" output parameter.
   
   Note: the following parameter is deprecated and will be removed in mlpack
-  4.0.0: "output".
-  Use "predictions" instead of "output".
+  4.0.0: "Output".
+  Use "Predictions" instead of "Output".
   
   For example, to run AdaBoost on an input dataset data with perceptrons as the
   weak learner type, storing the trained model in model, one could use the
   following command: 
   
-    param := mlpack.InitializeAdaboost()
-    param.Training = data
-    param.WeakLearner = "perceptron"
-    _, Model, _, _ := mlpack.Adaboost(param)
+      // Initialize optional parameters for Adaboost().
+      param := mlpack.AdaboostOptions()
+      param.Training = data
+      param.WeakLearner = "perceptron"
+      
+      _, model, _, _ := mlpack.Adaboost(param)
   
   Similarly, an already-trained model in model can be used to provide class
   predictions from test data test_data and store the output in predictions with
   the following command: 
   
-    param := mlpack.InitializeAdaboost()
-    param.InputModel = &Model
-    param.Test = test_data
-    _, _, Predictions, _ := mlpack.Adaboost(param)
+      // Initialize optional parameters for Adaboost().
+      param := mlpack.AdaboostOptions()
+      param.InputModel = &model
+      param.Test = test_data
+      
+      _, _, predictions, _ := mlpack.Adaboost(param)
 
 
   Input parameters:
@@ -120,10 +124,10 @@ func setAdaBoostModel(identifier string, ptr *adaBoostModel) {
 
   Output parameters:
 
-   - Output (mat.Dense): Predicted labels for the test set.
-   - OutputModel (adaBoostModel): Output trained AdaBoost model.
-   - Predictions (mat.Dense): Predicted labels for the test set.
-   - Probabilities (mat.Dense): Predicted class probabilities for each
+   - output (mat.Dense): Predicted labels for the test set.
+   - outputModel (adaBoostModel): Output trained AdaBoost model.
+   - predictions (mat.Dense): Predicted labels for the test set.
+   - probabilities (mat.Dense): Predicted class probabilities for each
         point in the test set.
 
  */
@@ -194,17 +198,17 @@ func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Den
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumUrow("output")
-  var OutputModel adaBoostModel
-  OutputModel.getAdaBoostModel("output_model")
+  output := outputPtr.armaToGonumUrow("output")
+  var outputModel adaBoostModel
+  outputModel.getAdaBoostModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
   var probabilitiesPtr mlpackArma
-  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
+  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output, OutputModel, Predictions, Probabilities
+  return output, outputModel, predictions, probabilities
 }

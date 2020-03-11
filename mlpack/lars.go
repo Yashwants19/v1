@@ -25,7 +25,7 @@ type LarsOptionalParam struct {
     Verbose bool
 }
 
-func InitializeLars() *LarsOptionalParam {
+func LarsOptions() *LarsOptionalParam {
   return &LarsOptionalParam{
     Input: nil,
     InputModel: nil,
@@ -79,38 +79,42 @@ func setLARS(identifier string, ptr *lars) {
   regression.
   
   For efficiency reasons, it is not recommended to use this algorithm with
-  "lambda1" = 0.  In that case, use the 'linear_regression' program, which
+  "Lambda1" = 0.  In that case, use the 'linear_regression' program, which
   implements both unregularized linear regression and ridge regression.
   
-  To train a LARS/LASSO/Elastic Net model, the "input" and "responses"
-  parameters must be given.  The "lambda1", "lambda2", and "use_cholesky"
+  To train a LARS/LASSO/Elastic Net model, the "Input" and "Responses"
+  parameters must be given.  The "Lambda1", "Lambda2", and "UseCholesky"
   parameters control the training options.  A trained model can be saved with
-  the "output_model".  If no training is desired at all, a model can be passed
-  via the "input_model" parameter.
+  the "OutputModel".  If no training is desired at all, a model can be passed
+  via the "InputModel" parameter.
   
   The program can also provide predictions for test data using either the
   trained model or the given input model.  Test points can be specified with the
-  "test" parameter.  Predicted responses to the test points can be saved with
-  the "output_predictions" output parameter.
+  "Test" parameter.  Predicted responses to the test points can be saved with
+  the "OutputPredictions" output parameter.
   
   For example, the following command trains a model on the data data and
   responses responses with lambda1 set to 0.4 and lambda2 set to 0 (so, LASSO is
   being solved), and then the model is saved to lasso_model:
   
-    param := mlpack.InitializeLars()
-    param.Input = data
-    param.Responses = responses
-    param.Lambda1 = 0.4
-    param.Lambda2 = 0
-    LassoModel, _ := mlpack.Lars(param)
+      // Initialize optional parameters for Lars().
+      param := mlpack.LarsOptions()
+      param.Input = data
+      param.Responses = responses
+      param.Lambda1 = 0.4
+      param.Lambda2 = 0
+      
+      lasso_model, _ := mlpack.Lars(param)
   
   The following command uses the lasso_model to provide predicted responses for
   the data test and save those responses to test_predictions: 
   
-    param := mlpack.InitializeLars()
-    param.InputModel = &LassoModel
-    param.Test = test
-    _, TestPredictions := mlpack.Lars(param)
+      // Initialize optional parameters for Lars().
+      param := mlpack.LarsOptions()
+      param.InputModel = &lasso_model
+      param.Test = test
+      
+      _, test_predictions := mlpack.Lars(param)
 
 
   Input parameters:
@@ -131,8 +135,8 @@ func setLARS(identifier string, ptr *lars) {
 
   Output parameters:
 
-   - OutputModel (lars): Output LARS model.
-   - OutputPredictions (mat.Dense): If --test_file is specified, this file
+   - outputModel (lars): Output LARS model.
+   - outputPredictions (mat.Dense): If --test_file is specified, this file
         is where the predicted responses will be saved.
 
  */
@@ -200,14 +204,14 @@ func Lars(param *LarsOptionalParam) (lars, *mat.Dense) {
   C.mlpackLars()
 
   // Initialize result variable and get output.
-  var OutputModel lars
-  OutputModel.getLARS("output_model")
+  var outputModel lars
+  outputModel.getLARS("output_model")
   var outputPredictionsPtr mlpackArma
-  OutputPredictions := outputPredictionsPtr.armaToGonumMat("output_predictions")
+  outputPredictions := outputPredictionsPtr.armaToGonumMat("output_predictions")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, OutputPredictions
+  return outputModel, outputPredictions
 }

@@ -22,7 +22,7 @@ type RadicalOptionalParam struct {
     Verbose bool
 }
 
-func InitializeRadical() *RadicalOptionalParam {
+func RadicalOptions() *RadicalOptionalParam {
   return &RadicalOptionalParam{
     Angles: 150,
     NoiseStdDev: 0.175,
@@ -41,22 +41,24 @@ func InitializeRadical() *RadicalOptionalParam {
   components.  If the algorithm is running particularly slowly, try reducing the
   number of replicates.
   
-  The input matrix to perform ICA on should be specified with the "input"
-  parameter.  The output matrix Y may be saved with the "output_ic" output
+  The input matrix to perform ICA on should be specified with the "Input"
+  parameter.  The output matrix Y may be saved with the "OutputIc" output
   parameter, and the output unmixing matrix W may be saved with the
-  "output_unmixing" output parameter.
+  "OutputUnmixing" output parameter.
   
   For example, to perform ICA on the matrix X with 40 replicates, saving the
   independent components to ic, the following command may be used: 
   
-    param := mlpack.InitializeRadical()
-    param.Replicates = 40
-    Ic, _ := mlpack.Radical(X, param)
+      // Initialize optional parameters for Radical().
+      param := mlpack.RadicalOptions()
+      param.Replicates = 40
+      
+      ic, _ := mlpack.Radical(X, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input dataset for ICA.
+   - input (mat.Dense): Input dataset for ICA.
    - Angles (int): Number of angles to consider in brute-force search
         during Radical2D.  Default value 150.
    - NoiseStdDev (float64): Standard deviation of Gaussian noise.  Default
@@ -74,8 +76,8 @@ func InitializeRadical() *RadicalOptionalParam {
 
   Output parameters:
 
-   - OutputIc (mat.Dense): Matrix to save independent components to.
-   - OutputUnmixing (mat.Dense): Matrix to save unmixing matrix to.
+   - outputIc (mat.Dense): Matrix to save independent components to.
+   - outputUnmixing (mat.Dense): Matrix to save unmixing matrix to.
 
  */
 func Radical(input *mat.Dense, param *RadicalOptionalParam) (*mat.Dense, *mat.Dense) {
@@ -141,13 +143,13 @@ func Radical(input *mat.Dense, param *RadicalOptionalParam) (*mat.Dense, *mat.De
 
   // Initialize result variable and get output.
   var outputIcPtr mlpackArma
-  OutputIc := outputIcPtr.armaToGonumMat("output_ic")
+  outputIc := outputIcPtr.armaToGonumMat("output_ic")
   var outputUnmixingPtr mlpackArma
-  OutputUnmixing := outputUnmixingPtr.armaToGonumMat("output_unmixing")
+  outputUnmixing := outputUnmixingPtr.armaToGonumMat("output_unmixing")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputIc, OutputUnmixing
+  return outputIc, outputUnmixing
 }

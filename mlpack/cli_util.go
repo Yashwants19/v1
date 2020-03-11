@@ -2,7 +2,7 @@ package mlpack
 
 /*
 #cgo CFLAGS: -I. -I/capi -g -Wall
-#cgo LDFLAGS: -L${SRCDIR} -Wl,-rpath,${SRCDIR} -lgo_util -larmadillo
+#cgo LDFLAGS: -L${SRCDIR} -Wl,-rpath,${SRCDIR} -lgo_util
 #include <capi/cli_util.h>
 */
 import "C"
@@ -100,7 +100,14 @@ func (v *mlpackVectorType) allocVecIntPtr(identifier string) {
 }
 
 func setParamVecInt(identifier string, vecInt []int) {
-  ptr := unsafe.Pointer(&vecInt[0])
+  vecInt64 := make([]int64, len(vecInt))
+  // Here we are promisely passing int64 to C++.
+  for i := 0; i < len(vecInt); i++ {
+    vecInt64[i] = int64(vecInt[i])
+  }
+  ptr := unsafe.Pointer(&vecInt64[0])
+  // As we are not guaranteed  that int is always equivalent of int64_t or
+  // int32_t in Go. Hence we are passing `long long` to C++.
   C.mlpackSetParamVectorInt(C.CString(identifier), (*C.longlong)(ptr),
                             C.size_t(len(vecInt)))
 }
@@ -134,7 +141,6 @@ func getParamVecString(identifier string) []string {
   for i := 0; i < e; i++ {
     data[i] = C.GoString(C.mlpackGetVecStringPtr(C.CString(identifier),
                          C.size_t(i)))
-    runtime.GC()
   }
   return data
 }

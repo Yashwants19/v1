@@ -30,7 +30,7 @@ type GmmTrainOptionalParam struct {
     Verbose bool
 }
 
-func InitializeGmmTrain() *GmmTrainOptionalParam {
+func GmmTrainOptions() *GmmTrainOptionalParam {
   return &GmmTrainOptionalParam{
     DiagonalCovariance: false,
     InputModel: nil,
@@ -70,35 +70,35 @@ func setGMM(identifier string, ptr *gmm) {
   using the EM algorithm to find the maximum likelihood estimate.  The model may
   be saved and reused by other mlpack GMM tools.
   
-  The input data to train on must be specified with the "input" parameter, and
-  the number of Gaussians in the model must be specified with the "gaussians"
+  The input data to train on must be specified with the "Input" parameter, and
+  the number of Gaussians in the model must be specified with the "Gaussians"
   parameter.  Optionally, many trials with different random initializations may
   be run, and the result with highest log-likelihood on the training data will
-  be taken.  The number of trials to run is specified with the "trials"
+  be taken.  The number of trials to run is specified with the "Trials"
   parameter.  By default, only one trial is run.
   
   The tolerance for convergence and maximum number of iterations of the EM
-  algorithm are specified with the "tolerance" and "max_iterations" parameters,
+  algorithm are specified with the "Tolerance" and "MaxIterations" parameters,
   respectively.  The GMM may be initialized for training with another model,
-  specified with the "input_model" parameter. Otherwise, the model is
-  initialized by running k-means on the data.  The k-means clustering
-  initialization can be controlled with the "kmeans_max_iterations",
-  "refined_start", "samplings", and "percentage" parameters.  If "refined_start"
-  is specified, then the Bradley-Fayyad refined start initialization will be
-  used.  This can often lead to better clustering results.
+  specified with the "InputModel" parameter. Otherwise, the model is initialized
+  by running k-means on the data.  The k-means clustering initialization can be
+  controlled with the "KmeansMaxIterations", "RefinedStart", "Samplings", and
+  "Percentage" parameters.  If "RefinedStart" is specified, then the
+  Bradley-Fayyad refined start initialization will be used.  This can often lead
+  to better clustering results.
   
   The 'diagonal_covariance' flag will cause the learned covariances to be
   diagonal matrices.  This significantly simplifies the model itself and causes
   training to be faster, but restricts the ability to fit more complex GMMs.
   
   If GMM training fails with an error indicating that a covariance matrix could
-  not be inverted, make sure that the "no_force_positive" parameter is not
+  not be inverted, make sure that the "NoForcePositive" parameter is not
   specified.  Alternately, adding a small amount of Gaussian noise (using the
-  "noise" parameter) to the entire dataset may help prevent Gaussians with zero
+  "Noise" parameter) to the entire dataset may help prevent Gaussians with zero
   variance in a particular dimension, which is usually the cause of
   non-invertible covariance matrices.
   
-  The "no_force_positive" parameter, if set, will avoid the checks after each
+  The "NoForcePositive" parameter, if set, will avoid the checks after each
   iteration of the EM algorithm which ensure that the covariance matrices are
   positive definite.  Specifying the flag can cause faster runtime, but may also
   cause non-positive definite covariance matrices, which will cause the program
@@ -108,22 +108,26 @@ func setGMM(identifier string, ptr *gmm) {
   100 iterations of EM and 3 trials, saving the trained GMM to gmm, the
   following command can be used:
   
-    param := mlpack.InitializeGmmTrain()
-    param.Trials = 3
-    Gmm := mlpack.GmmTrain(data, 6, param)
+      // Initialize optional parameters for GmmTrain().
+      param := mlpack.GmmTrainOptions()
+      param.Trials = 3
+      
+      gmm := mlpack.GmmTrain(data, 6, param)
   
   To re-train that GMM on another set of data data2, the following command may
   be used: 
   
-    param := mlpack.InitializeGmmTrain()
-    param.InputModel = &Gmm
-    NewGmm := mlpack.GmmTrain(data2, 6, param)
+      // Initialize optional parameters for GmmTrain().
+      param := mlpack.GmmTrainOptions()
+      param.InputModel = &gmm
+      
+      new_gmm := mlpack.GmmTrain(data2, 6, param)
 
 
   Input parameters:
 
-   - Gaussians (int): Number of Gaussians in the GMM.
-   - Input (mat.Dense): The training data on which the model will be fit.
+   - gaussians (int): Number of Gaussians in the GMM.
+   - input (mat.Dense): The training data on which the model will be fit.
    - DiagonalCovariance (bool): Force the covariance of the Gaussians to
         be diagonal.  This can accelerate training time significantly.
    - InputModel (gmm): Initial input GMM model to start training with.
@@ -153,7 +157,7 @@ func setGMM(identifier string, ptr *gmm) {
 
   Output parameters:
 
-   - OutputModel (gmm): Output for trained GMM model.
+   - outputModel (gmm): Output for trained GMM model.
 
  */
 func GmmTrain(gaussians int, input *mat.Dense, param *GmmTrainOptionalParam) (gmm) {
@@ -257,12 +261,12 @@ func GmmTrain(gaussians int, input *mat.Dense, param *GmmTrainOptionalParam) (gm
   C.mlpackGmmTrain()
 
   // Initialize result variable and get output.
-  var OutputModel gmm
-  OutputModel.getGMM("output_model")
+  var outputModel gmm
+  outputModel.getGMM("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel
+  return outputModel
 }

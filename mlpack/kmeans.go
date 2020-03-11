@@ -27,7 +27,7 @@ type KmeansOptionalParam struct {
     Verbose bool
 }
 
-func InitializeKmeans() *KmeansOptionalParam {
+func KmeansOptions() *KmeansOptionalParam {
   return &KmeansOptionalParam{
     Algorithm: "naive",
     AllowEmptyClusters: false,
@@ -53,14 +53,14 @@ func InitializeKmeans() *KmeansOptionalParam {
   
   Optionally, the Bradley and Fayyad approach ("Refining initial points for
   k-means clustering", 1998) can be used to select initial points by specifying
-  the "refined_start" parameter.  This approach works by taking random samplings
-  of the dataset; to specify the number of samplings, the "samplings" parameter
+  the "RefinedStart" parameter.  This approach works by taking random samplings
+  of the dataset; to specify the number of samplings, the "Samplings" parameter
   is used, and to specify the percentage of the dataset to be used in each
-  sample, the "percentage" parameter is used (it should be a value between 0.0
+  sample, the "Percentage" parameter is used (it should be a value between 0.0
   and 1.0).
   
   There are several options available for the algorithm used for each Lloyd
-  iteration, specified with the "algorithm"  option.  The standard O(kN)
+  iteration, specified with the "Algorithm"  option.  The standard O(kN)
   approach can be used ('naive').  Other options include the Pelleg-Moore
   tree-based algorithm ('pelleg-moore'), Elkan's triangle-inequality based
   algorithm ('elkan'), Hamerly's modification to Elkan's algorithm ('hamerly'),
@@ -68,43 +68,47 @@ func InitializeKmeans() *KmeansOptionalParam {
   algorithm using the cover tree ('dualtree-covertree').
   
   The behavior for when an empty cluster is encountered can be modified with the
-  "allow_empty_clusters" option.  When this option is specified and there is a
+  "AllowEmptyClusters" option.  When this option is specified and there is a
   cluster owning no points at the end of an iteration, that cluster's centroid
   will simply remain in its position from the previous iteration. If the
-  "kill_empty_clusters" option is specified, then when a cluster owns no points
-  at the end of an iteration, the cluster centroid is simply filled with
-  DBL_MAX, killing it and effectively reducing k for the rest of the
-  computation.  Note that the default option when neither empty cluster option
-  is specified can be time-consuming to calculate; therefore, specifying either
-  of these parameters will often accelerate runtime.
+  "KillEmptyClusters" option is specified, then when a cluster owns no points at
+  the end of an iteration, the cluster centroid is simply filled with DBL_MAX,
+  killing it and effectively reducing k for the rest of the computation.  Note
+  that the default option when neither empty cluster option is specified can be
+  time-consuming to calculate; therefore, specifying either of these parameters
+  will often accelerate runtime.
   
-  Initial clustering assignments may be specified using the "initial_centroids"
+  Initial clustering assignments may be specified using the "InitialCentroids"
   parameter, and the maximum number of iterations may be specified with the
-  "max_iterations" parameter.
+  "MaxIterations" parameter.
   
   As an example, to use Hamerly's algorithm to perform k-means clustering with
   k=10 on the dataset data, saving the centroids to centroids and the
   assignments for each point to assignments, the following command could be
   used:
   
-    param := mlpack.InitializeKmeans()
-    Centroids, Assignments := mlpack.Kmeans(data, 10, )
+      // Initialize optional parameters for Kmeans().
+      param := mlpack.KmeansOptions()
+      
+      centroids, assignments := mlpack.Kmeans(data, 10, param)
   
   To run k-means on that same dataset with initial centroids specified in
   initial with a maximum of 500 iterations, storing the output centroids in
   final the following command may be used:
   
-    param := mlpack.InitializeKmeans()
-    param.InitialCentroids = initial
-    param.MaxIterations = 500
-    Final, _ := mlpack.Kmeans(data, 10, param)
+      // Initialize optional parameters for Kmeans().
+      param := mlpack.KmeansOptions()
+      param.InitialCentroids = initial
+      param.MaxIterations = 500
+      
+      final, _ := mlpack.Kmeans(data, 10, param)
 
 
   Input parameters:
 
-   - Clusters (int): Number of clusters to find (0 autodetects from
+   - clusters (int): Number of clusters to find (0 autodetects from
         initial centroids).
-   - Input (mat.Dense): Input dataset to perform clustering on.
+   - input (mat.Dense): Input dataset to perform clustering on.
    - Algorithm (string): Algorithm to use for the Lloyd iteration
         ('naive', 'pelleg-moore', 'elkan', 'hamerly', 'dualtree', or
         'dualtree-covertree').  Default value 'naive'.
@@ -132,9 +136,9 @@ func InitializeKmeans() *KmeansOptionalParam {
 
   Output parameters:
 
-   - Centroid (mat.Dense): If specified, the centroids of each cluster
+   - centroid (mat.Dense): If specified, the centroids of each cluster
         will  be written to the given file.
-   - Output (mat.Dense): Matrix to store output labels or labeled data
+   - output (mat.Dense): Matrix to store output labels or labeled data
         to.
 
  */
@@ -235,13 +239,13 @@ func Kmeans(clusters int, input *mat.Dense, param *KmeansOptionalParam) (*mat.De
 
   // Initialize result variable and get output.
   var centroidPtr mlpackArma
-  Centroid := centroidPtr.armaToGonumMat("centroid")
+  centroid := centroidPtr.armaToGonumMat("centroid")
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Centroid, Output
+  return centroid, output
 }

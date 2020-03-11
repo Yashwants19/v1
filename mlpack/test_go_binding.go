@@ -19,7 +19,7 @@ type TestGoBindingOptionalParam struct {
     ColIn *mat.Dense
     Flag1 bool
     Flag2 bool
-    MatrixAndInfoIn *MatrixWithInfo
+    MatrixAndInfoIn *matrixWithInfo
     MatrixIn *mat.Dense
     ModelIn *gaussianKernel
     RowIn *mat.Dense
@@ -31,7 +31,7 @@ type TestGoBindingOptionalParam struct {
     Verbose bool
 }
 
-func InitializeTestGoBinding() *TestGoBindingOptionalParam {
+func TestGoBindingOptions() *TestGoBindingOptionalParam {
   return &TestGoBindingOptionalParam{
     BuildModel: false,
     ColIn: nil,
@@ -73,14 +73,14 @@ func setGaussianKernel(identifier string, ptr *gaussianKernel) {
 
   Input parameters:
 
-   - DoubleIn (float64): Input double, must be 4.0.
-   - IntIn (int): Input int, must be 12.
-   - StringIn (string): Input string, must be 'hello'.
+   - doubleIn (float64): Input double, must be 4.0.
+   - intIn (int): Input int, must be 12.
+   - stringIn (string): Input string, must be 'hello'.
    - BuildModel (bool): If true, a model will be returned.
    - ColIn (mat.Dense): Input column.
    - Flag1 (bool): Input flag, must be specified.
    - Flag2 (bool): Input flag, must not be specified.
-   - MatrixAndInfoIn (MatrixWithInfo): Input matrix and info.
+   - MatrixAndInfoIn (matrixWithInfo): Input matrix and info.
    - MatrixIn (mat.Dense): Input matrix.
    - ModelIn (gaussianKernel): Input model.
    - RowIn (mat.Dense): Input row.
@@ -94,25 +94,25 @@ func setGaussianKernel(identifier string, ptr *gaussianKernel) {
 
   Output parameters:
 
-   - ColOut (mat.Dense): Output column. 2x input column
-   - DoubleOut (float64): Output double, will be 5.0.  Default value 0.
-   - IntOut (int): Output int, will be 13.  Default value 0.
-   - MatrixAndInfoOut (mat.Dense): Output matrix and info; all numeric
+   - colOut (mat.Dense): Output column. 2x input column
+   - doubleOut (float64): Output double, will be 5.0.  Default value 0.
+   - intOut (int): Output int, will be 13.  Default value 0.
+   - matrixAndInfoOut (mat.Dense): Output matrix and info; all numeric
         elements multiplied by 3.
-   - MatrixOut (mat.Dense): Output matrix.
-   - ModelBwOut (float64): The bandwidth of the model.  Default value 0.
-   - ModelOut (gaussianKernel): Output model, with twice the bandwidth.
-   - RowOut (mat.Dense): Output row.  2x input row.
-   - StrVectorOut ([]string): Output string vector.
-   - StringOut (string): Output string, will be 'hello2'.  Default value
+   - matrixOut (mat.Dense): Output matrix.
+   - modelBwOut (float64): The bandwidth of the model.  Default value 0.
+   - modelOut (gaussianKernel): Output model, with twice the bandwidth.
+   - rowOut (mat.Dense): Output row.  2x input row.
+   - strVectorOut ([]string): Output string vector.
+   - stringOut (string): Output string, will be 'hello2'.  Default value
         ''.
-   - UcolOut (mat.Dense): Output unsigned column. 2x input column.
-   - UmatrixOut (mat.Dense): Output unsigned matrix.
-   - UrowOut (mat.Dense): Output unsigned row.  2x input row.
-   - VectorOut ([]int): Output vector.
+   - ucolOut (mat.Dense): Output unsigned column. 2x input column.
+   - umatrixOut (mat.Dense): Output unsigned matrix.
+   - urowOut (mat.Dense): Output unsigned row.  2x input row.
+   - vectorOut ([]int): Output vector.
 
  */
-func TestGoBinding(double_in float64, int_in int, string_in string, param *TestGoBindingOptionalParam) (*mat.Dense, float64, int, *mat.Dense, *mat.Dense, float64, gaussianKernel, *mat.Dense, []string, string, *mat.Dense, *mat.Dense, *mat.Dense, []int) {
+func TestGoBinding(doubleIn float64, intIn int, stringIn string, param *TestGoBindingOptionalParam) (*mat.Dense, float64, int, *mat.Dense, *mat.Dense, float64, gaussianKernel, *mat.Dense, []string, string, *mat.Dense, *mat.Dense, *mat.Dense, []int) {
   resetTimers()
   enableTimers()
   disableBacktrace()
@@ -120,15 +120,15 @@ func TestGoBinding(double_in float64, int_in int, string_in string, param *TestG
   restoreSettings("Golang binding test")
 
   // Detect if the parameter was passed; set if so.
-  setParamDouble("double_in", double_in)
+  setParamDouble("double_in", doubleIn)
   setPassed("double_in")
 
   // Detect if the parameter was passed; set if so.
-  setParamInt("int_in", int_in)
+  setParamInt("int_in", intIn)
   setPassed("int_in")
 
   // Detect if the parameter was passed; set if so.
-  setParamString("string_in", string_in)
+  setParamString("string_in", stringIn)
   setPassed("string_in")
 
   // Detect if the parameter was passed; set if so.
@@ -237,31 +237,31 @@ func TestGoBinding(double_in float64, int_in int, string_in string, param *TestG
 
   // Initialize result variable and get output.
   var colOutPtr mlpackArma
-  ColOut := colOutPtr.armaToGonumCol("col_out")
-  DoubleOut := getParamDouble("double_out")
-  IntOut := getParamInt("int_out")
+  colOut := colOutPtr.armaToGonumCol("col_out")
+  doubleOut := getParamDouble("double_out")
+  intOut := getParamInt("int_out")
   var matrixAndInfoOutPtr mlpackArma
-  MatrixAndInfoOut := matrixAndInfoOutPtr.armaToGonumMat("matrix_and_info_out")
+  matrixAndInfoOut := matrixAndInfoOutPtr.armaToGonumMat("matrix_and_info_out")
   var matrixOutPtr mlpackArma
-  MatrixOut := matrixOutPtr.armaToGonumMat("matrix_out")
-  ModelBwOut := getParamDouble("model_bw_out")
-  var ModelOut gaussianKernel
-  ModelOut.getGaussianKernel("model_out")
+  matrixOut := matrixOutPtr.armaToGonumMat("matrix_out")
+  modelBwOut := getParamDouble("model_bw_out")
+  var modelOut gaussianKernel
+  modelOut.getGaussianKernel("model_out")
   var rowOutPtr mlpackArma
-  RowOut := rowOutPtr.armaToGonumRow("row_out")
-  StrVectorOut := getParamVecString("str_vector_out")
-  StringOut := getParamString("string_out")
+  rowOut := rowOutPtr.armaToGonumRow("row_out")
+  strVectorOut := getParamVecString("str_vector_out")
+  stringOut := getParamString("string_out")
   var ucolOutPtr mlpackArma
-  UcolOut := ucolOutPtr.armaToGonumUcol("ucol_out")
+  ucolOut := ucolOutPtr.armaToGonumUcol("ucol_out")
   var umatrixOutPtr mlpackArma
-  UmatrixOut := umatrixOutPtr.armaToGonumUmat("umatrix_out")
+  umatrixOut := umatrixOutPtr.armaToGonumUmat("umatrix_out")
   var urowOutPtr mlpackArma
-  UrowOut := urowOutPtr.armaToGonumUrow("urow_out")
-  VectorOut := getParamVecInt("vector_out")
+  urowOut := urowOutPtr.armaToGonumUrow("urow_out")
+  vectorOut := getParamVecInt("vector_out")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return ColOut, DoubleOut, IntOut, MatrixAndInfoOut, MatrixOut, ModelBwOut, ModelOut, RowOut, StrVectorOut, StringOut, UcolOut, UmatrixOut, UrowOut, VectorOut
+  return colOut, doubleOut, intOut, matrixAndInfoOut, matrixOut, modelBwOut, modelOut, rowOut, strVectorOut, stringOut, ucolOut, umatrixOut, urowOut, vectorOut
 }

@@ -22,7 +22,7 @@ type DbscanOptionalParam struct {
     Verbose bool
 }
 
-func InitializeDbscan() *DbscanOptionalParam {
+func DbscanOptions() *DbscanOptionalParam {
   return &DbscanOptionalParam{
     Epsilon: 1,
     MinSize: 5,
@@ -39,34 +39,36 @@ func InitializeDbscan() *DbscanOptionalParam {
   tree-based range search.  The type of tree that is used may be parameterized,
   or brute-force range search may also be used.
   
-  The input dataset to be clustered may be specified with the "input" parameter;
-  the radius of each range search may be specified with the "epsilon"
+  The input dataset to be clustered may be specified with the "Input" parameter;
+  the radius of each range search may be specified with the "Epsilon"
   parameters, and the minimum number of points in a cluster may be specified
-  with the "min_size" parameter.
+  with the "MinSize" parameter.
   
-  The "assignments" and "centroids" output parameters may be used to save the
-  output of the clustering. "assignments" contains the cluster assignments of
-  each point, and "centroids" contains the centroids of each cluster.
+  The "Assignments" and "Centroids" output parameters may be used to save the
+  output of the clustering. "Assignments" contains the cluster assignments of
+  each point, and "Centroids" contains the centroids of each cluster.
   
-  The range search may be controlled with the "tree_type", "single_mode", and
-  "naive" parameters.  "tree_type" can control the type of tree used for range
+  The range search may be controlled with the "TreeType", "SingleMode", and
+  "Naive" parameters.  "TreeType" can control the type of tree used for range
   search; this can take a variety of values: 'kd', 'r', 'r-star', 'x',
-  'hilbert-r', 'r-plus', 'r-plus-plus', 'cover', 'ball'. The "single_mode"
+  'hilbert-r', 'r-plus', 'r-plus-plus', 'cover', 'ball'. The "SingleMode"
   parameter will force single-tree search (as opposed to the default dual-tree
-  search), and '"naive" will force brute-force range search.
+  search), and '"Naive" will force brute-force range search.
   
   An example usage to run DBSCAN on the dataset in input with a radius of 0.5
   and a minimum cluster size of 5 is given below:
   
-    param := mlpack.InitializeDbscan()
-    param.Epsilon = 0.5
-    param.MinSize = 5
-    _, _ := mlpack.Dbscan(input, param)
+      // Initialize optional parameters for Dbscan().
+      param := mlpack.DbscanOptions()
+      param.Epsilon = 0.5
+      param.MinSize = 5
+      
+      _, _ := mlpack.Dbscan(input, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input dataset to cluster.
+   - input (mat.Dense): Input dataset to cluster.
    - Epsilon (float64): Radius of each range search.  Default value 1.
    - MinSize (int): Minimum number of points for a cluster.  Default value
         5.
@@ -84,9 +86,9 @@ func InitializeDbscan() *DbscanOptionalParam {
 
   Output parameters:
 
-   - Assignments (mat.Dense): Output matrix for assignments of each
+   - assignments (mat.Dense): Output matrix for assignments of each
         point.
-   - Centroids (mat.Dense): Matrix to save output centroids to.
+   - centroids (mat.Dense): Matrix to save output centroids to.
 
  */
 func Dbscan(input *mat.Dense, param *DbscanOptionalParam) (*mat.Dense, *mat.Dense) {
@@ -152,13 +154,13 @@ func Dbscan(input *mat.Dense, param *DbscanOptionalParam) (*mat.Dense, *mat.Dens
 
   // Initialize result variable and get output.
   var assignmentsPtr mlpackArma
-  Assignments := assignmentsPtr.armaToGonumUrow("assignments")
+  assignments := assignmentsPtr.armaToGonumUrow("assignments")
   var centroidsPtr mlpackArma
-  Centroids := centroidsPtr.armaToGonumMat("centroids")
+  centroids := centroidsPtr.armaToGonumMat("centroids")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Assignments, Centroids
+  return assignments, centroids
 }

@@ -26,7 +26,7 @@ type DetOptionalParam struct {
     Verbose bool
 }
 
-func InitializeDet() *DetOptionalParam {
+func DetOptions() *DetOptionalParam {
   return &DetOptionalParam{
     Folds: 10,
     InputModel: nil,
@@ -60,28 +60,28 @@ func setDTree(identifier string, ptr *dTree) {
 /*
   This program performs a number of functions related to Density Estimation
   Trees.  The optimal Density Estimation Tree (DET) can be trained on a set of
-  data (specified by "training") using cross-validation (with number of folds
-  specified with the "folds" parameter).  This trained density estimation tree
-  may then be saved with the "output_model" output parameter.
+  data (specified by "Training") using cross-validation (with number of folds
+  specified with the "Folds" parameter).  This trained density estimation tree
+  may then be saved with the "OutputModel" output parameter.
   
   The variable importances (that is, the feature importance values for each
-  dimension) may be saved with the "vi" output parameter, and the density
-  estimates for each training point may be saved with the
-  "training_set_estimates" output parameter.
+  dimension) may be saved with the "Vi" output parameter, and the density
+  estimates for each training point may be saved with the "TrainingSetEstimates"
+  output parameter.
   
   Enabling path printing for each node outputs the path from the root node to a
   leaf for each entry in the test set, or training set (if a test set is not
   provided).  Strings like 'LRLRLR' (indicating that traversal went to the left
   child, then the right child, then the left child, and so forth) will be
-  output. If 'lr-id' or 'id-lr' are given as the "path_format" parameter, then
+  output. If 'lr-id' or 'id-lr' are given as the "PathFormat" parameter, then
   the ID (tag) of every node along the path will be printed after or before the
   L or R character indicating the direction of traversal, respectively.
   
   This program also can provide density estimates for a set of test points,
-  specified in the "test" parameter.  The density estimation tree used for this
+  specified in the "Test" parameter.  The density estimation tree used for this
   task will be the tree that was trained on the given training points, or a tree
-  given as the parameter "input_model".  The density estimates for the test
-  points may be saved using the "test_set_estimates" output parameter.
+  given as the parameter "InputModel".  The density estimates for the test
+  points may be saved using the "TestSetEstimates" output parameter.
 
 
   Input parameters:
@@ -105,17 +105,17 @@ func setDTree(identifier string, ptr *dTree) {
 
   Output parameters:
 
-   - OutputModel (dTree): Output to save trained density estimation tree
+   - outputModel (dTree): Output to save trained density estimation tree
         to.
-   - TagCountersFile (string): The file to output the number of points
+   - tagCountersFile (string): The file to output the number of points
         that went to each leaf.  Default value ''.
-   - TagFile (string): The file to output the tags (and possibly paths)
+   - tagFile (string): The file to output the tags (and possibly paths)
         for each sample in the test set.  Default value ''.
-   - TestSetEstimates (mat.Dense): The output estimates on the test set
+   - testSetEstimates (mat.Dense): The output estimates on the test set
         from the final optimally pruned tree.
-   - TrainingSetEstimates (mat.Dense): The output density estimates on the
+   - trainingSetEstimates (mat.Dense): The output density estimates on the
         training set from the final optimally pruned tree.
-   - Vi (mat.Dense): The output variable importance values for each
+   - vi (mat.Dense): The output variable importance values for each
         feature.
 
  */
@@ -193,20 +193,20 @@ func Det(param *DetOptionalParam) (dTree, string, string, *mat.Dense, *mat.Dense
   C.mlpackDet()
 
   // Initialize result variable and get output.
-  var OutputModel dTree
-  OutputModel.getDTree("output_model")
-  TagCountersFile := getParamString("tag_counters_file")
-  TagFile := getParamString("tag_file")
+  var outputModel dTree
+  outputModel.getDTree("output_model")
+  tagCountersFile := getParamString("tag_counters_file")
+  tagFile := getParamString("tag_file")
   var testSetEstimatesPtr mlpackArma
-  TestSetEstimates := testSetEstimatesPtr.armaToGonumMat("test_set_estimates")
+  testSetEstimates := testSetEstimatesPtr.armaToGonumMat("test_set_estimates")
   var trainingSetEstimatesPtr mlpackArma
-  TrainingSetEstimates := trainingSetEstimatesPtr.armaToGonumMat("training_set_estimates")
+  trainingSetEstimates := trainingSetEstimatesPtr.armaToGonumMat("training_set_estimates")
   var viPtr mlpackArma
-  Vi := viPtr.armaToGonumMat("vi")
+  vi := viPtr.armaToGonumMat("vi")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, TagCountersFile, TagFile, TestSetEstimates, TrainingSetEstimates, Vi
+  return outputModel, tagCountersFile, tagFile, testSetEstimates, trainingSetEstimates, vi
 }

@@ -26,13 +26,13 @@ type HoeffdingTreeOptionalParam struct {
     NumericSplitStrategy string
     ObservationsBeforeBinning int
     Passes int
-    Test *MatrixWithInfo
+    Test *matrixWithInfo
     TestLabels *mat.Dense
-    Training *MatrixWithInfo
+    Training *matrixWithInfo
     Verbose bool
 }
 
-func InitializeHoeffdingTree() *HoeffdingTreeOptionalParam {
+func HoeffdingTreeOptions() *HoeffdingTreeOptionalParam {
   return &HoeffdingTreeOptionalParam{
     BatchMode: false,
     Bins: 10,
@@ -77,40 +77,44 @@ func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
   The program is also able to use a trained model or a model from file in order
   to predict classes for a given test set.
   
-  The training file and associated labels are specified with the "training" and
-  "labels" parameters, respectively. Optionally, if "labels" is not specified,
+  The training file and associated labels are specified with the "Training" and
+  "Labels" parameters, respectively. Optionally, if "Labels" is not specified,
   the labels are assumed to be the last dimension of the training dataset.
   
   The training may be performed in batch mode (like a typical decision tree
-  algorithm) by specifying the "batch_mode" option, but this may not be the best
+  algorithm) by specifying the "BatchMode" option, but this may not be the best
   option for large datasets.
   
-  When a model is trained, it may be saved via the "output_model" output
+  When a model is trained, it may be saved via the "OutputModel" output
   parameter.  A model may be loaded from file for further training or testing
-  with the "input_model" parameter.
+  with the "InputModel" parameter.
   
-  Test data may be specified with the "test" parameter, and if performance
+  Test data may be specified with the "Test" parameter, and if performance
   statistics are desired for that test set, labels may be specified with the
-  "test_labels" parameter.  Predictions for each test point may be saved with
-  the "predictions" output parameter, and class probabilities for each
-  prediction may be saved with the "probabilities" output parameter.
+  "TestLabels" parameter.  Predictions for each test point may be saved with the
+  "Predictions" output parameter, and class probabilities for each prediction
+  may be saved with the "Probabilities" output parameter.
   
   For example, to train a Hoeffding tree with confidence 0.99 with data dataset,
   saving the trained tree to tree, the following command may be used:
   
-    param := mlpack.InitializeHoeffdingTree()
-    param.Training = dataset
-    param.Confidence = 0.99
-    Tree, _, _ := mlpack.HoeffdingTree(param)
+      // Initialize optional parameters for HoeffdingTree().
+      param := mlpack.HoeffdingTreeOptions()
+      param.Training = dataset
+      param.Confidence = 0.99
+      
+      tree, _, _ := mlpack.HoeffdingTree(param)
   
   Then, this tree may be used to make predictions on the test set test_set,
   saving the predictions into predictions and the class probabilities into
   class_probs with the following command: 
   
-    param := mlpack.InitializeHoeffdingTree()
-    param.InputModel = &Tree
-    param.Test = test_set
-    _, Predictions, ClassProbs := mlpack.HoeffdingTree(param)
+      // Initialize optional parameters for HoeffdingTree().
+      param := mlpack.HoeffdingTreeOptions()
+      param.InputModel = &tree
+      param.Test = test_set
+      
+      _, predictions, class_probs := mlpack.HoeffdingTree(param)
 
 
   Input parameters:
@@ -137,19 +141,19 @@ func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
         performed.  Default value 100.
    - Passes (int): Number of passes to take over the dataset.  Default
         value 1.
-   - Test (MatrixWithInfo): Testing dataset (may be categorical).
+   - Test (matrixWithInfo): Testing dataset (may be categorical).
    - TestLabels (mat.Dense): Labels of test data.
-   - Training (MatrixWithInfo): Training dataset (may be categorical).
+   - Training (matrixWithInfo): Training dataset (may be categorical).
    - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
   Output parameters:
 
-   - OutputModel (hoeffdingTreeModel): Output for trained Hoeffding tree
+   - outputModel (hoeffdingTreeModel): Output for trained Hoeffding tree
         model.
-   - Predictions (mat.Dense): Matrix to output label predictions for test
+   - predictions (mat.Dense): Matrix to output label predictions for test
         data into.
-   - Probabilities (mat.Dense): In addition to predicting labels, provide
+   - probabilities (mat.Dense): In addition to predicting labels, provide
         rediction probabilities in this matrix.
 
  */
@@ -260,16 +264,16 @@ func HoeffdingTree(param *HoeffdingTreeOptionalParam) (hoeffdingTreeModel, *mat.
   C.mlpackHoeffdingTree()
 
   // Initialize result variable and get output.
-  var OutputModel hoeffdingTreeModel
-  OutputModel.getHoeffdingTreeModel("output_model")
+  var outputModel hoeffdingTreeModel
+  outputModel.getHoeffdingTreeModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
   var probabilitiesPtr mlpackArma
-  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
+  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, Predictions, Probabilities
+  return outputModel, predictions, probabilities
 }

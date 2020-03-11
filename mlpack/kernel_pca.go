@@ -24,7 +24,7 @@ type KernelPcaOptionalParam struct {
     Verbose bool
 }
 
-func InitializeKernelPca() *KernelPcaOptionalParam {
+func KernelPcaOptions() *KernelPcaOptionalParam {
   return &KernelPcaOptionalParam{
     Bandwidth: 1,
     Center: false,
@@ -49,8 +49,10 @@ func InitializeKernelPca() *KernelPcaOptionalParam {
   For example, the following command will perform KPCA on the dataset input
   using the Gaussian kernel, and saving the transformed data to transformed: 
   
-    param := mlpack.InitializeKernelPca()
-    Transformed := mlpack.KernelPca(input, "gaussian", )
+      // Initialize optional parameters for KernelPca().
+      param := mlpack.KernelPcaOptions()
+      
+      transformed := mlpack.KernelPca(input, "gaussian", param)
   
   The kernels that are supported are listed below:
   
@@ -76,21 +78,21 @@ func InitializeKernelPca() *KernelPcaOptionalParam {
       K(x, y) = 1 - (x^T y) / (|| x || * || y ||)
   
   The parameters for each of the kernels should be specified with the options
-  "bandwidth", "kernel_scale", "offset", or "degree" (or a combination of those
+  "Bandwidth", "KernelScale", "Offset", or "Degree" (or a combination of those
   parameters).
   
   Optionally, the Nystroem method ("Using the Nystroem method to speed up kernel
   machines", 2001) can be used to calculate the kernel matrix by specifying the
-  "nystroem_method" parameter. This approach works by using a subset of the data
+  "NystroemMethod" parameter. This approach works by using a subset of the data
   as basis to reconstruct the kernel matrix; to specify the sampling scheme, the
-  "sampling" parameter is used.  The sampling scheme for the Nystroem method can
+  "Sampling" parameter is used.  The sampling scheme for the Nystroem method can
   be chosen from the following list: 'kmeans', 'random', 'ordered'.
 
 
   Input parameters:
 
-   - Input (mat.Dense): Input dataset to perform KPCA on.
-   - Kernel (string): The kernel to use; see the above documentation for
+   - input (mat.Dense): Input dataset to perform KPCA on.
+   - kernel (string): The kernel to use; see the above documentation for
         the list of usable kernels.
    - Bandwidth (float64): Bandwidth, for 'gaussian' and 'laplacian'
         kernels.  Default value 1.
@@ -112,7 +114,7 @@ func InitializeKernelPca() *KernelPcaOptionalParam {
 
   Output parameters:
 
-   - Output (mat.Dense): Matrix to save modified dataset to.
+   - output (mat.Dense): Matrix to save modified dataset to.
 
  */
 func KernelPca(input *mat.Dense, kernel string, param *KernelPcaOptionalParam) (*mat.Dense) {
@@ -193,11 +195,11 @@ func KernelPca(input *mat.Dense, kernel string, param *KernelPcaOptionalParam) (
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output
+  return output
 }

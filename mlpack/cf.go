@@ -34,7 +34,7 @@ type CfOptionalParam struct {
     Verbose bool
 }
 
-func InitializeCf() *CfOptionalParam {
+func CfOptions() *CfOptionalParam {
   return &CfOptionalParam{
     Algorithm: "NMF",
     AllUserRecommendations: false,
@@ -75,10 +75,10 @@ func setCFModel(identifier string, ptr *cfModel) {
 
 /*
   This program performs collaborative filtering (CF) on the given dataset. Given
-  a list of user, item and preferences (the "training" parameter), the program
+  a list of user, item and preferences (the "Training" parameter), the program
   will perform a matrix decomposition and then can perform a series of actions
   related to collaborative filtering.  Alternately, the program can load an
-  existing saved CF model with the "input_model" parameter and then use that
+  existing saved CF model with the "InputModel" parameter and then use that
   model to provide recommendations or predict values.
   
   The input matrix should be a 3-dimensional matrix of ratings, where the first
@@ -87,16 +87,16 @@ func setCFModel(identifier string, ptr *cfModel) {
   be numeric indices, not names. The indices are assumed to start from 0.
   
   A set of query users for which recommendations can be generated may be
-  specified with the "query" parameter; alternately, recommendations may be
+  specified with the "Query" parameter; alternately, recommendations may be
   generated for every user in the dataset by specifying the
-  "all_user_recommendations" parameter.  In addition, the number of
+  "AllUserRecommendations" parameter.  In addition, the number of
   recommendations per user to generate can be specified with the
-  "recommendations" parameter, and the number of similar users (the size of the
+  "Recommendations" parameter, and the number of similar users (the size of the
   neighborhood) to be considered when generating recommendations can be
-  specified with the "neighborhood" parameter.
+  specified with the "Neighborhood" parameter.
   
   For performing the matrix decomposition, the following optimization algorithms
-  can be specified via the "algorithm" parameter: 
+  can be specified via the "Algorithm" parameter: 
    - 'RegSVD' -- Regularized SVD using a SGD optimizer
    - 'NMF' -- Non-negative matrix factorization with alternating least squares
   update rules
@@ -108,46 +108,50 @@ func setCFModel(identifier string, ptr *cfModel) {
   
   
   The following neighbor search algorithms can be specified via the
-  "neighbor_search" parameter:
+  "NeighborSearch" parameter:
    - 'cosine'  -- Cosine Search Algorithm
    - 'euclidean'  -- Euclidean Search Algorithm
    - 'pearson'  -- Pearson Search Algorithm
   
   
   The following weight interpolation algorithms can be specified via the
-  "interpolation" parameter:
+  "Interpolation" parameter:
    - 'average'  -- Average Interpolation Algorithm
    - 'regression'  -- Regression Interpolation Algorithm
    - 'similarity'  -- Similarity Interpolation Algorithm
   
   
   The following ranking normalization algorithms can be specified via the
-  "normalization" parameter:
+  "Normalization" parameter:
    - 'none'  -- No Normalization
    - 'item_mean'  -- Item Mean Normalization
    - 'overall_mean'  -- Overall Mean Normalization
    - 'user_mean'  -- User Mean Normalization
    - 'z_score'  -- Z-Score Normalization
   
-  A trained model may be saved to with the "output_model" output parameter.
+  A trained model may be saved to with the "OutputModel" output parameter.
   
   To train a CF model on a dataset training_set using NMF for decomposition and
   saving the trained model to model, one could call: 
   
-    param := mlpack.InitializeCf()
-    param.Training = training_set
-    param.Algorithm = "NMF"
-    _, Model := mlpack.Cf(param)
+      // Initialize optional parameters for Cf().
+      param := mlpack.CfOptions()
+      param.Training = training_set
+      param.Algorithm = "NMF"
+      
+      _, model := mlpack.Cf(param)
   
   Then, to use this model to generate recommendations for the list of users in
   the query set users, storing 5 recommendations in recommendations, one could
   call 
   
-    param := mlpack.InitializeCf()
-    param.InputModel = &Model
-    param.Query = users
-    param.Recommendations = 5
-    Recommendations, _ := mlpack.Cf(param)
+      // Initialize optional parameters for Cf().
+      param := mlpack.CfOptions()
+      param.InputModel = &model
+      param.Query = users
+      param.Recommendations = 5
+      
+      recommendations, _ := mlpack.Cf(param)
 
 
   Input parameters:
@@ -186,8 +190,8 @@ func setCFModel(identifier string, ptr *cfModel) {
 
   Output parameters:
 
-   - Output (mat.Dense): Matrix that will store output recommendations.
-   - OutputModel (cfModel): Output for trained CF model.
+   - output (mat.Dense): Matrix that will store output recommendations.
+   - outputModel (cfModel): Output for trained CF model.
 
  */
 func Cf(param *CfOptionalParam) (*mat.Dense, cfModel) {
@@ -309,13 +313,13 @@ func Cf(param *CfOptionalParam) (*mat.Dense, cfModel) {
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumUmat("output")
-  var OutputModel cfModel
-  OutputModel.getCFModel("output_model")
+  output := outputPtr.armaToGonumUmat("output")
+  var outputModel cfModel
+  outputModel.getCFModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output, OutputModel
+  return output, outputModel
 }

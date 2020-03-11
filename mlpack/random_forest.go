@@ -30,7 +30,7 @@ type RandomForestOptionalParam struct {
     Verbose bool
 }
 
-func InitializeRandomForest() *RandomForestOptionalParam {
+func RandomForestOptions() *RandomForestOptionalParam {
   return &RandomForestOptionalParam{
     InputModel: nil,
     Labels: nil,
@@ -71,52 +71,55 @@ func setRandomForestModel(identifier string, ptr *randomForestModel) {
   use, or a random forest may be loaded and predictions or class probabilities
   for points may be generated.
   
-  The training set and associated labels are specified with the "training" and
-  "labels" parameters, respectively.  The labels should be in the range [0,
-  num_classes - 1]. Optionally, if "labels" is not specified, the labels are
+  The training set and associated labels are specified with the "Training" and
+  "Labels" parameters, respectively.  The labels should be in the range [0,
+  num_classes - 1]. Optionally, if "Labels" is not specified, the labels are
   assumed to be the last dimension of the training dataset.
   
-  When a model is trained, the "output_model" output parameter may be used to
+  When a model is trained, the "OutputModel" output parameter may be used to
   save the trained model.  A model may be loaded for predictions with the
-  "input_model"parameter. The "input_model" parameter may not be specified when
-  the "training" parameter is specified.  The "minimum_leaf_size" parameter
+  "InputModel"parameter. The "InputModel" parameter may not be specified when
+  the "Training" parameter is specified.  The "MinimumLeafSize" parameter
   specifies the minimum number of training points that must fall into each leaf
-  for it to be split.  The "num_trees" controls the number of trees in the
-  random forest.  The "minimum_gain_split" parameter controls the minimum
-  required gain for a decision tree node to split.  Larger values will force
-  higher-confidence splits.  The "maximum_depth" parameter specifies the maximum
-  depth of the tree.  The "subspace_dim" parameter is used to control the number
-  of random dimensions chosen for an individual node's split.  If
-  "print_training_accuracy" is specified, the calculated accuracy on the
-  training set will be printed.
+  for it to be split.  The "NumTrees" controls the number of trees in the random
+  forest.  The "MinimumGainSplit" parameter controls the minimum required gain
+  for a decision tree node to split.  Larger values will force higher-confidence
+  splits.  The "MaximumDepth" parameter specifies the maximum depth of the tree.
+   The "SubspaceDim" parameter is used to control the number of random
+  dimensions chosen for an individual node's split.  If "PrintTrainingAccuracy"
+  is specified, the calculated accuracy on the training set will be printed.
   
-  Test data may be specified with the "test" parameter, and if performance
+  Test data may be specified with the "Test" parameter, and if performance
   measures are desired for that test set, labels for the test points may be
-  specified with the "test_labels" parameter.  Predictions for each test point
-  may be saved via the "predictions"output parameter.  Class probabilities for
-  each prediction may be saved with the "probabilities" output parameter.
+  specified with the "TestLabels" parameter.  Predictions for each test point
+  may be saved via the "Predictions"output parameter.  Class probabilities for
+  each prediction may be saved with the "Probabilities" output parameter.
   
   For example, to train a random forest with a minimum leaf size of 20 using 10
   trees on the dataset contained in datawith labels labels, saving the output
   random forest to rf_model and printing the training error, one could call
   
-    param := mlpack.InitializeRandomForest()
-    param.Training = data
-    param.Labels = labels
-    param.MinimumLeafSize = 20
-    param.NumTrees = 10
-    param.PrintTrainingAccuracy = true
-    RfModel, _, _ := mlpack.RandomForest(param)
+      // Initialize optional parameters for RandomForest().
+      param := mlpack.RandomForestOptions()
+      param.Training = data
+      param.Labels = labels
+      param.MinimumLeafSize = 20
+      param.NumTrees = 10
+      param.PrintTrainingAccuracy = true
+      
+      rf_model, _, _ := mlpack.RandomForest(param)
   
   Then, to use that model to classify points in test_set and print the test
   error given the labels test_labels using that model, while saving the
   predictions for each point to predictions, one could call 
   
-    param := mlpack.InitializeRandomForest()
-    param.InputModel = &RfModel
-    param.Test = test_set
-    param.TestLabels = test_labels
-    _, Predictions, _ := mlpack.RandomForest(param)
+      // Initialize optional parameters for RandomForest().
+      param := mlpack.RandomForestOptions()
+      param.InputModel = &rf_model
+      param.Test = test_set
+      param.TestLabels = test_labels
+      
+      _, predictions, _ := mlpack.RandomForest(param)
 
 
   Input parameters:
@@ -148,11 +151,11 @@ func setRandomForestModel(identifier string, ptr *randomForestModel) {
 
   Output parameters:
 
-   - OutputModel (randomForestModel): Model to save trained random forest
+   - outputModel (randomForestModel): Model to save trained random forest
         to.
-   - Predictions (mat.Dense): Predicted classes for each point in the test
+   - predictions (mat.Dense): Predicted classes for each point in the test
         set.
-   - Probabilities (mat.Dense): Predicted class probabilities for each
+   - probabilities (mat.Dense): Predicted class probabilities for each
         point in the test set.
 
  */
@@ -251,16 +254,16 @@ func RandomForest(param *RandomForestOptionalParam) (randomForestModel, *mat.Den
   C.mlpackRandomForest()
 
   // Initialize result variable and get output.
-  var OutputModel randomForestModel
-  OutputModel.getRandomForestModel("output_model")
+  var outputModel randomForestModel
+  outputModel.getRandomForestModel("output_model")
   var predictionsPtr mlpackArma
-  Predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow("predictions")
   var probabilitiesPtr mlpackArma
-  Probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
+  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return OutputModel, Predictions, Probabilities
+  return outputModel, predictions, probabilities
 }

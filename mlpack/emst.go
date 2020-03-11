@@ -18,7 +18,7 @@ type EmstOptionalParam struct {
     Verbose bool
 }
 
-func InitializeEmst() *EmstOptionalParam {
+func EmstOptions() *EmstOptionalParam {
   return &EmstOptionalParam{
     LeafSize: 1,
     Naive: false,
@@ -31,22 +31,24 @@ func InitializeEmst() *EmstOptionalParam {
   points using the dual-tree Boruvka algorithm.
   
   The set to calculate the minimum spanning tree of is specified with the
-  "input" parameter, and the output may be saved with the "output" output
+  "Input" parameter, and the output may be saved with the "Output" output
   parameter.
   
-  The "leaf_size" parameter controls the leaf size of the kd-tree that is used
-  to calculate the minimum spanning tree, and if the "naive" option is given,
-  then brute-force search is used (this is typically much slower in low
-  dimensions).  The leaf size does not affect the results, but it may have some
-  effect on the runtime of the algorithm.
+  The "LeafSize" parameter controls the leaf size of the kd-tree that is used to
+  calculate the minimum spanning tree, and if the "Naive" option is given, then
+  brute-force search is used (this is typically much slower in low dimensions). 
+  The leaf size does not affect the results, but it may have some effect on the
+  runtime of the algorithm.
   
   For example, the minimum spanning tree of the input dataset data can be
   calculated with a leaf size of 20 and stored as spanning_tree using the
   following command:
   
-    param := mlpack.InitializeEmst()
-    param.LeafSize = 20
-    SpanningTree := mlpack.Emst(data, param)
+      // Initialize optional parameters for Emst().
+      param := mlpack.EmstOptions()
+      param.LeafSize = 20
+      
+      spanning_tree := mlpack.Emst(data, param)
   
   The output matrix is a three-dimensional matrix, where each row indicates an
   edge.  The first dimension corresponds to the lesser index of the edge; the
@@ -56,7 +58,7 @@ func InitializeEmst() *EmstOptionalParam {
 
   Input parameters:
 
-   - Input (mat.Dense): Input data matrix.
+   - input (mat.Dense): Input data matrix.
    - LeafSize (int): Leaf size in the kd-tree.  One-element leaves give
         the empirically best performance, but at the cost of greater memory
         requirements.  Default value 1.
@@ -66,7 +68,7 @@ func InitializeEmst() *EmstOptionalParam {
 
   Output parameters:
 
-   - Output (mat.Dense): Output data.  Stored as an edge list.
+   - output (mat.Dense): Output data.  Stored as an edge list.
 
  */
 func Emst(input *mat.Dense, param *EmstOptionalParam) (*mat.Dense) {
@@ -107,11 +109,11 @@ func Emst(input *mat.Dense, param *EmstOptionalParam) (*mat.Dense) {
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  Output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat("output")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Output
+  return output
 }

@@ -27,7 +27,7 @@ type ApproxKfnOptionalParam struct {
     Verbose bool
 }
 
-func InitializeApproxKfn() *ApproxKfnOptionalParam {
+func ApproxKfnOptions() *ApproxKfnOptionalParam {
   return &ApproxKfnOptionalParam{
     Algorithm: "ds",
     CalculateError: false,
@@ -76,19 +76,19 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
   typically, the 'ds' algorithm requires far fewer tables and projections than
   the 'qdafn' algorithm.
   
-  Specify a reference set (set to search in) with "reference", specify a query
-  set with "query", and specify algorithm parameters with "num_tables" and
-  "num_projections" (or don't and defaults will be used).  The algorithm to be
+  Specify a reference set (set to search in) with "Reference", specify a query
+  set with "Query", and specify algorithm parameters with "NumTables" and
+  "NumProjections" (or don't and defaults will be used).  The algorithm to be
   used (either 'ds'---the default---or 'qdafn')  may be specified with
-  "algorithm".  Also specify the number of neighbors to search for with "k".
+  "Algorithm".  Also specify the number of neighbors to search for with "K".
   
   If no query set is specified, the reference set will be used as the query set.
-   The "output_model" output parameter may be used to store the built model, and
+   The "OutputModel" output parameter may be used to store the built model, and
   an input model may be loaded instead of specifying a reference set with the
-  "input_model" option.
+  "InputModel" option.
   
-  Results for each query point can be stored with the "neighbors" and
-  "distances" output parameters.  Each row of these output matrices holds the k
+  Results for each query point can be stored with the "Neighbors" and
+  "Distances" output parameters.  Each row of these output matrices holds the k
   distances or neighbor indices for each query point.
   
   For example, to find the 5 approximate furthest neighbors with reference_set
@@ -96,31 +96,37 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
   storing the furthest neighbor indices to neighbors and the furthest neighbor
   distances to distances, one could call
   
-    param := mlpack.InitializeApproxKfn()
-    param.Query = query_set
-    param.Reference = reference_set
-    param.K = 5
-    param.Algorithm = "ds"
-    Distances, Neighbors, _ := mlpack.ApproxKfn(param)
+      // Initialize optional parameters for ApproxKfn().
+      param := mlpack.ApproxKfnOptions()
+      param.Query = query_set
+      param.Reference = reference_set
+      param.K = 5
+      param.Algorithm = "ds"
+      
+      distances, neighbors, _ := mlpack.ApproxKfn(param)
   
   and to perform approximate all-furthest-neighbors search with k=1 on the set
   data storing only the furthest neighbor distances to distances, one could call
   
-    param := mlpack.InitializeApproxKfn()
-    param.Reference = reference_set
-    param.K = 1
-    Distances, _, _ := mlpack.ApproxKfn(param)
+      // Initialize optional parameters for ApproxKfn().
+      param := mlpack.ApproxKfnOptions()
+      param.Reference = reference_set
+      param.K = 1
+      
+      distances, _, _ := mlpack.ApproxKfn(param)
   
   A trained model can be re-used.  If a model has been previously saved to
   model, then we may find 3 approximate furthest neighbors on a query set
   new_query_set using that model and store the furthest neighbor indices into
   neighbors by calling
   
-    param := mlpack.InitializeApproxKfn()
-    param.InputModel = &Model
-    param.Query = new_query_set
-    param.K = 3
-    _, Neighbors, _ := mlpack.ApproxKfn(param)
+      // Initialize optional parameters for ApproxKfn().
+      param := mlpack.ApproxKfnOptions()
+      param.InputModel = &model
+      param.Query = new_query_set
+      param.K = 3
+      
+      _, neighbors, _ := mlpack.ApproxKfn(param)
 
 
   Input parameters:
@@ -145,10 +151,10 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
 
   Output parameters:
 
-   - Distances (mat.Dense): Matrix to save furthest neighbor distances
+   - distances (mat.Dense): Matrix to save furthest neighbor distances
         to.
-   - Neighbors (mat.Dense): Matrix to save neighbor indices to.
-   - OutputModel (approxkfnModel): File to save output model to.
+   - neighbors (mat.Dense): Matrix to save neighbor indices to.
+   - outputModel (approxkfnModel): File to save output model to.
 
  */
 func ApproxKfn(param *ApproxKfnOptionalParam) (*mat.Dense, *mat.Dense, approxkfnModel) {
@@ -229,15 +235,15 @@ func ApproxKfn(param *ApproxKfnOptionalParam) (*mat.Dense, *mat.Dense, approxkfn
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  Distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat("distances")
   var neighborsPtr mlpackArma
-  Neighbors := neighborsPtr.armaToGonumUmat("neighbors")
-  var OutputModel approxkfnModel
-  OutputModel.getApproxKFNModel("output_model")
+  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  var outputModel approxkfnModel
+  outputModel.getApproxKFNModel("output_model")
 
   // Clear settings.
   clearSettings()
 
   // Return output(s).
-  return Distances, Neighbors, OutputModel
+  return distances, neighbors, outputModel
 }

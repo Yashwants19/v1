@@ -21,7 +21,7 @@ type PreprocessDescribeOptionalParam struct {
     Width int
 }
 
-func InitializePreprocessDescribe() *PreprocessDescribeOptionalParam {
+func PreprocessDescribeOptions() *PreprocessDescribeOptionalParam {
   return &PreprocessDescribeOptionalParam{
     Dimension: 0,
     Population: false,
@@ -41,31 +41,35 @@ func InitializePreprocessDescribe() *PreprocessDescribeOptionalParam {
   table.
   
   Optionally, width and precision of the output can be adjusted by a user using
-  the "width" and "precision" parameters. A user can also select a specific
-  dimension to analyze if there are too many dimensions. The "population"
+  the "Width" and "Precision" parameters. A user can also select a specific
+  dimension to analyze if there are too many dimensions. The "Population"
   parameter can be specified when the dataset should be considered as a
   population.  Otherwise, the dataset will be considered as a sample.
   
   So, a simple example where we want to print out statistical facts about the
   dataset X using the default settings, we could run 
   
-    param := mlpack.InitializePreprocessDescribe()
-    param.Verbose = true
-   := mlpack.PreprocessDescribe(X, param)
+      // Initialize optional parameters for PreprocessDescribe().
+      param := mlpack.PreprocessDescribeOptions()
+      param.Verbose = true
+      
+       := mlpack.PreprocessDescribe(X, param)
   
   If we want to customize the width to 10 and precision to 5 and consider the
   dataset as a population, we could run
   
-    param := mlpack.InitializePreprocessDescribe()
-    param.Width = 10
-    param.Precision = 5
-    param.Verbose = true
-   := mlpack.PreprocessDescribe(X, param)
+      // Initialize optional parameters for PreprocessDescribe().
+      param := mlpack.PreprocessDescribeOptions()
+      param.Width = 10
+      param.Precision = 5
+      param.Verbose = true
+      
+       := mlpack.PreprocessDescribe(X, param)
 
 
   Input parameters:
 
-   - Input (mat.Dense): Matrix containing data,
+   - input (mat.Dense): Matrix containing data,
    - Dimension (int): Dimension of the data. Use this to specify a
         dimension  Default value 0.
    - Population (bool): If specified, the program will calculate
