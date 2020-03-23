@@ -71,7 +71,6 @@ install: deps download build sudo_install clean verify
 sudo_install:
 	cd $(TMP_DIR)mlpack/mlpack-go-bindings/build
 	sudo $(MAKE) install
-	sudo ldconfig
 	cd -
 
 # Build a minimal Go app to confirm gocv works.
