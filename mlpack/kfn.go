@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_kfn
 #include <capi/kfn.h>
 #include <stdlib.h>
 */

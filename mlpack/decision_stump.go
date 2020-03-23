@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_decision_stump
 #include <capi/decision_stump.h>
 #include <stdlib.h>
 */

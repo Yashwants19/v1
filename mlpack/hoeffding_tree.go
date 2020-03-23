@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_hoeffding_tree
 #include <capi/hoeffding_tree.h>
 #include <stdlib.h>
 */

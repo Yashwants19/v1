@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_krann
 #include <capi/krann.h>
 #include <stdlib.h>
 */

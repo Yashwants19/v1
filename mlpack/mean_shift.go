@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_mean_shift
 #include <capi/mean_shift.h>
 #include <stdlib.h>
 */

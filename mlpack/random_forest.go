@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_random_forest
 #include <capi/random_forest.h>
 #include <stdlib.h>
 */

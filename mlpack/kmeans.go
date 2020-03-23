@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_kmeans
 #include <capi/kmeans.h>
 #include <stdlib.h>
 */

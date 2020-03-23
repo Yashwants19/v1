@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_test_go_binding
 #include <capi/test_go_binding.h>
 #include <stdlib.h>
 */

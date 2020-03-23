@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_softmax_regression
 #include <capi/softmax_regression.h>
 #include <stdlib.h>
 */

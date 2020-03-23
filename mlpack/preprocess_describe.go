@@ -1,8 +1,6 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
-#cgo LDFLAGS: -L. -lmlpack_go_preprocess_describe
 #include <capi/preprocess_describe.h>
 #include <stdlib.h>
 */
