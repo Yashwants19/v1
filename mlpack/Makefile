@@ -1,17 +1,13 @@
 .ONESHELL:
-.PHONY: test deps download build clean astyle cmds docker
+.PHONY: verify deps download build clean
 
-# Go version to use when building Docker image
 GOVERSION?=1.13.1
 
-# Temporary directory to put files into.
 TMP_DIR?=/tmp/
 
-# Package list for each well-known Linux distribution
 RPMS=cmake curl git unzip boost-devel boost-test boost-program-options boost-math armadillo-devel binutils-devel
 DEBS=unzip build-essential cmake curl git pkg-config libboost-math-dev libboost-program-options-dev libboost-test-dev libboost-serialization-dev libarmadillo-dev binutils-dev
 
-# Detect Linux distribution
 distro_deps=
 ifneq ($(shell which dnf 2>/dev/null),)
 	distro_deps=deps_fedora
@@ -25,7 +21,6 @@ endif
 endif
 endif
 
-# Install all necessary dependencies.
 deps: $(distro_deps)
 
 deps_rh_centos:
@@ -39,7 +34,6 @@ deps_debian:
 	sudo apt-get -y install $(DEBS)
 
 
-# Download mlpack source tarballs.
 download:
 	rm -rf $(TMP_DIR)mlpack
 	mkdir $(TMP_DIR)mlpack
@@ -49,7 +43,6 @@ download:
 	rm mlpack.zip
 	cd -
 
-# Build mlpack.
 build:
 	cd $(TMP_DIR)mlpack/mlpack-go-bindings
 	mkdir build
@@ -59,27 +52,17 @@ build:
 	$(MAKE) preinstall
 	cd -
 
-# Cleanup temporary build files.
 clean:
 	go clean --cache
 	rm -rf $(TMP_DIR)mlpack
 
-# Do everything.
 install: deps download build sudo_install clean verify
 
-# Install system wide.
 sudo_install:
 	cd $(TMP_DIR)mlpack/mlpack-go-bindings/build
 	sudo $(MAKE) install
 	sudo ldconfig
 	cd -
 
-# Build a minimal Go app to confirm gocv works.
 verify:
 	go test -v ./...
-
-# Runs tests.
-# This assumes env.sh was already sourced.
-# pvt is not tested here since it requires additional depenedences.
-test:
-	go test . ./tests
