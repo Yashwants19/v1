@@ -54,7 +54,7 @@ build:
 	cd $(TMP_DIR)mlpack/mlpack-go-bindings
 	mkdir build
 	cd build
-	cmake -D BUILD_TESTS=OFF -D BUILD_JULIA_BINDINGS=OFF -D BUILD_PYTHON_BINDINGS=OFF -D BUILD_CLI_EXECUTABLES=OFF -D BUILD_GO_BINDINGS=ON ..
+	cmake -D BUILD_TESTS=ON -D BUILD_JULIA_BINDINGS=OFF -D BUILD_PYTHON_BINDINGS=OFF -D BUILD_CLI_EXECUTABLES=OFF -D BUILD_GO_BINDINGS=OFF -D BUILD_GO_SHLIB=ON  ..
 	$(MAKE) -j $(shell nproc --all)
 	$(MAKE) preinstall
 	cd -
@@ -75,7 +75,7 @@ sudo_install:
 
 # Build a minimal Go app to confirm gocv works.
 verify:
-	go run main.go
+	go test -v ./...
 
 # Runs tests.
 # This assumes env.sh was already sourced.
