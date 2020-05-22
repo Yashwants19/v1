@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_preprocess_binarize
 #include <capi/preprocess_binarize.h>
 #include <stdlib.h>
 */

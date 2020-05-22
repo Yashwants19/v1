@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_decision_tree
 #include <capi/decision_tree.h>
 #include <stdlib.h>
 */

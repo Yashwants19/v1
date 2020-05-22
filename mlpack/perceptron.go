@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_perceptron
 #include <capi/perceptron.h>
 #include <stdlib.h>
 */

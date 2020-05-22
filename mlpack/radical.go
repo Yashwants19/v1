@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_radical
 #include <capi/radical.h>
 #include <stdlib.h>
 */

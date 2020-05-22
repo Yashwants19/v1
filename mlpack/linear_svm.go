@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_linear_svm
 #include <capi/linear_svm.h>
 #include <stdlib.h>
 */

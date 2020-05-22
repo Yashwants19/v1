@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_preprocess_scale
 #include <capi/preprocess_scale.h>
 #include <stdlib.h>
 */

@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_range_search
 #include <capi/range_search.h>
 #include <stdlib.h>
 */

@@ -1,6 +1,8 @@
 package mlpack
 
 /*
+#cgo CFLAGS: -I./capi -Wall
+#cgo LDFLAGS: -L. -lmlpack_go_adaboost
 #include <capi/adaboost.h>
 #include <stdlib.h>
 */
