@@ -23,7 +23,7 @@ func main() {
   _, _ = data.ReadHeading()
   ratings, _ := data.ReadAll()
 
-  //mlpack.UnZip("movies.csv.gz", "movies.csv")
+  mlpack.UnZip("movies.csv.gz", "movies.csv")
   table, _ := csv.NewTable(csv.FromFile("movies.csv"), csv.LoadHeaders())
   movies, _ := table.ReadColumn("title")
 
