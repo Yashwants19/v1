@@ -1,5 +1,5 @@
 package main
-  
+
 import (
   "github.com/frictionlessdata/tableschema-go/csv"
   "github.com/Yashwants19/v1/mlpack"
@@ -10,13 +10,13 @@ import (
 func main() {
 
   // Download dataset.
-  //mlpack.DownloadFile("https://www.mlpack.org/datasets/ml-20m/ratings-only.csv.gz",
-  //                    "ratings-only.csv.gz")
-  //mlpack.DownloadFile("https://www.mlpack.org/datasets/ml-20m/movies.csv.gz",
-  //                    "movies.csv.gz")
- 
+  mlpack.DownloadFile("https://www.mlpack.org/datasets/ml-20m/ratings-only.csv.gz",
+                      "ratings-only.csv.gz")
+  mlpack.DownloadFile("https://www.mlpack.org/datasets/ml-20m/movies.csv.gz",
+                      "movies.csv.gz")
+
   // Extract dataset.
-  //mlpack.UnZip("ratings-only.csv.gz", "ratings-only.csv")
+  mlpack.UnZip("ratings-only.csv.gz", "ratings-only.csv")
   f1, _ := os.Open("ratings-only.csv")
   defer f1.Close()
   data := mlpack.NewReader(f1)
@@ -44,7 +44,7 @@ func main() {
   cf_params.Verbose = true
   cf_params.Algorithm = "RegSVD"
   _, cf_model := mlpack.Cf(cf_params)
-  
+
   // Now query the 5 top movies for user 1.
   cf_params_2 := mlpack.CfOptions()
   cf_params_2.InputModel = &cf_model
@@ -53,7 +53,7 @@ func main() {
   cf_params_2.Verbose = true
   cf_params_2.MaxIterations = 5
   output, _ := mlpack.Cf(cf_params_2)
- 
+
   // Get the names of the movies for user 1.
   fmt.Print("Recommendations for user 1")
   fmt.Println()
