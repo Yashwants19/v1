@@ -32,7 +32,7 @@ func main() {
   params := mlpack.PreprocessSplitOptions()
   params.TestRatio = 0.1
   params.Verbose = true
-  _, _, ratings_train, _ :=
+  ratings_test, _, ratings_train, _ :=
       mlpack.PreprocessSplit(ratings, params)
   // Train the model.  Change the rank to increase/decrease the complexity of the
   // model.
