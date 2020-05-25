@@ -2,7 +2,7 @@ package main
 
 import (
   "github.com/frictionlessdata/tableschema-go/csv"
-  "github.com/Yashwants19/v1/mlpack"
+  "github.com/Yashwants19/v1"
   "gonum.org/v1/gonum/mat"
   "fmt"
   "os"

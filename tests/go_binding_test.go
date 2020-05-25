@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Yashwants19/v1/mlpack"
+	"github.com/Yashwants19/v1"
 	"testing"
 
 	"gonum.org/v1/gonum/mat"
