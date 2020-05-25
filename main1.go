@@ -58,6 +58,6 @@ func main() {
   fmt.Print("Recommendations for user 1")
   fmt.Println()
   for i := 1; i < 11; i++ {
-    fmt.Println(i, ":", movies[int(output.At(i , 0))])
+    fmt.Println(i, ":", movies[int(output.At(0 , i))])
   }
 }
