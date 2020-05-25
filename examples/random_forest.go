@@ -8,13 +8,13 @@ import (
 func main() {
 
   // Download dataset.
-  //mlpack.DownloadFile("https://www.mlpack.org/datasets/covertype-small.data.csv.gz",
-                     // "data.csv.gz")
-  //mlpack.DownloadFile("https://www.mlpack.org/datasets/covertype-small.labels.csv.gz",
-                     // "labels.csv.gz")
+  mlpack.DownloadFile("https://www.mlpack.org/datasets/covertype-small.data.csv.gz",
+                      "data.csv.gz")
+  mlpack.DownloadFile("https://www.mlpack.org/datasets/covertype-small.labels.csv.gz",
+                      "labels.csv.gz")
  
   // Extract/Unzip the dataset.
-  //mlpack.UnZip("data.csv.gz", "data.csv")
+  mlpack.UnZip("data.csv.gz", "data.csv")
   f1, _ := os.Open("data.csv")
   defer f1.Close()
   data := mlpack.NewReader(f1)
