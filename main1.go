@@ -38,8 +38,8 @@ func main() {
   // model.
   cf_params := mlpack.CfOptions()
   cf_params.Training = ratings_train
-  //cf_params.Test = ratings_test
-  cf_params.MaxIterations = 5
+  cf_params.Test = ratings_test
+  cf_params.MaxIterations = 10
   cf_params.Rank = 10
   cf_params.Verbose = true
   cf_params.Algorithm = "RegSVD"
@@ -51,13 +51,13 @@ func main() {
   cf_params_2.Recommendations = 10
   cf_params_2.Query = mat.NewDense(1, 1, []float64{1})
   cf_params_2.Verbose = true
-  cf_params_2.MaxIterations = 5
+  cf_params_2.MaxIterations = 10
   output, _ := mlpack.Cf(cf_params_2)
 
   // Get the names of the movies for user 1.
   fmt.Print("Recommendations for user 1")
   fmt.Println()
-  for i := 0; i < 10; i++ {
+  for i := 1; i < 11; i++ {
     fmt.Println(i, ":", movies[int(output.At(i , 0))])
   }
 }
