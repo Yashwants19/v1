@@ -15,16 +15,10 @@ func main() {
  
   // Extract/Unzip the dataset.
   mlpack.UnZip("data.csv.gz", "data.csv")
-  f1, _ := os.Open("data.csv")
-  defer f1.Close()
-  data := mlpack.NewReader(f1)
-  dataset, _ := data.ReadAll()
-  
+  dataset, _ := mlpack.Load("data.csv")
+
   mlpack.UnZip("labels.csv.gz", "labels.csv")
-  f2, _ := os.Open("labels.csv")
-  defer f2.Close()
-  labels_data := mlpack.NewReader(f2)
-  labels, _ := labels_data.ReadAll()
+  labels, _ := mlpack.Load("labels.csv")
 
   // Split the dataset using mlpack.
   params := mlpack.PreprocessSplitOptions()

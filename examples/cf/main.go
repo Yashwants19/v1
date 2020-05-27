@@ -17,11 +17,7 @@ func main() {
 
   // Extract dataset.
   mlpack.UnZip("ratings-only.csv.gz", "ratings-only.csv")
-  f1, _ := os.Open("ratings-only.csv")
-  defer f1.Close()
-  data := mlpack.NewReader(f1)
-  _, _ = data.ReadHeading()
-  ratings, _ := data.ReadAll()
+  ratings, _ := mlpack.Load("ratings-only.csv")
 
   mlpack.UnZip("movies.csv.gz", "movies.csv")
   table, _ := csv.NewTable(csv.FromFile("movies.csv"), csv.LoadHeaders())
