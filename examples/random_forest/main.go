@@ -1,5 +1,5 @@
 package main
-  
+
 import (
   "github.com/Yashwants19/v1"
   "fmt"
@@ -11,7 +11,7 @@ func main() {
                       "data.csv.gz")
   mlpack.DownloadFile("https://www.mlpack.org/datasets/covertype-small.labels.csv.gz",
                       "labels.csv.gz")
- 
+
   // Extract/Unzip the dataset.
   mlpack.UnZip("data.csv.gz", "data.csv")
   dataset, _ := mlpack.Load("data.csv")
@@ -26,7 +26,7 @@ func main() {
   params.Verbose = true
   test, test_labels, train, train_labels :=
       mlpack.PreprocessSplit(dataset, params)
-      
+
   // Train a random forest.
   rf_params := mlpack.RandomForestOptions()
   rf_params.NumTrees = 10
@@ -52,5 +52,6 @@ func main() {
       sum = sum + 1
     }
   }
-  fmt.Println(sum, " correct of ", rows, "(", (float64(sum) / float64(rows)) * 100, "%)")
+  fmt.Println(sum, " correct of ", rows, "(", (float64(sum) / float64(rows)) *
+              100, "%)")
 }

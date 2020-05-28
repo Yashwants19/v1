@@ -26,8 +26,7 @@ func main() {
   params := mlpack.PreprocessSplitOptions()
   params.TestRatio = 0.1
   params.Verbose = true
-  ratings_test, _, ratings_train, _ :=
-      mlpack.PreprocessSplit(ratings, params)
+  ratings_test, _, ratings_train, _ := mlpack.PreprocessSplit(ratings, params)
 
   // Train the model.  Change the rank to increase/decrease the complexity of the
   // model.
@@ -49,8 +48,7 @@ func main() {
   output, _ := mlpack.Cf(cf_params_2)
 
   // Get the names of the movies for user 1.
-  fmt.Print("Recommendations for user 1")
-  fmt.Println()
+  fmt.Println("Recommendations for user 1")
   for i := 0; i < 10; i++ {
     fmt.Println(i, ":", movies[int(output.At(0 , i))])
   }

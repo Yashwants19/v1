@@ -1,13 +1,20 @@
 .ONESHELL:
-.PHONY: verify deps download build clean
+.PHONY: test deps download build clean docker
 
+# Go version to use when building Docker image
 GOVERSION?=1.13.1
 
+# Temporary directory to put files into.
 TMP_DIR?=/tmp/
 
-RPMS=cmake curl git unzip boost-devel boost-test boost-program-options boost-math armadillo-devel binutils-devel
-DEBS=unzip build-essential cmake curl git pkg-config libboost-math-dev libboost-program-options-dev libboost-test-dev libboost-serialization-dev libarmadillo-dev binutils-dev
+# Package list for each well-known Linux distribution
+RPMS = cmake curl git unzip boost-devel boost-test boost-program-options         \
+       boost-math armadillo-devel
+DEBS = unzip build-essential cmake curl git pkg-config libboost-math-dev         \
+       libboost-program-options-dev libboost-test-dev libboost-serialization-dev \
+       libarmadillo-dev
 
+# Detect Linux distribution
 distro_deps=
 ifneq ($(shell which dnf 2>/dev/null),)
 	distro_deps=deps_fedora
@@ -21,6 +28,7 @@ endif
 endif
 endif
 
+# Install all necessary dependencies.
 deps: $(distro_deps)
 
 deps_rh_centos:
@@ -33,7 +41,7 @@ deps_debian:
 	sudo apt-get -y update
 	sudo apt-get -y install $(DEBS)
 
-
+# Download mlpack source.
 download:
 	rm -rf $(TMP_DIR)mlpack
 	mkdir $(TMP_DIR)mlpack
@@ -43,26 +51,36 @@ download:
 	rm mlpack.zip
 	cd -
 
+# Build mlpack(go shared libraries).
 build:
 	cd $(TMP_DIR)mlpack/mlpack-go-bindings
 	mkdir build
 	cd build
-	cmake -D BUILD_TESTS=OFF -D BUILD_JULIA_BINDINGS=OFF -D BUILD_PYTHON_BINDINGS=OFF -D BUILD_CLI_EXECUTABLES=OFF -D BUILD_GO_BINDINGS=OFF -D BUILD_GO_SHLIB=ON  ..
+	cmake -D BUILD_TESTS=OFF           \
+	      -D BUILD_JULIA_BINDINGS=OFF  \
+	      -D BUILD_PYTHON_BINDINGS=OFF \
+	      -D BUILD_CLI_EXECUTABLES=OFF \
+	      -D BUILD_GO_BINDINGS=OFF     \
+	      -D BUILD_GO_SHLIB=ON  ..
 	$(MAKE) -j $(shell nproc --all)
 	$(MAKE) preinstall
 	cd -
 
+# Cleanup temporary build files.
 clean:
 	go clean --cache
 	rm -rf $(TMP_DIR)mlpack
 
-install: deps download build sudo_install clean verify
+# Do everything.
+install: deps download build sudo_install clean test
 
+
+# Install system wide.
 sudo_install:
 	cd $(TMP_DIR)mlpack/mlpack-go-bindings/build
 	sudo $(MAKE) install
 	sudo ldconfig
 	cd -
-
-verify:
-	go test -v ./...
+# Runs tests.
+test:
+	go test -v . ./tests
