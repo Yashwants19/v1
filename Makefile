@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: test deps download build clean
+.PHONY: test deps download build clean docker
 
 # Go version to use when building Docker image
 GOVERSION?=1.13.1
@@ -84,3 +84,7 @@ sudo_install:
 # Runs tests.
 test:
 	go test -v . ./tests
+
+docker:
+	docker build --build-arg GOVERSION=$(GOVERSION) .
+

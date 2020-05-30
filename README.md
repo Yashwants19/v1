@@ -205,7 +205,7 @@ The following commands should do everything to download and mlpack 3.3.0 on Linu
 If it works correctly, at the end of the entire process, the following message should be displayed:
 
 	PASS
-	ok mlpack.org/v1/mlpack/tests
+	ok	mlpack.org/v1/mlpack/tests
 
 That's it, now you are ready to use mlpack.
 
@@ -255,7 +255,7 @@ Now you should be able to build or run any of the examples:
 
 The version program should output the following:
 
-	ok $GOPATH/src/mlpack.org/v1/mlpack/tests
+	ok	$GOPATH/src/mlpack.org/v1/mlpack/tests
 
 #### Cleanup extra files
 
@@ -263,3 +263,10 @@ After the installation is complete, you can remove the extra files and folders:
 
 	make clean
 
+### Docker
+
+The project provides `Dockerfile` which lets you build [mlpack](https://mlpack.org/) Docker image which you can then use to build and run `mlpack` applications in Docker containers. The `Makefile` contains `docker` target which lets you build Docker image with a single command:
+
+```
+make docker
+```
