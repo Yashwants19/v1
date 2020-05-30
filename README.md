@@ -255,7 +255,7 @@ Now you should be able to build or run any of the examples:
 
 The version program should output the following:
 
-	ok	$GOPATH/src/mlpack.org/v1/mlpack/tests
+	ok	mlpack.org/v1/mlpack/tests
 
 #### Cleanup extra files
 
