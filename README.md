@@ -102,7 +102,7 @@ It's easy to modify the code above to do more complex things, or to use differen
 ## Using mlpack for movie recommendations
 
 In this example, we'll train a collaborative filtering model using mlpack's
-<tt><a href="https://www.mlpack.org/doc/mlpack-git/go_documentation.html#cf">Cf()</a></tt> method.  We'll train this on the MovieLens dataset from
+<tt><a href="https://godoc.org/github.com/Yashwants19/v1#Cf">Cf()</a></tt> method.  We'll train this on the MovieLens dataset from
 https://grouplens.org/datasets/movielens/, and then we'll use the model that we
 train to give recommendations.
 
@@ -205,7 +205,7 @@ The following commands should do everything to download and mlpack 3.3.0 on Linu
 If it works correctly, at the end of the entire process, the following message should be displayed:
 
 	PASS
-        ok  	mlpack.org/v1/mlpack/tests
+	ok mlpack.org/v1/mlpack/tests
 
 That's it, now you are ready to use mlpack.
 
@@ -255,7 +255,7 @@ Now you should be able to build or run any of the examples:
 
 The version program should output the following:
 
-        ok $GOPATH/src/mlpack.org/v1/mlpack/tests
+	ok $GOPATH/src/mlpack.org/v1/mlpack/tests
 
 #### Cleanup extra files
 
