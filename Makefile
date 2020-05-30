@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: test deps download build clean docker
+.PHONY: test deps download build clean
 
 # Go version to use when building Docker image
 GOVERSION?=1.13.1
