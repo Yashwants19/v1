@@ -30,10 +30,6 @@ endif
 
 # Install all necessary dependencies.
 deps: $(distro_deps)
-	curl https://ftp.fau.de/macports/distfiles/armadillo/armadillo-8.400.0.tar.xz | tar -xvJ
-	cd armadillo*
-	cmake . && make && sudo make install && cd ..
-	rm -rf armadillo*
 
 deps_rh_centos:
 	sudo yum -y install pkgconfig $(RPMS)
