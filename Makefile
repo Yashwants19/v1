@@ -35,7 +35,7 @@ deps: $(distro_deps)
 	cd $(TMP_DIR)arma
 	curl -Lo arma.tar.xz https://ftp.fau.de/macports/distfiles/armadillo/armadillo-8.400.0.tar.xz
 	tar -xvJ arma.tar.xz && rm arma.tar.xz && cd -
-	cd $(TMP_DIR)arma/armadillo*
+	cd $(TMP_DIR)arma/armadillo-8.400.0
 	cmake . && make && sudo make install && cd -
 	rm -rf  $(TMP_DIR)arma
 
