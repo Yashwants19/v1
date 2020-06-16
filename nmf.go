@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type NmfOptionalParam struct {
     InitialH *mat.Dense
@@ -60,11 +58,11 @@ func NmfOptions() *NmfOptionalParam {
   rules with a rank-10 decomposition and storing the decomposed matrices into W
   and H, the following command could be used: 
   
-      // Initialize optional parameters for Nmf().
-      param := mlpack.NmfOptions()
-      param.UpdateRules = "multdist"
-      
-      H, W := mlpack.Nmf(V, 10, param)
+  // Initialize optional parameters for Nmf().
+  param := mlpack.NmfOptions()
+  param.UpdateRules = "multdist"
+  
+  H, W := mlpack.Nmf(V, 10, param)
 
 
   Input parameters:

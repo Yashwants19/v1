@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LshOptionalParam struct {
     BucketSize int
@@ -48,23 +44,6 @@ func LshOptions() *LshOptionalParam {
   }
 }
 
-type lshSearch struct {
-  mem unsafe.Pointer
-}
-
-func (m *lshSearch) allocLSHSearch(identifier string) {
-  m.mem = C.mlpackGetLSHSearchPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *lshSearch) getLSHSearch(identifier string) {
-  m.allocLSHSearch(identifier)
-}
-
-func setLSHSearch(identifier string, ptr *lshSearch) {
-  C.mlpackSetLSHSearchPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program will calculate the k approximate-nearest-neighbors of a set of
   points using locality-sensitive hashing. You may specify a separate set of
@@ -75,12 +54,12 @@ func setLSHSearch(identifier string, ptr *lshSearch) {
   point in input and store the distances in distances and the neighbors in
   neighbors:
   
-      // Initialize optional parameters for Lsh().
-      param := mlpack.LshOptions()
-      param.K = 5
-      param.Reference = input
-      
-      distances, neighbors, _ := mlpack.Lsh(param)
+  // Initialize optional parameters for Lsh().
+  param := mlpack.LshOptions()
+  param.K = 5
+  param.Reference = input
+  
+  distances, neighbors, _ := mlpack.Lsh(param)
   
   The output is organized such that row i and column j in the neighbors output
   corresponds to the index of the point in the reference set which is the j'th

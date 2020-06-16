@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type NbcOptionalParam struct {
     IncrementalVariance bool
@@ -32,23 +28,6 @@ func NbcOptions() *NbcOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type nbcModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *nbcModel) allocNBCModel(identifier string) {
-  m.mem = C.mlpackGetNBCModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *nbcModel) getNBCModel(identifier string) {
-  m.allocNBCModel(identifier)
-}
-
-func setNBCModel(identifier string, ptr *nbcModel) {
-  C.mlpackSetNBCModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -80,22 +59,22 @@ func setNBCModel(identifier string, ptr *nbcModel) {
   For example, to train a Naive Bayes classifier on the dataset data with labels
   labels and save the model to nbc_model, the following command may be used:
   
-      // Initialize optional parameters for Nbc().
-      param := mlpack.NbcOptions()
-      param.Training = data
-      param.Labels = labels
-      
-      _, nbc_model, _, _, _ := mlpack.Nbc(param)
+  // Initialize optional parameters for Nbc().
+  param := mlpack.NbcOptions()
+  param.Training = data
+  param.Labels = labels
+  
+  _, nbc_model, _, _, _ := mlpack.Nbc(param)
   
   Then, to use nbc_model to predict the classes of the dataset test_set and save
   the predicted classes to predictions, the following command may be used:
   
-      // Initialize optional parameters for Nbc().
-      param := mlpack.NbcOptions()
-      param.InputModel = &nbc_model
-      param.Test = test_set
-      
-      predictions, _, _, _, _ := mlpack.Nbc(param)
+  // Initialize optional parameters for Nbc().
+  param := mlpack.NbcOptions()
+  param.InputModel = &nbc_model
+  param.Test = test_set
+  
+  predictions, _, _, _, _ := mlpack.Nbc(param)
 
 
   Input parameters:

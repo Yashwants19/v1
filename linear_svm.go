@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LinearSvmOptionalParam struct {
     Delta float64
@@ -54,23 +50,6 @@ func LinearSvmOptions() *LinearSvmOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type linearsvmModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *linearsvmModel) allocLinearSVMModel(identifier string) {
-  m.mem = C.mlpackGetLinearSVMModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *linearsvmModel) getLinearSVMModel(identifier string) {
-  m.allocLinearSVMModel(identifier)
-}
-
-func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
-  C.mlpackSetLinearSVMModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -116,25 +95,25 @@ func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
   with L2 regularization of 0.1, saving the model to 'lsvm_model', the following
   command may be used:
   
-      // Initialize optional parameters for LinearSvm().
-      param := mlpack.LinearSvmOptions()
-      param.Training = data
-      param.Labels = labels
-      param.Lambda = 0.1
-      param.Delta = 1
-      param.NumClasses = 0
-      
-      lsvm_model, _, _ := mlpack.LinearSvm(param)
+  // Initialize optional parameters for LinearSvm().
+  param := mlpack.LinearSvmOptions()
+  param.Training = data
+  param.Labels = labels
+  param.Lambda = 0.1
+  param.Delta = 1
+  param.NumClasses = 0
+  
+  lsvm_model, _, _ := mlpack.LinearSvm(param)
   
   Then, to use that model to predict classes for the dataset 'test', storing the
   output predictions in 'predictions', the following command may be used: 
   
-      // Initialize optional parameters for LinearSvm().
-      param := mlpack.LinearSvmOptions()
-      param.InputModel = &lsvm_model
-      param.Test = test
-      
-      _, predictions, _ := mlpack.LinearSvm(param)
+  // Initialize optional parameters for LinearSvm().
+  param := mlpack.LinearSvmOptions()
+  param.InputModel = &lsvm_model
+  param.Test = test
+  
+  _, predictions, _ := mlpack.LinearSvm(param)
 
 
   Input parameters:

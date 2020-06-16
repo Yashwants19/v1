@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessScaleOptionalParam struct {
     Epsilon float64
@@ -38,23 +34,6 @@ func PreprocessScaleOptions() *PreprocessScaleOptionalParam {
   }
 }
 
-type scalingModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *scalingModel) allocScalingModel(identifier string) {
-  m.mem = C.mlpackGetScalingModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *scalingModel) getScalingModel(identifier string) {
-  m.allocScalingModel(identifier)
-}
-
-func setScalingModel(identifier string, ptr *scalingModel) {
-  C.mlpackSetScalingModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This utility takes a dataset and performs feature scaling using one of the six
   scaler methods namely: 'max_abs_scaler', 'mean_normalization',
@@ -72,44 +51,44 @@ func setScalingModel(identifier string, ptr *scalingModel) {
   So, a simple example where we want to scale the dataset X into X_scaled with 
   standard_scaler as scaler_method, we could run 
   
-      // Initialize optional parameters for PreprocessScale().
-      param := mlpack.PreprocessScaleOptions()
-      param.ScalerMethod = "standard_scaler"
-      
-      X_scaled, _ := mlpack.PreprocessScale(X, param)
+  // Initialize optional parameters for PreprocessScale().
+  param := mlpack.PreprocessScaleOptions()
+  param.ScalerMethod = "standard_scaler"
+  
+  X_scaled, _ := mlpack.PreprocessScale(X, param)
   
   A simple example where we want to whiten the dataset X into X_whitened with 
   PCA as whitening_method and use 0.01 as regularization parameter, we could run
   
   
-      // Initialize optional parameters for PreprocessScale().
-      param := mlpack.PreprocessScaleOptions()
-      param.ScalerMethod = "pca_whitening"
-      param.Epsilon = 0.01
-      
-      X_scaled, _ := mlpack.PreprocessScale(X, param)
+  // Initialize optional parameters for PreprocessScale().
+  param := mlpack.PreprocessScaleOptions()
+  param.ScalerMethod = "pca_whitening"
+  param.Epsilon = 0.01
+  
+  X_scaled, _ := mlpack.PreprocessScale(X, param)
   
   You can also retransform the scaled dataset back using"InverseScaling". An
   example to rescale : X_scaled into Xusing the saved model "InputModel" is:
   
-      // Initialize optional parameters for PreprocessScale().
-      param := mlpack.PreprocessScaleOptions()
-      param.InverseScaling = true
-      param.InputModel = &saved
-      
-      X, _ := mlpack.PreprocessScale(X_scaled, param)
+  // Initialize optional parameters for PreprocessScale().
+  param := mlpack.PreprocessScaleOptions()
+  param.InverseScaling = true
+  param.InputModel = &saved
+  
+  X, _ := mlpack.PreprocessScale(X_scaled, param)
   
   Another simple example where we want to scale the dataset X into X_scaled with
    min_max_scaler as scaler method, where scaling range is 1 to 3 instead of
   default 0 to 1. We could run 
   
-      // Initialize optional parameters for PreprocessScale().
-      param := mlpack.PreprocessScaleOptions()
-      param.ScalerMethod = "min_max_scaler"
-      param.MinValue = 1
-      param.MaxValue = 3
-      
-      X_scaled, _ := mlpack.PreprocessScale(X, param)
+  // Initialize optional parameters for PreprocessScale().
+  param := mlpack.PreprocessScaleOptions()
+  param.ScalerMethod = "min_max_scaler"
+  param.MinValue = 1
+  param.MaxValue = 3
+  
+  X_scaled, _ := mlpack.PreprocessScale(X, param)
 
 
   Input parameters:

@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type FastmksOptionalParam struct {
     Bandwidth float64
@@ -48,23 +44,6 @@ func FastmksOptions() *FastmksOptionalParam {
   }
 }
 
-type fastmksModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *fastmksModel) allocFastMKSModel(identifier string) {
-  m.mem = C.mlpackGetFastMKSModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *fastmksModel) getFastMKSModel(identifier string) {
-  m.allocFastMKSModel(identifier)
-}
-
-func setFastMKSModel(identifier string, ptr *fastmksModel) {
-  C.mlpackSetFastMKSModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program will find the k maximum kernels of a set of points, using a query
   set and a reference set (which can optionally be the same set). More
@@ -78,14 +57,14 @@ func setFastMKSModel(identifier string, ptr *fastmksModel) {
   the  kernels output parameter and the indices may be saved with the indices
   output parameter.
   
-      // Initialize optional parameters for Fastmks().
-      param := mlpack.FastmksOptions()
-      param.K = 5
-      param.Reference = reference
-      param.Query = query
-      param.Kernel = "linear"
-      
-      indices, kernels, _ := mlpack.Fastmks(param)
+  // Initialize optional parameters for Fastmks().
+  param := mlpack.FastmksOptions()
+  param.K = 5
+  param.Reference = reference
+  param.Query = query
+  param.Kernel = "linear"
+  
+  indices, kernels, _ := mlpack.Fastmks(param)
   
   The output matrices are organized such that row i and column j in the indices
   matrix corresponds to the index of the point in the reference set that has

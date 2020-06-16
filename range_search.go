@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type RangeSearchOptionalParam struct {
     InputModel *rsModel
@@ -44,23 +40,6 @@ func RangeSearchOptions() *RangeSearchOptionalParam {
     TreeType: "kd",
     Verbose: false,
   }
-}
-
-type rsModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *rsModel) allocRSModel(identifier string) {
-  m.mem = C.mlpackGetRSModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *rsModel) getRSModel(identifier string) {
-  m.allocRSModel(identifier)
-}
-
-func setRSModel(identifier string, ptr *rsModel) {
-  C.mlpackSetRSModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*

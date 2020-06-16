@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KernelPcaOptionalParam struct {
     Bandwidth float64
@@ -49,10 +47,10 @@ func KernelPcaOptions() *KernelPcaOptionalParam {
   For example, the following command will perform KPCA on the dataset input
   using the Gaussian kernel, and saving the transformed data to transformed: 
   
-      // Initialize optional parameters for KernelPca().
-      param := mlpack.KernelPcaOptions()
-      
-      transformed := mlpack.KernelPca(input, "gaussian", param)
+  // Initialize optional parameters for KernelPca().
+  param := mlpack.KernelPcaOptions()
+  
+  transformed := mlpack.KernelPca(input, "gaussian", param)
   
   The kernels that are supported are listed below:
   

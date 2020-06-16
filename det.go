@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DetOptionalParam struct {
     Folds int
@@ -38,23 +34,6 @@ func DetOptions() *DetOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type dTree struct {
-  mem unsafe.Pointer
-}
-
-func (m *dTree) allocDTree(identifier string) {
-  m.mem = C.mlpackGetDTreePtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *dTree) getDTree(identifier string) {
-  m.allocDTree(identifier)
-}
-
-func setDTree(identifier string, ptr *dTree) {
-  C.mlpackSetDTreePtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*

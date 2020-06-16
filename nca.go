@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type NcaOptionalParam struct {
     ArmijoConstant float64

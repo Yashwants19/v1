@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KmeansOptionalParam struct {
     Algorithm string
@@ -87,21 +85,21 @@ func KmeansOptions() *KmeansOptionalParam {
   assignments for each point to assignments, the following command could be
   used:
   
-      // Initialize optional parameters for Kmeans().
-      param := mlpack.KmeansOptions()
-      
-      centroids, assignments := mlpack.Kmeans(data, 10, param)
+  // Initialize optional parameters for Kmeans().
+  param := mlpack.KmeansOptions()
+  
+  centroids, assignments := mlpack.Kmeans(data, 10, param)
   
   To run k-means on that same dataset with initial centroids specified in
   initial with a maximum of 500 iterations, storing the output centroids in
   final the following command may be used:
   
-      // Initialize optional parameters for Kmeans().
-      param := mlpack.KmeansOptions()
-      param.InitialCentroids = initial
-      param.MaxIterations = 500
-      
-      final, _ := mlpack.Kmeans(data, 10, param)
+  // Initialize optional parameters for Kmeans().
+  param := mlpack.KmeansOptions()
+  param.InitialCentroids = initial
+  param.MaxIterations = 500
+  
+  final, _ := mlpack.Kmeans(data, 10, param)
 
 
   Input parameters:

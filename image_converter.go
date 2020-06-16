@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type ImageConverterOptionalParam struct {
     Channels int
@@ -44,25 +42,25 @@ func ImageConverterOptions() *ImageConverterOptionalParam {
   You can also provide a dataset and save them as images using "Dataset" and
   "Save" as an parameter. An example to load an image : 
   
-      // Initialize optional parameters for ImageConverter().
-      param := mlpack.ImageConverterOptions()
-      param.Height = 256
-      param.Width = 256
-      param.Channels = 3
-      
-      Y := mlpack.ImageConverter(X, param)
+  // Initialize optional parameters for ImageConverter().
+  param := mlpack.ImageConverterOptions()
+  param.Height = 256
+  param.Width = 256
+  param.Channels = 3
+  
+  Y := mlpack.ImageConverter(X, param)
   
    An example to save an image is :
   
-      // Initialize optional parameters for ImageConverter().
-      param := mlpack.ImageConverterOptions()
-      param.Height = 256
-      param.Width = 256
-      param.Channels = 3
-      param.Dataset = Y
-      param.Save = true
-      
-      _ := mlpack.ImageConverter(X, param)
+  // Initialize optional parameters for ImageConverter().
+  param := mlpack.ImageConverterOptions()
+  param.Height = 256
+  param.Width = 256
+  param.Channels = 3
+  param.Dataset = Y
+  param.Save = true
+  
+  _ := mlpack.ImageConverter(X, param)
 
 
   Input parameters:

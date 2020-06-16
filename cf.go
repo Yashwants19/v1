@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type CfOptionalParam struct {
     Algorithm string
@@ -54,23 +50,6 @@ func CfOptions() *CfOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type cfModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *cfModel) allocCFModel(identifier string) {
-  m.mem = C.mlpackGetCFModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *cfModel) getCFModel(identifier string) {
-  m.allocCFModel(identifier)
-}
-
-func setCFModel(identifier string, ptr *cfModel) {
-  C.mlpackSetCFModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -134,24 +113,24 @@ func setCFModel(identifier string, ptr *cfModel) {
   To train a CF model on a dataset training_set using NMF for decomposition and
   saving the trained model to model, one could call: 
   
-      // Initialize optional parameters for Cf().
-      param := mlpack.CfOptions()
-      param.Training = training_set
-      param.Algorithm = "NMF"
-      
-      _, model := mlpack.Cf(param)
+  // Initialize optional parameters for Cf().
+  param := mlpack.CfOptions()
+  param.Training = training_set
+  param.Algorithm = "NMF"
+  
+  _, model := mlpack.Cf(param)
   
   Then, to use this model to generate recommendations for the list of users in
   the query set users, storing 5 recommendations in recommendations, one could
   call 
   
-      // Initialize optional parameters for Cf().
-      param := mlpack.CfOptions()
-      param.InputModel = &model
-      param.Query = users
-      param.Recommendations = 5
-      
-      recommendations, _ := mlpack.Cf(param)
+  // Initialize optional parameters for Cf().
+  param := mlpack.CfOptions()
+  param.InputModel = &model
+  param.Query = users
+  param.Recommendations = 5
+  
+  recommendations, _ := mlpack.Cf(param)
 
 
   Input parameters:

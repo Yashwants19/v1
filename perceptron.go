@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PerceptronOptionalParam struct {
     InputModel *perceptronModel
@@ -32,23 +28,6 @@ func PerceptronOptions() *PerceptronOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type perceptronModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *perceptronModel) allocPerceptronModel(identifier string) {
-  m.mem = C.mlpackGetPerceptronModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *perceptronModel) getPerceptronModel(identifier string) {
-  m.allocPerceptronModel(identifier)
-}
-
-func setPerceptronModel(identifier string, ptr *perceptronModel) {
-  C.mlpackSetPerceptronModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -82,23 +61,23 @@ func setPerceptronModel(identifier string, ptr *perceptronModel) {
   on training_data with labels training_labels, and saves the model to
   perceptron_model.
   
-      // Initialize optional parameters for Perceptron().
-      param := mlpack.PerceptronOptions()
-      param.Training = training_data
-      param.Labels = training_labels
-      
-      _, perceptron_model, _ := mlpack.Perceptron(param)
+  // Initialize optional parameters for Perceptron().
+  param := mlpack.PerceptronOptions()
+  param.Training = training_data
+  param.Labels = training_labels
+  
+  _, perceptron_model, _ := mlpack.Perceptron(param)
   
   Then, this model can be re-used for classification on the test data test_data.
    The example below does precisely that, saving the predicted classes to
   predictions.
   
-      // Initialize optional parameters for Perceptron().
-      param := mlpack.PerceptronOptions()
-      param.InputModel = &perceptron_model
-      param.Test = test_data
-      
-      _, _, predictions := mlpack.Perceptron(param)
+  // Initialize optional parameters for Perceptron().
+  param := mlpack.PerceptronOptions()
+  param.InputModel = &perceptron_model
+  param.Test = test_data
+  
+  _, _, predictions := mlpack.Perceptron(param)
   
   Note that all of the options may be specified at once: predictions may be
   calculated right after training a model, and model training can occur even if

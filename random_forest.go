@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type RandomForestOptionalParam struct {
     InputModel *randomForestModel
@@ -46,23 +42,6 @@ func RandomForestOptions() *RandomForestOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type randomForestModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *randomForestModel) allocRandomForestModel(identifier string) {
-  m.mem = C.mlpackGetRandomForestModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *randomForestModel) getRandomForestModel(identifier string) {
-  m.allocRandomForestModel(identifier)
-}
-
-func setRandomForestModel(identifier string, ptr *randomForestModel) {
-  C.mlpackSetRandomForestModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -99,27 +78,27 @@ func setRandomForestModel(identifier string, ptr *randomForestModel) {
   trees on the dataset contained in datawith labels labels, saving the output
   random forest to rf_model and printing the training error, one could call
   
-      // Initialize optional parameters for RandomForest().
-      param := mlpack.RandomForestOptions()
-      param.Training = data
-      param.Labels = labels
-      param.MinimumLeafSize = 20
-      param.NumTrees = 10
-      param.PrintTrainingAccuracy = true
-      
-      rf_model, _, _ := mlpack.RandomForest(param)
+  // Initialize optional parameters for RandomForest().
+  param := mlpack.RandomForestOptions()
+  param.Training = data
+  param.Labels = labels
+  param.MinimumLeafSize = 20
+  param.NumTrees = 10
+  param.PrintTrainingAccuracy = true
+  
+  rf_model, _, _ := mlpack.RandomForest(param)
   
   Then, to use that model to classify points in test_set and print the test
   error given the labels test_labels using that model, while saving the
   predictions for each point to predictions, one could call 
   
-      // Initialize optional parameters for RandomForest().
-      param := mlpack.RandomForestOptions()
-      param.InputModel = &rf_model
-      param.Test = test_set
-      param.TestLabels = test_labels
-      
-      _, predictions, _ := mlpack.RandomForest(param)
+  // Initialize optional parameters for RandomForest().
+  param := mlpack.RandomForestOptions()
+  param.InputModel = &rf_model
+  param.Test = test_set
+  param.TestLabels = test_labels
+  
+  _, predictions, _ := mlpack.RandomForest(param)
 
 
   Input parameters:

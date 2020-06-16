@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DecisionTreeOptionalParam struct {
     InputModel *decisionTreeModel
@@ -46,23 +42,6 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
   }
 }
 
-type decisionTreeModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *decisionTreeModel) allocDecisionTreeModel(identifier string) {
-  m.mem = C.mlpackGetDecisionTreeModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *decisionTreeModel) getDecisionTreeModel(identifier string) {
-  m.allocDecisionTreeModel(identifier)
-}
-
-func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
-  C.mlpackSetDecisionTreeModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   Train and evaluate using a decision tree.  Given a dataset containing numeric
   or categorical features, and associated labels for each point in the dataset,
@@ -93,27 +72,27 @@ func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
   dataset contained in data with labels labels, saving the output model to tree
   and printing the training error, one could call
   
-      // Initialize optional parameters for DecisionTree().
-      param := mlpack.DecisionTreeOptions()
-      param.Training = data
-      param.Labels = labels
-      param.MinimumLeafSize = 20
-      param.MinimumGainSplit = 0.001
-      param.PrintTrainingAccuracy = true
-      
-      tree, _, _ := mlpack.DecisionTree(param)
+  // Initialize optional parameters for DecisionTree().
+  param := mlpack.DecisionTreeOptions()
+  param.Training = data
+  param.Labels = labels
+  param.MinimumLeafSize = 20
+  param.MinimumGainSplit = 0.001
+  param.PrintTrainingAccuracy = true
+  
+  tree, _, _ := mlpack.DecisionTree(param)
   
   Then, to use that model to classify points in test_set and print the test
   error given the labels test_labels using that model, while saving the
   predictions for each point to predictions, one could call 
   
-      // Initialize optional parameters for DecisionTree().
-      param := mlpack.DecisionTreeOptions()
-      param.InputModel = &tree
-      param.Test = test_set
-      param.TestLabels = test_labels
-      
-      _, predictions, _ := mlpack.DecisionTree(param)
+  // Initialize optional parameters for DecisionTree().
+  param := mlpack.DecisionTreeOptions()
+  param.InputModel = &tree
+  param.Test = test_set
+  param.TestLabels = test_labels
+  
+  _, predictions, _ := mlpack.DecisionTree(param)
 
 
   Input parameters:

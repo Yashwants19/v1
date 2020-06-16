@@ -46,14 +46,14 @@ download:
 	rm -rf $(TMP_DIR)mlpack
 	mkdir $(TMP_DIR)mlpack
 	cd $(TMP_DIR)mlpack
-	curl -Lo mlpack.zip https://codeload.github.com/Yashwants19/mlpack/zip/go-bindings
+	curl -Lo mlpack.zip https://codeload.github.com/Yashwants19/mlpack/zip/imporve-go-modules
 	unzip -q mlpack.zip
 	rm mlpack.zip
 	cd -
 
 # Build mlpack(go shared libraries).
 build:
-	cd $(TMP_DIR)mlpack/mlpack-go-bindings
+	cd $(TMP_DIR)mlpack/mlpack-imporve-go-modules
 	mkdir build
 	cd build
 	cmake -D BUILD_TESTS=OFF           \
@@ -77,7 +77,7 @@ install: deps download build sudo_install clean test
 
 # Install system wide.
 sudo_install:
-	cd $(TMP_DIR)mlpack/mlpack-go-bindings/build
+	cd $(TMP_DIR)mlpack/mlpack-imporve-go-modules/build
 	sudo $(MAKE) install
 	sudo ldconfig
 	cd -

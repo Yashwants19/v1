@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessDescribeOptionalParam struct {
     Dimension int
@@ -49,22 +47,22 @@ func PreprocessDescribeOptions() *PreprocessDescribeOptionalParam {
   So, a simple example where we want to print out statistical facts about the
   dataset X using the default settings, we could run 
   
-      // Initialize optional parameters for PreprocessDescribe().
-      param := mlpack.PreprocessDescribeOptions()
-      param.Verbose = true
-      
-       := mlpack.PreprocessDescribe(X, param)
+  // Initialize optional parameters for PreprocessDescribe().
+  param := mlpack.PreprocessDescribeOptions()
+  param.Verbose = true
+  
+   := mlpack.PreprocessDescribe(X, param)
   
   If we want to customize the width to 10 and precision to 5 and consider the
   dataset as a population, we could run
   
-      // Initialize optional parameters for PreprocessDescribe().
-      param := mlpack.PreprocessDescribeOptions()
-      param.Width = 10
-      param.Precision = 5
-      param.Verbose = true
-      
-       := mlpack.PreprocessDescribe(X, param)
+  // Initialize optional parameters for PreprocessDescribe().
+  param := mlpack.PreprocessDescribeOptions()
+  param.Width = 10
+  param.Precision = 5
+  param.Verbose = true
+  
+   := mlpack.PreprocessDescribe(X, param)
 
 
   Input parameters:

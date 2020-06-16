@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KnnOptionalParam struct {
     Algorithm string
@@ -52,23 +48,6 @@ func KnnOptions() *KnnOptionalParam {
   }
 }
 
-type knnModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *knnModel) allocKNNModel(identifier string) {
-  m.mem = C.mlpackGetKNNModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *knnModel) getKNNModel(identifier string) {
-  m.allocKNNModel(identifier)
-}
-
-func setKNNModel(identifier string, ptr *knnModel) {
-  C.mlpackSetKNNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program will calculate the k-nearest-neighbors of a set of points using
   kd-trees or cover trees (cover tree support is experimental and may be slow).
@@ -79,12 +58,12 @@ func setKNNModel(identifier string, ptr *knnModel) {
   each point in input and store the distances in distances and the neighbors in
   neighbors: 
   
-      // Initialize optional parameters for Knn().
-      param := mlpack.KnnOptions()
-      param.K = 5
-      param.Reference = input
-      
-      distances, neighbors, _ := mlpack.Knn(param)
+  // Initialize optional parameters for Knn().
+  param := mlpack.KnnOptions()
+  param.K = 5
+  param.Reference = input
+  
+  distances, neighbors, _ := mlpack.Knn(param)
   
   The output is organized such that row i and column j in the neighbors output
   matrix corresponds to the index of the point in the reference set which is the

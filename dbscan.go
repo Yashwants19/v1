@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DbscanOptionalParam struct {
     Epsilon float64
@@ -58,12 +56,12 @@ func DbscanOptions() *DbscanOptionalParam {
   An example usage to run DBSCAN on the dataset in input with a radius of 0.5
   and a minimum cluster size of 5 is given below:
   
-      // Initialize optional parameters for Dbscan().
-      param := mlpack.DbscanOptions()
-      param.Epsilon = 0.5
-      param.MinSize = 5
-      
-      _, _ := mlpack.Dbscan(input, param)
+  // Initialize optional parameters for Dbscan().
+  param := mlpack.DbscanOptions()
+  param.Epsilon = 0.5
+  param.MinSize = 5
+  
+  _, _ := mlpack.Dbscan(input, param)
 
 
   Input parameters:

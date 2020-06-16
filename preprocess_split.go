@@ -8,12 +8,11 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessSplitOptionalParam struct {
     InputLabels *mat.Dense
+    NoShuffle bool
     Seed int
     TestRatio float64
     Verbose bool
@@ -22,6 +21,7 @@ type PreprocessSplitOptionalParam struct {
 func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
   return &PreprocessSplitOptionalParam{
     InputLabels: nil,
+    NoShuffle: false,
     Seed: 0,
     TestRatio: 0.2,
     Verbose: false,
@@ -46,28 +46,40 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
   X_test with 60% of the data in the training set and 40% of the dataset in the
   test set, we could run 
   
-      // Initialize optional parameters for PreprocessSplit().
-      param := mlpack.PreprocessSplitOptions()
-      param.TestRatio = 0.4
-      
-      X_test, _, X_train, _ := mlpack.PreprocessSplit(X, param)
+  // Initialize optional parameters for PreprocessSplit().
+  param := mlpack.PreprocessSplitOptions()
+  param.TestRatio = 0.4
+  
+  X_test, _, X_train, _ := mlpack.PreprocessSplit(X, param)
+  
+  Also by default the dataset is shuffled and split; you can provide the
+  "NoShuffle" option to avoid shuffling the data; an example to avoid shuffling
+  of data is:
+  
+  // Initialize optional parameters for PreprocessSplit().
+  param := mlpack.PreprocessSplitOptions()
+  param.TestRatio = 0.4
+  param.NoShuffle = true
+  
+  X_test, _, X_train, _ := mlpack.PreprocessSplit(X, param)
   
   If we had a dataset X and associated labels y, and we wanted to split these
   into X_train, y_train, X_test, and y_test, with 30% of the data in the test
   set, we could run
   
-      // Initialize optional parameters for PreprocessSplit().
-      param := mlpack.PreprocessSplitOptions()
-      param.InputLabels = y
-      param.TestRatio = 0.3
-      
-      X_test, y_test, X_train, y_train := mlpack.PreprocessSplit(X, param)
+  // Initialize optional parameters for PreprocessSplit().
+  param := mlpack.PreprocessSplitOptions()
+  param.InputLabels = y
+  param.TestRatio = 0.3
+  
+  X_test, y_test, X_train, y_train := mlpack.PreprocessSplit(X, param)
 
 
   Input parameters:
 
    - input (mat.Dense): Matrix containing data.
    - InputLabels (mat.Dense): Matrix containing labels.
+   - NoShuffle (bool): Avoid shuffling and splitting the data.
    - Seed (int): Random seed (0 for std::time(NULL)).  Default value 0.
    - TestRatio (float64): Ratio of test set; if not set,the ratio defaults
         to 0.2  Default value 0.2.
@@ -97,6 +109,12 @@ func PreprocessSplit(input *mat.Dense, param *PreprocessSplitOptionalParam) (*ma
   if param.InputLabels != nil {
     gonumToArmaUmat("input_labels", param.InputLabels)
     setPassed("input_labels")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.NoShuffle != false {
+    setParamBool("no_shuffle", param.NoShuffle)
+    setPassed("no_shuffle")
   }
 
   // Detect if the parameter was passed; set if so.

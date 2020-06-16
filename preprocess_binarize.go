@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessBinarizeOptionalParam struct {
     Dimension int
@@ -40,21 +38,21 @@ func PreprocessBinarizeOptions() *PreprocessBinarizeOptionalParam {
   to 1 and variables less than or equal to 5.0 to 0, and save the result to Y,
   we could run
   
-      // Initialize optional parameters for PreprocessBinarize().
-      param := mlpack.PreprocessBinarizeOptions()
-      param.Threshold = 5
-      
-      Y := mlpack.PreprocessBinarize(X, param)
+  // Initialize optional parameters for PreprocessBinarize().
+  param := mlpack.PreprocessBinarizeOptions()
+  param.Threshold = 5
+  
+  Y := mlpack.PreprocessBinarize(X, param)
   
   But if we want to apply this to only the first (0th) dimension of X,  we could
   instead run
   
-      // Initialize optional parameters for PreprocessBinarize().
-      param := mlpack.PreprocessBinarizeOptions()
-      param.Threshold = 5
-      param.Dimension = 0
-      
-      Y := mlpack.PreprocessBinarize(X, param)
+  // Initialize optional parameters for PreprocessBinarize().
+  param := mlpack.PreprocessBinarizeOptions()
+  param.Threshold = 5
+  param.Dimension = 0
+  
+  Y := mlpack.PreprocessBinarize(X, param)
 
 
   Input parameters:

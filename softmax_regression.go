@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type SoftmaxRegressionOptionalParam struct {
     InputModel *softmaxRegression
@@ -40,23 +36,6 @@ func SoftmaxRegressionOptions() *SoftmaxRegressionOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type softmaxRegression struct {
-  mem unsafe.Pointer
-}
-
-func (m *softmaxRegression) allocSoftmaxRegression(identifier string) {
-  m.mem = C.mlpackGetSoftmaxRegressionPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *softmaxRegression) getSoftmaxRegression(identifier string) {
-  m.allocSoftmaxRegression(identifier)
-}
-
-func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
-  C.mlpackSetSoftmaxRegressionPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -89,22 +68,22 @@ func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
   labels labels with a maximum of 1000 iterations for training, saving the
   trained model to sr_model, the following command can be used: 
   
-      // Initialize optional parameters for SoftmaxRegression().
-      param := mlpack.SoftmaxRegressionOptions()
-      param.Training = dataset
-      param.Labels = labels
-      
-      sr_model, _ := mlpack.SoftmaxRegression(param)
+  // Initialize optional parameters for SoftmaxRegression().
+  param := mlpack.SoftmaxRegressionOptions()
+  param.Training = dataset
+  param.Labels = labels
+  
+  sr_model, _ := mlpack.SoftmaxRegression(param)
   
   Then, to use sr_model to classify the test points in test_points, saving the
   output predictions to predictions, the following command can be used:
   
-      // Initialize optional parameters for SoftmaxRegression().
-      param := mlpack.SoftmaxRegressionOptions()
-      param.InputModel = &sr_model
-      param.Test = test_points
-      
-      _, predictions := mlpack.SoftmaxRegression(param)
+  // Initialize optional parameters for SoftmaxRegression().
+  param := mlpack.SoftmaxRegressionOptions()
+  param.InputModel = &sr_model
+  param.Test = test_points
+  
+  _, predictions := mlpack.SoftmaxRegression(param)
 
 
   Input parameters:

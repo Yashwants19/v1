@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type EmstOptionalParam struct {
     LeafSize int
@@ -44,11 +42,11 @@ func EmstOptions() *EmstOptionalParam {
   calculated with a leaf size of 20 and stored as spanning_tree using the
   following command:
   
-      // Initialize optional parameters for Emst().
-      param := mlpack.EmstOptions()
-      param.LeafSize = 20
-      
-      spanning_tree := mlpack.Emst(data, param)
+  // Initialize optional parameters for Emst().
+  param := mlpack.EmstOptions()
+  param.LeafSize = 20
+  
+  spanning_tree := mlpack.Emst(data, param)
   
   The output matrix is a three-dimensional matrix, where each row indicates an
   edge.  The first dimension corresponds to the lesser index of the edge; the

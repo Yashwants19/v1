@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LmnnOptionalParam struct {
     BatchSize int
@@ -125,24 +123,24 @@ func LmnnOptions() *LmnnOptionalParam {
   targets as 3 using BigBatch_SGD optimizer. A simple call for the same will
   look like: 
   
-      // Initialize optional parameters for MlpackLmnn().
-      param := mlpack.MlpackLmnnOptions()
-      param.Labels = iris_labels
-      param.K = 3
-      param.Optimizer = "bbsgd"
-      
-      _, output, _ := mlpack.MlpackLmnn(iris, param)
+  // Initialize optional parameters for MlpackLmnn().
+  param := mlpack.MlpackLmnnOptions()
+  param.Labels = iris_labels
+  param.K = 3
+  param.Optimizer = "bbsgd"
+  
+  _, output, _ := mlpack.MlpackLmnn(iris, param)
   
   An another program call making use of range & regularization parameter with
   dataset having labels as last column can be made as: 
   
-      // Initialize optional parameters for MlpackLmnn().
-      param := mlpack.MlpackLmnnOptions()
-      param.K = 5
-      param.Range = 10
-      param.Regularization = 0.4
-      
-      _, output, _ := mlpack.MlpackLmnn(letter_recognition, param)
+  // Initialize optional parameters for MlpackLmnn().
+  param := mlpack.MlpackLmnnOptions()
+  param.K = 5
+  param.Range = 10
+  param.Regularization = 0.4
+  
+  _, output, _ := mlpack.MlpackLmnn(letter_recognition, param)
 
 
   Input parameters:

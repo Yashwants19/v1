@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PcaOptionalParam struct {
     DecompositionMethod string
@@ -51,12 +49,12 @@ func PcaOptions() *PcaOptionalParam {
   using randomized SVD for the decomposition, storing the output matrix to
   data_mod, the following command can be used:
   
-      // Initialize optional parameters for Pca().
-      param := mlpack.PcaOptions()
-      param.NewDimensionality = 5
-      param.DecompositionMethod = "randomized"
-      
-      data_mod := mlpack.Pca(data, param)
+  // Initialize optional parameters for Pca().
+  param := mlpack.PcaOptions()
+  param.NewDimensionality = 5
+  param.DecompositionMethod = "randomized"
+  
+  data_mod := mlpack.Pca(data, param)
 
 
   Input parameters:

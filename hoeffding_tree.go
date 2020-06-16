@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type HoeffdingTreeOptionalParam struct {
     BatchMode bool
@@ -52,23 +48,6 @@ func HoeffdingTreeOptions() *HoeffdingTreeOptionalParam {
   }
 }
 
-type hoeffdingTreeModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *hoeffdingTreeModel) allocHoeffdingTreeModel(identifier string) {
-  m.mem = C.mlpackGetHoeffdingTreeModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *hoeffdingTreeModel) getHoeffdingTreeModel(identifier string) {
-  m.allocHoeffdingTreeModel(identifier)
-}
-
-func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
-  C.mlpackSetHoeffdingTreeModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program implements Hoeffding trees, a form of streaming decision tree
   suited best for large (or streaming) datasets.  This program supports both
@@ -98,23 +77,23 @@ func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
   For example, to train a Hoeffding tree with confidence 0.99 with data dataset,
   saving the trained tree to tree, the following command may be used:
   
-      // Initialize optional parameters for HoeffdingTree().
-      param := mlpack.HoeffdingTreeOptions()
-      param.Training = dataset
-      param.Confidence = 0.99
-      
-      tree, _, _ := mlpack.HoeffdingTree(param)
+  // Initialize optional parameters for HoeffdingTree().
+  param := mlpack.HoeffdingTreeOptions()
+  param.Training = dataset
+  param.Confidence = 0.99
+  
+  tree, _, _ := mlpack.HoeffdingTree(param)
   
   Then, this tree may be used to make predictions on the test set test_set,
   saving the predictions into predictions and the class probabilities into
   class_probs with the following command: 
   
-      // Initialize optional parameters for HoeffdingTree().
-      param := mlpack.HoeffdingTreeOptions()
-      param.InputModel = &tree
-      param.Test = test_set
-      
-      _, predictions, class_probs := mlpack.HoeffdingTree(param)
+  // Initialize optional parameters for HoeffdingTree().
+  param := mlpack.HoeffdingTreeOptions()
+  param.InputModel = &tree
+  param.Test = test_set
+  
+  _, predictions, class_probs := mlpack.HoeffdingTree(param)
 
 
   Input parameters:

@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type ApproxKfnOptionalParam struct {
     Algorithm string
@@ -42,23 +38,6 @@ func ApproxKfnOptions() *ApproxKfnOptionalParam {
   }
 }
 
-type approxkfnModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *approxkfnModel) allocApproxKFNModel(identifier string) {
-  m.mem = C.mlpackGetApproxKFNModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *approxkfnModel) getApproxKFNModel(identifier string) {
-  m.allocApproxKFNModel(identifier)
-}
-
-func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
-  C.mlpackSetApproxKFNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program implements two strategies for furthest neighbor search. These
   strategies are:
@@ -82,6 +61,9 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
   used (either 'ds'---the default---or 'qdafn')  may be specified with
   "Algorithm".  Also specify the number of neighbors to search for with "K".
   
+  Note that for 'qdafn' in lower dimensions, "NumProjections" may need to be set
+  to a high value in order to return results for each query point.
+  
   If no query set is specified, the reference set will be used as the query set.
    The "OutputModel" output parameter may be used to store the built model, and
   an input model may be loaded instead of specifying a reference set with the
@@ -96,37 +78,37 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
   storing the furthest neighbor indices to neighbors and the furthest neighbor
   distances to distances, one could call
   
-      // Initialize optional parameters for ApproxKfn().
-      param := mlpack.ApproxKfnOptions()
-      param.Query = query_set
-      param.Reference = reference_set
-      param.K = 5
-      param.Algorithm = "ds"
-      
-      distances, neighbors, _ := mlpack.ApproxKfn(param)
+  // Initialize optional parameters for ApproxKfn().
+  param := mlpack.ApproxKfnOptions()
+  param.Query = query_set
+  param.Reference = reference_set
+  param.K = 5
+  param.Algorithm = "ds"
+  
+  distances, neighbors, _ := mlpack.ApproxKfn(param)
   
   and to perform approximate all-furthest-neighbors search with k=1 on the set
   data storing only the furthest neighbor distances to distances, one could call
   
-      // Initialize optional parameters for ApproxKfn().
-      param := mlpack.ApproxKfnOptions()
-      param.Reference = reference_set
-      param.K = 1
-      
-      distances, _, _ := mlpack.ApproxKfn(param)
+  // Initialize optional parameters for ApproxKfn().
+  param := mlpack.ApproxKfnOptions()
+  param.Reference = reference_set
+  param.K = 1
+  
+  distances, _, _ := mlpack.ApproxKfn(param)
   
   A trained model can be re-used.  If a model has been previously saved to
   model, then we may find 3 approximate furthest neighbors on a query set
   new_query_set using that model and store the furthest neighbor indices into
   neighbors by calling
   
-      // Initialize optional parameters for ApproxKfn().
-      param := mlpack.ApproxKfnOptions()
-      param.InputModel = &model
-      param.Query = new_query_set
-      param.K = 3
-      
-      _, neighbors, _ := mlpack.ApproxKfn(param)
+  // Initialize optional parameters for ApproxKfn().
+  param := mlpack.ApproxKfnOptions()
+  param.InputModel = &model
+  param.Query = new_query_set
+  param.K = 3
+  
+  _, neighbors, _ := mlpack.ApproxKfn(param)
 
 
   Input parameters:

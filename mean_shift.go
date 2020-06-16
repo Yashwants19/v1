@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type MeanShiftOptionalParam struct {
     ForceConvergence bool
@@ -48,10 +46,10 @@ func MeanShiftOptions() *MeanShiftOptionalParam {
   For example, to run mean shift clustering on the dataset data and store the
   centroids to centroids, the following command may be used: 
   
-      // Initialize optional parameters for MeanShift().
-      param := mlpack.MeanShiftOptions()
-      
-      centroids, _ := mlpack.MeanShift(data, param)
+  // Initialize optional parameters for MeanShift().
+  param := mlpack.MeanShiftOptions()
+  
+  centroids, _ := mlpack.MeanShift(data, param)
 
 
   Input parameters:

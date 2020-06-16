@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LinearRegressionOptionalParam struct {
     InputModel *linearRegression
@@ -32,23 +28,6 @@ func LinearRegressionOptions() *LinearRegressionOptionalParam {
     TrainingResponses: nil,
     Verbose: false,
   }
-}
-
-type linearRegression struct {
-  mem unsafe.Pointer
-}
-
-func (m *linearRegression) allocLinearRegression(identifier string) {
-  m.mem = C.mlpackGetLinearRegressionPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *linearRegression) getLinearRegression(identifier string) {
-  m.allocLinearRegression(identifier)
-}
-
-func setLinearRegression(identifier string, ptr *linearRegression) {
-  C.mlpackSetLinearRegressionPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -77,22 +56,22 @@ func setLinearRegression(identifier string, ptr *linearRegression) {
   For example, to run a linear regression on the dataset X with responses y,
   saving the trained model to lr_model, the following command could be used:
   
-      // Initialize optional parameters for LinearRegression().
-      param := mlpack.LinearRegressionOptions()
-      param.Training = X
-      param.TrainingResponses = y
-      
-      lr_model, _ := mlpack.LinearRegression(param)
+  // Initialize optional parameters for LinearRegression().
+  param := mlpack.LinearRegressionOptions()
+  param.Training = X
+  param.TrainingResponses = y
+  
+  lr_model, _ := mlpack.LinearRegression(param)
   
   Then, to use lr_model to predict responses for a test set X_test, saving the
   predictions to X_test_responses, the following command could be used:
   
-      // Initialize optional parameters for LinearRegression().
-      param := mlpack.LinearRegressionOptions()
-      param.InputModel = &lr_model
-      param.Test = X_test
-      
-      _, X_test_responses := mlpack.LinearRegression(param)
+  // Initialize optional parameters for LinearRegression().
+  param := mlpack.LinearRegressionOptions()
+  param.InputModel = &lr_model
+  param.Test = X_test
+  
+  _, X_test_responses := mlpack.LinearRegression(param)
 
 
   Input parameters:

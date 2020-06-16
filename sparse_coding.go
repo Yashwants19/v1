@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type SparseCodingOptionalParam struct {
     Atoms int
@@ -48,23 +44,6 @@ func SparseCodingOptions() *SparseCodingOptionalParam {
   }
 }
 
-type sparseCoding struct {
-  mem unsafe.Pointer
-}
-
-func (m *sparseCoding) allocSparseCoding(identifier string) {
-  m.mem = C.mlpackGetSparseCodingPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *sparseCoding) getSparseCoding(identifier string) {
-  m.allocSparseCoding(identifier)
-}
-
-func setSparseCoding(identifier string, ptr *sparseCoding) {
-  C.mlpackSetSparseCodingPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   An implementation of Sparse Coding with Dictionary Learning, which achieves
   sparsity via an l1-norm regularizer on the codes (LASSO) or an (l1+l2)-norm
@@ -95,23 +74,23 @@ func setSparseCoding(identifier string, ptr *sparseCoding) {
   atoms and an l1-regularization parameter of 0.1, saving the model into model,
   use 
   
-      // Initialize optional parameters for SparseCoding().
-      param := mlpack.SparseCodingOptions()
-      param.Training = data
-      param.Atoms = 200
-      param.Lambda1 = 0.1
-      
-      _, _, model := mlpack.SparseCoding(param)
+  // Initialize optional parameters for SparseCoding().
+  param := mlpack.SparseCodingOptions()
+  param.Training = data
+  param.Atoms = 200
+  param.Lambda1 = 0.1
+  
+  _, _, model := mlpack.SparseCoding(param)
   
   Then, this model could be used to encode a new matrix, otherdata, and save the
   output codes to codes: 
   
-      // Initialize optional parameters for SparseCoding().
-      param := mlpack.SparseCodingOptions()
-      param.InputModel = &model
-      param.Test = otherdata
-      
-      codes, _, _ := mlpack.SparseCoding(param)
+  // Initialize optional parameters for SparseCoding().
+  param := mlpack.SparseCodingOptions()
+  param.InputModel = &model
+  param.Test = otherdata
+  
+  codes, _, _ := mlpack.SparseCoding(param)
 
 
   Input parameters:

@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LocalCoordinateCodingOptionalParam struct {
     Atoms int
@@ -44,23 +40,6 @@ func LocalCoordinateCodingOptions() *LocalCoordinateCodingOptionalParam {
   }
 }
 
-type localCoordinateCoding struct {
-  mem unsafe.Pointer
-}
-
-func (m *localCoordinateCoding) allocLocalCoordinateCoding(identifier string) {
-  m.mem = C.mlpackGetLocalCoordinateCodingPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *localCoordinateCoding) getLocalCoordinateCoding(identifier string) {
-  m.allocLocalCoordinateCoding(identifier)
-}
-
-func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
-  C.mlpackSetLocalCoordinateCodingPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   An implementation of Local Coordinate Coding (LCC), which codes data that
   approximately lives on a manifold using a variation of l1-norm regularized
@@ -86,13 +65,13 @@ func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
   l1-regularization parameter of 0.1, saving the dictionary "Dictionary" and the
   codes into "Codes", use
   
-      // Initialize optional parameters for LocalCoordinateCoding().
-      param := mlpack.LocalCoordinateCodingOptions()
-      param.Training = data
-      param.Atoms = 200
-      param.Lambda = 0.1
-      
-      codes, dict, _ := mlpack.LocalCoordinateCoding(param)
+  // Initialize optional parameters for LocalCoordinateCoding().
+  param := mlpack.LocalCoordinateCodingOptions()
+  param.Training = data
+  param.Atoms = 200
+  param.Lambda = 0.1
+  
+  codes, dict, _ := mlpack.LocalCoordinateCoding(param)
   
   The maximum number of iterations may be specified with the "MaxIterations"
   parameter. Optionally, the input data matrix X can be normalized before coding
@@ -103,12 +82,12 @@ func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
   lcc_model, saving the new codes to new_codes, the following command can be
   used:
   
-      // Initialize optional parameters for LocalCoordinateCoding().
-      param := mlpack.LocalCoordinateCodingOptions()
-      param.InputModel = &lcc_model
-      param.Test = points
-      
-      new_codes, _, _ := mlpack.LocalCoordinateCoding(param)
+  // Initialize optional parameters for LocalCoordinateCoding().
+  param := mlpack.LocalCoordinateCodingOptions()
+  param.InputModel = &lcc_model
+  param.Test = points
+  
+  new_codes, _, _ := mlpack.LocalCoordinateCoding(param)
 
 
   Input parameters:

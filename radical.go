@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type RadicalOptionalParam struct {
     Angles int
@@ -49,11 +47,11 @@ func RadicalOptions() *RadicalOptionalParam {
   For example, to perform ICA on the matrix X with 40 replicates, saving the
   independent components to ic, the following command may be used: 
   
-      // Initialize optional parameters for Radical().
-      param := mlpack.RadicalOptions()
-      param.Replicates = 40
-      
-      ic, _ := mlpack.Radical(X, param)
+  // Initialize optional parameters for Radical().
+  param := mlpack.RadicalOptions()
+  param.Replicates = 40
+  
+  ic, _ := mlpack.Radical(X, param)
 
 
   Input parameters:

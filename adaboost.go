@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type AdaboostOptionalParam struct {
     InputModel *adaBoostModel
@@ -36,23 +32,6 @@ func AdaboostOptions() *AdaboostOptionalParam {
     Verbose: false,
     WeakLearner: "decision_stump",
   }
-}
-
-type adaBoostModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *adaBoostModel) allocAdaBoostModel(identifier string) {
-  m.mem = C.mlpackGetAdaBoostModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *adaBoostModel) getAdaBoostModel(identifier string) {
-  m.allocAdaBoostModel(identifier)
-}
-
-func setAdaBoostModel(identifier string, ptr *adaBoostModel) {
-  C.mlpackSetAdaBoostModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -84,27 +63,28 @@ func setAdaBoostModel(identifier string, ptr *adaBoostModel) {
   4.0.0: "Output".
   Use "Predictions" instead of "Output".
   
-  For example, to run AdaBoost on an input dataset data with perceptrons as the
-  weak learner type, storing the trained model in model, one could use the
-  following command: 
+  For example, to run AdaBoost on an input dataset data with labels labelsand
+  perceptrons as the weak learner type, storing the trained model in model, one
+  could use the following command: 
   
-      // Initialize optional parameters for Adaboost().
-      param := mlpack.AdaboostOptions()
-      param.Training = data
-      param.WeakLearner = "perceptron"
-      
-      _, model, _, _ := mlpack.Adaboost(param)
+  // Initialize optional parameters for Adaboost().
+  param := mlpack.AdaboostOptions()
+  param.Training = data
+  param.Labels = labels
+  param.WeakLearner = "perceptron"
+  
+  _, model, _, _ := mlpack.Adaboost(param)
   
   Similarly, an already-trained model in model can be used to provide class
   predictions from test data test_data and store the output in predictions with
   the following command: 
   
-      // Initialize optional parameters for Adaboost().
-      param := mlpack.AdaboostOptions()
-      param.InputModel = &model
-      param.Test = test_data
-      
-      _, _, predictions, _ := mlpack.Adaboost(param)
+  // Initialize optional parameters for Adaboost().
+  param := mlpack.AdaboostOptions()
+  param.InputModel = &model
+  param.Test = test_data
+  
+  _, _, predictions, _ := mlpack.Adaboost(param)
 
 
   Input parameters:
